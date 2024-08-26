@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.1.2"
+A_FileVersion := "1.1.1.3"
 #singleInstance
 
 persistent()
