@@ -1,4 +1,5 @@
-A_FileVersion := "1.1.1.4"
+A_FileVersion := "1.1.1.5"
+#requires autoHotkey v2.0+
 #singleInstance
 
 persistent()
@@ -8,6 +9,8 @@ ui.autoFish := false
 ui.debug := false
 ui.fishLogArr := array()
 ui.fishCount := 0
+ui.reeledIn := false
+ui.isCasting := false
 
 jigMethod := [1,2,3]
 
@@ -25,36 +28,36 @@ hotIfWinActive("ahk_exe fishingPlanet.exe")
 	hotKey(ui.reloadKey,appReload)
 	hotKey(ui.showLogKey,toggleLog)
 	hotKey(ui.exitKey,cleanExit)
-	Numpad0:: {
-		oneFish()
-	}
+	; Numpad0:: {
+		; oneFish()
+	; }
 	
-	^enter:: {
-		ui.autoclickerActive := true
-			loop {
-				if !ui.autoclickerActive
-					break
-				if winActive("ahk_exe fishingPlanet.exe") {
-					send("{LButton down}")
-					sleep(100)
-					send("{LButton up}")
-				sleep(round(random(1,100)))
-			}
-		}
-	}
+	; ^enter:: {
+		; ui.autoclickerActive := true
+			; loop {
+				; if !ui.autoclickerActive
+					; break
+				; if winActive("ahk_exe fishingPlanet.exe") {
+					; send("{LButton down}")
+					; sleep(100)
+					; send("{LButton up}")
+				; sleep(round(random(1,100)))
+			; }
+		; }
+	; }
 	
-	^+enter:: {
-		ui.autoclickerActive := false
-	}		
+	; ^+enter:: {
+		; ui.autoclickerActive := false
+	; }		
 hotIf()
 
-oneFish(*) {
+/* oneFish(*) {
 	cast()
 	retrieve()
 }
-
+ */
 autoFishStop(*) {
-	ui.autoFish := false
+	ui.autoFish := 0
 	ui.fishStatusText.text := "Stopped"
 	ui.startButton.opt("cBBBBBB")
 }
@@ -65,19 +68,6 @@ autoFishStart(*) {
 	while ui.autoFish == 1 {
 		cast()
 		retrieve()
-		if reeledIn()
-			if fishCaught() {
-				log("Fish Caught!")
-				ui.fishLogCount.text += 1
-				send("{space}")
-				sleep(1000)
-				send("{backspace}")
-				sleep(1500)
-			} else {
-				log("No Fish, Trying Again.")
-			}
-		else
-			retrieve()
 	}
 }
 
@@ -97,6 +87,8 @@ cast(*) {
 	sleep(500)
 	if !ui.autoFish
 		return
+	
+	ui.isCasting := true
 	send("{space down}")
 	sleep(1000)
 	if !ui.autoFish
@@ -123,50 +115,97 @@ cast(*) {
 	if !ui.autoFish
 		return	
 	sleep(1000)
+	ui.isCasting := false
 }
 
 retrieve(*) {
 	ui.fishStatusText.text := "Retrieving / Jigging" 
-	while !reeledIn() {
-		if a_index < 30 {
+	log("Retrieving")
+	while !(reeledIn()) {
+		jigMechanic := 3
+		if a_index < 30 && !(isHooked()) {
 			jigMechanic := round(random(1,3))
-		} else {
-			jigMechanic := 3
 		}
-		
 		switch jigMechanic {
 			case 1: ;twitch
-				log("Jig Mechanic: Twitch")
+				log("Retrieve Mechanic: Twitch")
 				;send("{space down}")
 				loop round(random(1,2)) {
 						;send("{space down}")
 						send("{RShift down}")
-						sleep(100)
+						sleep(150)
 						send("{RShift up}")
 						sleep(round(random(200,400)))
 				}
-				send("{space up}")
 			case 2: ;pause
-				log("Jig Mechanic: Pause")
-				send("{space up}")
+				log("Retrieve Mechanic: Pause")
 				loop round(random(4)) {
 					sleep(1000)
 					if !ui.autoFish
 						return
 				}
 				sleep(round(random(1,999)))
-				send("{space down}")
 			case 3: ;reel
-				log("Jig Mechanic: Reel")
-				send("{space down}")
+				log("Retrieve Mechanic: Reel")
+				if !ui.reeledIn
+					send("{space down}")
 				loop round(random(2,4)) {
-					sleep(1000)
+					if !ui.reeledIn
+						sleep(1000)
 				}
-				sleep(round(random(1,999)))
+				if !ui.reeledIn
+					sleep(round(random(1,999)))
 				send("{space up}")
 			}
 	}
-	sleep(1500)
+	sleep(3000)
+	if fishCaught() {
+		log("Fish Caught!")
+		ui.fishLogCount.text += 1
+		send("{space}")
+		sleep(1000)
+		send("{backspace}")
+		sleep(1500)
+	} else {	
+		log("No Fish Detected.")
+	}
+}
+
+setTimer(checkReel,500,100)
+
+checkReel(*) {
+	if ui.isCasting
+		return
+	ui.checkReel1 := round(pixelGetColor(1027,637))
+	ui.checkReel2 := round(pixelGetColor(1027,653))
+	ui.checkReel3 := round(pixelGetColor(1047,637))
+	ui.checkReel4 := round(pixelGetColor(1047,653))
+	ui.checkReel5 := round(pixelGetColor(1037,645))
+		
+	if (ui.checkReel1 >= 16250871
+		&& ui.checkReel2 >= 16250871
+		&& ui.checkReel3 >= 16250871
+		&& ui.checkReel4 >= 16250871
+		&& ui.checkReel5 < 16250871) {
+			ui.reeledIn := 1
+			send("{space up}")
+			send("{rshift up}")
+		}
+	else
+		ui.reeledIn := 0
+	
+	return ui.reeledIn
+}
+
+isHooked(*) {
+	hookedPixel := pixelGetColor(1220,420) 
+	if (hookedPixel > (round(0x3BCC3C) - 10000) && hookedPixel < (round(0x3BCC3C) + 10000)) {
+		log("HOOKED!")
+		ui.isHooked := 1
+	} else
+		ui.isHooked := 0
+		
+	return ui.isHooked
 }
 
 reeledIn(*) {
@@ -181,21 +220,24 @@ reeledIn(*) {
 		&& ui.checkReel3 >= 16250871
 		&& ui.checkReel4 >= 16250871
 		&& ui.checkReel5 < 16250871)
-			reeledIn := 1
+			ui.reeledIn := 1
 	else
-		reeledIn := 0
+		ui.reeledIn := 0
 	
 	if (ui.debug) {
-		if reeledIn
+		if ui.reeledIn
 			log("Reeled In")
 		else 
 			log("Checking Reel: " ui.checkReel1 ":" ui.checkReel2 ":" ui.checkReel3 ":" ui.checkReel4 ":" ui.checkReel5)
 		}
-	return reeledIn
+	return ui.reeledIn
 	} 
 
 fishCaught(*) {
-	if (round(pixelGetColor(450,575)) >= 16250871) {
+	winActivate("ahk_exe fishingPlanet.exe")
+	fishCaughtPixel := round(pixelGetColor(420,575))
+	log("Analyzing Catch: " fishCaughtPixel)
+	if (fishCaughtPixel >= 16250871) {
 		return 1
 	} else {
 		return 0
@@ -218,7 +260,7 @@ appReload(*) {
 }
 
 log(msg) {
-	if strSplit(ui.fishLogText.text,"`n").length > 34 {
+	if ui.fishLogArr.length > 34 {
 		ui.fishLogArr.removeAt(1)
 		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
 		ui.fishLogText.delete()
@@ -273,7 +315,7 @@ createGui(*) {
 	ui.fishLogCount := ui.fishGui.addText("x365 y32 w40 h30 backgroundTrans ceedc82",ui.fishCount)
 	ui.fishLogCount.setFont("s18","Impact")
 	ui.fishLog := ui.fishGui.addText("x0 y60 w400 h690 background353535")
-	ui.fishLogText := ui.fishGui.addListbox("x0 y63 w400 h720 r34 -wrap -E0x200 background353535",[])
+	ui.fishLogText := ui.fishGui.addListbox("x0 y63 w400 h720 -wrap 0x2000 0x100 -E0x200 background353535",[])
 	ui.fishLogText.setFont("s13 cBBBBBB")
 	winSetAlwaysOnTop(0,"ahk_exe fishingPlanet.exe")
 

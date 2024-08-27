@@ -33,7 +33,7 @@ cfg				:= Object()
 ui 				:= Object()
 
 if (A_Args.length > 0) && FileExist("./versions/" A_Args[1]) {
-	winWaitClose("ahk_exe cacheApp.exe")
+	winWaitClose("ahk_exe fpAssist.exe")
 	run("./versions/" A_Args[1])
 	exitApp
 } else {
@@ -42,17 +42,12 @@ if (A_Args.length > 0) && FileExist("./versions/" A_Args[1]) {
 	currentVersion := "0000"
 	
 	whr := ComObject("WinHttp.WinHttpRequest.5.1")
-	whr.Open("GET", "https://raw.githubusercontent.com/obcache/cacheApp/main/cacheApp_currentBuild.dat", true)
+	whr.Open("GET", "https://raw.githubusercontent.com/obcache/fpAssist/main/fpassist_currentBuild.dat", true)
 	whr.Send()
 	whr.WaitForResponse()
 	latestVersion := whr.ResponseText
-	
-	; if fileExist("./cacheApp_latestBuild.dat")
-		; fileDelete("./cacheApp_latestBuild.dat")
-	; download("http://sorryneedboost.com/cacheApp/cacheApp_currentBuild.dat","./cacheApp_latestBuild.dat")
-	; latestVersion := fileRead("./cacheApp_latestBuild.dat")
-	
-	currentVersion := fileRead("./cacheApp_currentBuild.dat")
+
+	currentVersion := fileRead("./fpassist_currentBuild.dat")
 	if !(DirExist("./versions"))
 		DirCreate("./versions")
 					
@@ -62,21 +57,21 @@ if (A_Args.length > 0) && FileExist("./versions/" A_Args[1]) {
 
 		if (msgBoxAnswer == "Yes")
 		{ 	
-			if winExist("ahk_exe cacheApp.exe")	{
-				winClose("ahk_exe cacheApp.exe")
+			if winExist("ahk_exe fpassist.exe")	{
+				winClose("ahk_exe fpassist.exe")
 			}			
-			pbNotify("Upgrading cacheApp to version " latestVersion)
+			pbNotify("Upgrading fpAssist to version " latestVersion)
 	
-			;download("http://sorryneedboost.com/cacheApp/bin/cacheApp_" latestVersion ".exe",A_ScriptDir "/versions/cacheApp_" latestVersion ".exe")
-			runWait("cmd /C start /b /wait curl.exe https://raw.githubusercontent.com/obcache/cacheApp/main/bin/cacheApp_" latestVersion ".exe -o " A_ScriptDir  "/versions/cacheApp_" latestVersion ".exe")
+			;download("http://sorryneedboost.com/fpAssist/bin/fpAssist_" latestVersion ".exe",A_ScriptDir "/versions/fpAssist_" latestVersion ".exe")
+			runWait("cmd /C start /b /wait curl.exe https://raw.githubusercontent.com/obcache/fpassist/main/bin/fpAssist_" latestVersion ".exe -o " A_ScriptDir  "/versions/fpAssist_" latestVersion ".exe")
 			sleep(3000)
-			if winExist("ahk_exe cacheApp.exe")
+			if winExist("ahk_exe fpassist.exe")
 			{
-				processClose("cacheApp.exe") 
+				processClose("fpAssist.exe") 
 				sleep(2000)
 			}			
-			if fileExist("./versions/cacheApp_" latestVersion ".exe")
-				run("./versions/cacheApp_" latestVersion ".exe")
+			if fileExist("./versions/fpassist_" latestVersion ".exe")
+				run("./versions/fpAssist_" latestVersion ".exe")
 			else 
 				pbNotify("Problem downloading or running the updated version. `nCheck your antivirus to ensure that it is not being blocked.")
 		} else {
