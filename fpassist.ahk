@@ -1,32 +1,39 @@
-A_FileVersion := "1.1.1.5"
+A_FileVersion := "1.1.1.6"
 #requires autoHotkey v2.0+
 #singleInstance
 
 persistent()
 
+cfg := object()
+cfg.debug := false
+
 ui := object()
+ui.sessionStartTime := A_Now
 ui.autoFish := false
-ui.debug := false
 ui.fishLogArr := array()
 ui.fishCount := 0
 ui.reeledIn := false
 ui.isCasting := false
 
-jigMethod := [1,2,3]
+ui.bgColor := ["222222","444444","666666","888888","AAAAAA","CCCCCC","EEEEEE"]
+ui.fontColor := ["EEEEEE","CCCCCC","AAAAAA","DDDDDD","666666","888888","444444"]
 
+jigMethod := [1,2,3]
 
 
 ui.startKey := "F3"
 ui.stopKey := "F4"
 ui.reloadKey := "F5"
-ui.showLogKey := "F6"
-ui.exitKey := "F7"
+ui.twitchKey := "F6"
+ui.waitKey := "F7"
+ui.exitKey := "F8"
 ui.autoclickerActive := false
 hotIfWinActive("ahk_exe fishingPlanet.exe")
 	hotKey(ui.startKey,autoFishStart)
 	hotKey(ui.stopKey,autoFishStop)
 	hotKey(ui.reloadKey,appReload)
-	hotKey(ui.showLogKey,toggleLog)
+	hotKey(ui.twitchKey,toggleTwitch)
+	hotKey(ui.waitKey,toggleWait)
 	hotKey(ui.exitKey,cleanExit)
 	; Numpad0:: {
 		; oneFish()
@@ -50,7 +57,13 @@ hotIfWinActive("ahk_exe fishingPlanet.exe")
 		; ui.autoclickerActive := false
 	; }		
 hotIf()
-
+	toggleWait(*) {
+		ui.waitToggle.value := !ui.waitToggle.value
+	}
+	toggleTwitch(*) {
+		ui.twitchToggle.value := !ui.twitchToggle.value
+	}
+	
 /* oneFish(*) {
 	cast()
 	retrieve()
@@ -58,13 +71,21 @@ hotIf()
  */
 autoFishStop(*) {
 	ui.autoFish := 0
+	setTimer(updateAfkTime,0)
+	ui.fishLogAfkTime.text := "00:00:00"
+	ui.startButton.opt("-hidden")
+	ui.stopButton.opt("hidden")
+	log("Stopped")
 	ui.fishStatusText.text := "Stopped"
-	ui.startButton.opt("cBBBBBB")
 }
 
 autoFishStart(*) {
 	ui.autoFish := 1
-	ui.startButton.opt("c55CC55")
+	ui.startButton.opt("hidden")
+	ui.stopButton.opt("-hidden")
+	ui.afkStartTime := a_now
+	setTimer(updateAfkTime,1000)
+
 	while ui.autoFish == 1 {
 		cast()
 		retrieve()
@@ -75,6 +96,9 @@ autoFishStart(*) {
 cast(*) {
 	if !ui.autoFish
 		return
+	if !ui.reeledIn
+		return
+		
 	ui.fishStatusText.text := "Casting...."
 	
 	log("Casting")
@@ -119,33 +143,39 @@ cast(*) {
 }
 
 retrieve(*) {
+	if !ui.autoFish
+		return
 	ui.fishStatusText.text := "Retrieving / Jigging" 
 	log("Retrieving")
-	while !(reeledIn()) {
+	while !(reeledIn()) && ui.autoFish {
 		jigMechanic := 3
 		if a_index < 30 && !(isHooked()) {
-			jigMechanic := round(random(1,3))
+			jigMechanic := round(random(1,8))
 		}
 		switch jigMechanic {
-			case 1: ;twitch
-				log("Retrieve Mechanic: Twitch")
-				;send("{space down}")
-				loop round(random(1,2)) {
+			case 1,2: ;twitch
+				if ui.twitchToggle.value {
+					log("Retrieve Mechanic: Twitch")
+					;send("{space down}")
+					loop round(random(1,2)) {
 						;send("{space down}")
 						send("{RShift down}")
 						sleep(150)
 						send("{RShift up}")
 						sleep(round(random(200,400)))
+					}
 				}
-			case 2: ;pause
-				log("Retrieve Mechanic: Pause")
-				loop round(random(4)) {
-					sleep(1000)
-					if !ui.autoFish
-						return
+			case 3,4: ;pause
+				if ui.waitToggle.value {
+					log("Retrieve Mechanic: Pause")
+					loop round(random(4)) {
+						sleep(1000)
+						if !ui.autoFish
+							return
+					}
 				}
 				sleep(round(random(1,999)))
-			case 3: ;reel
+			case 5,6,7,8: ;reel
 				log("Retrieve Mechanic: Reel")
 				if !ui.reeledIn
 					send("{space down}")
@@ -158,6 +188,8 @@ retrieve(*) {
 				send("{space up}")
 			}
 	}
+	if !ui.autoFish
+		return
 	sleep(3000)
 	if fishCaught() {
 		log("Fish Caught!")
@@ -171,8 +203,18 @@ retrieve(*) {
 	}
 }
 
-setTimer(checkReel,500,100)
 
+updateAfkTime(*) {
+	secondsElapsed := a_now-ui.afkStartTime
+	ui.fishLogAfkTime.text := format("{:02}",floor(secondsElapsed/3600)) ":" format("{:02}",floor(secondsElapsed/60)) ":" format("{:02}",mod(secondsElapsed,60))
+}
+updateSessionTime(*) {
+	secondsElapsed := a_now-ui.sessionStartTime
+	ui.fishLogSessionTime.text := format("{:02}",floor(secondsElapsed/3600)) ":" format("{:02}",floor(secondsElapsed/60))
+}
+
+setTimer(updateSessionTime,1000)
+setTimer(checkReel,500,100)
 checkReel(*) {
 	if ui.isCasting
 		return
@@ -198,7 +240,7 @@ checkReel(*) {
 }
 
 isHooked(*) {
-	hookedPixel := pixelGetColor(1220,420) 
+	hookedPixel := round(pixelGetColor(1220,420)) 
 	if (hookedPixel > (round(0x3BCC3C) - 10000) && hookedPixel < (round(0x3BCC3C) + 10000)) {
 		log("HOOKED!")
 		ui.isHooked := 1
@@ -224,7 +266,7 @@ reeledIn(*) {
 	else
 		ui.reeledIn := 0
 	
-	if (ui.debug) {
+	if (cfg.debug) {
 		if ui.reeledIn
 			log("Reeled In")
 		else 
@@ -235,7 +277,7 @@ reeledIn(*) {
 
 fishCaught(*) {
 	winActivate("ahk_exe fishingPlanet.exe")
-	fishCaughtPixel := round(pixelGetColor(420,575))
+	fishCaughtPixel := round(pixelGetColor(450,575))
 	log("Analyzing Catch: " fishCaughtPixel)
 	if (fishCaughtPixel >= 16250871) {
 		return 1
@@ -260,7 +302,7 @@ appReload(*) {
 }
 
 log(msg) {
-	if ui.fishLogArr.length > 34 {
+	if ui.fishLogArr.length > 32 {
 		ui.fishLogArr.removeAt(1)
 		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
 		ui.fishLogText.delete()
@@ -277,52 +319,75 @@ createGui()
 createGui(*) {
 	ui.fishGui := gui()
 	ui.fishGui.opt("-caption owner" winGetId("ahk_exe fishingPlanet.exe"))
-	ui.fishGui.backColor := "010203"
+	ui.fishGui.backColor := "444444"
 	winSetTransColor("010203",ui.fishGui.hwnd)
-	ui.titleBar2 := ui.fishGui.addText("x400 y0 w1280 h30 cBBBBBB background444444")
-	ui.titleBar3 := ui.fishGui.addText("x400 y1 w1278 h28 cBBBBBB background999999")
-	ui.titleBar := ui.fishGui.addText("x400 y1 w1278 h29 cBBBBBB background555555")
-	ui.titleBarText := ui.fishGui.addText("x405 y5 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet")
+	ui.appFrame := ui.fishGui.addText("x0 y0 w1584 h814 c" ui.fontColor[3] " background" ui.bgColor[3])
+
+	ui.appFrame2 := ui.fishGui.addText("x1 y1 w1582 h812 c" ui.fontColor[1] " background" ui.bgColor[1])
+	ui.fpBg := ui.fishGui.addText("x300 y31 w1280 h720 c010203 background010203")
+	ui.titleBarText := ui.fishGui.addText("x305 y5 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet")
 	ui.titleBarText.setFont("s13","Arial Bold")
-	ui.titleBar.onEvent("click",WM_LBUTTONDOWN_callback)
-	ui.titleBar2.onEvent("click",WM_LBUTTONDOWN_callback)
-	ui.titleBar3.onEvent("click",WM_LBUTTONDOWN_callback)
-	ui.fishStatus := ui.fishGui.addText("x400 y750 w1280 h60 cBBBBBB background353535")
-	ui.fishStatusText := ui.fishGui.addText("x408 y760 w1280 h60 cBBBBBB backgroundTrans","Ready to Cast")
+	ui.appFrame.onEvent("click",WM_LBUTTONDOWN_callback)
+	ui.appFrame2.onEvent("click",WM_LBUTTONDOWN_callback)
+	;ui.titleBar3.onEvent("click",WM_LBUTTONDOWN_callback)
+	ui.fishStatus := ui.fishGui.addText("x301 y750 w1280 h61 cBBBBBB background353535")
+	ui.fishStatusText := ui.fishGui.addText("x8 y760 w1280 h60 cBBBBBB backgroundTrans","Ready to Cast")
 	ui.fishStatusText.setFont("s24")
-	ui.startButton := ui.fishGui.addText("section x820 y760 w140 h60 cBBBBBB backgroundTrans","[F3]Start")
+	ui.twitchToggle := ui.fishGui.addCheckbox("x320 y753 w130 h30 background353535 c" ui.fontColor[3],"Twitch [F6]")
+	ui.twitchToggle.setFont("s12")
+	ui.twitchToggle.value := true
+	ui.waitToggle := ui.fishGui.addCheckbox("x320 y778 w130 h30 background353535 c" ui.fontColor[3],"Wait [F7]")
+	ui.waitToggle.setFont("s12")
+	ui.waitToggle.value := true
+	ui.startButton := ui.fishGui.addText("section x1060 y760 w160 h60 cBBBBBB backgroundTrans","[F3] Start")
 	ui.startButton.setFont("s22","Helvetica")
 	ui.startButton.onEvent("click",autoFishStart)
-	ui.stopButton := ui.fishGui.addText("x+25 ys+0 w140 h60 cBBBBBB backgroundTrans","[F4]Stop")
+	ui.stopButton := ui.fishGui.addText("x+-160 ys+0 w160 h60 cBBBBBB hidden cCCCC33 backgroundTrans","[F4] Stop")
 	ui.stopButton.setFont("s22","Helvetica")
 	ui.stopButton.onEvent("click",autoFishStop)
-	ui.reloadButton := ui.fishGui.addText("section x+10 ys+0 w140 h60 cBBBBBB backgroundTrans","[F5]Reload")
+	ui.reloadButton := ui.fishGui.addText("section x+15 ys+0 w160 h60 cBBBBBB backgroundTrans","[F5] Reload")
 	ui.reloadButton.setFont("s22","Helvetica")
 	ui.reloadButton.onEvent("click",appReload)
-	ui.logButton := ui.fishGui.addText("section x+50 ys+0 w180 h60 cBBBBBB backgroundTrans","[F6]Show Log")
-	ui.logButton.setFont("s22","Helvetica")
-	ui.logButton.onEvent("click",toggleLog)
-	ui.exitButton := ui.fishGui.addText("section x+30 ys+0 w140 h60 cBBBBBB backgroundTrans","[F7]Exit")
+	; ui.logButton := ui.fishGui.addText("section x+50 ys+0 w180 h60 cBBBBBB backgroundTrans","[F6]Show Log")
+	; ui.logButton.setFont("s22","Helvetica")
+	; ui.logButton.onEvent("click",toggleLog)
+	ui.exitButton := ui.fishGui.addText("section x+48 ys+0 w160 h60 cBBBBBB backgroundTrans","[F8] Exit")
 	ui.exitButton.setFont("s22","Helvetica")
 	ui.exitButton.onEvent("click",exitFunc)
-	ui.fishLogHeader := ui.fishGui.addText("x0 y30 w400 h30 background555555")
-	ui.fishLogHeaderText := ui.fishGui.addText("x5 y32 w400 h28 c353535 backgroundTrans","Log")
+	ui.fishLogHeader := ui.fishGui.addText("x2 y1 w296 h28 background222222")
+	ui.fishLogHeaderSpace := ui.fishGui.addText("x300 y1 w1 h29 background" ui.bgColor[3])
+	ui.fishLogHeaderText := ui.fishGui.addText("x5 y2 w300 h28 c353535 backgroundTrans","Log")
 	ui.fishLogHeaderText.setFont("s14 cAAAAAA","Bold")
-	ui.fishLogCountLabel := ui.fishGui.addText("x320 y31 w40 h25 backgroundTrans right cAAAAAA"," Fish")
+	ui.fishLogCountLabel := ui.fishGui.addText("x220 y1 w40 h25 backgroundTrans right cAAAAAA"," Fish")
 	ui.fishLogCountLabel.setFont("s11","Helvetica")
-	ui.fishLogCountLabel2 := ui.fishGui.addText("x320 y42 w40 h25 backgroundTrans right cAAAAAA","Count")
+	ui.fishLogCountLabel2 := ui.fishGui.addText("x220 y12 w40 h25 backgroundTrans right cAAAAAA","Count")
 	ui.fishLogCountLabel2.setFont("s11","Helvetica")
-	ui.fishLogCount := ui.fishGui.addText("x365 y32 w40 h30 backgroundTrans ceedc82",ui.fishCount)
-	ui.fishLogCount.setFont("s18","Impact")
-	ui.fishLog := ui.fishGui.addText("x0 y60 w400 h690 background353535")
-	ui.fishLogText := ui.fishGui.addListbox("x0 y63 w400 h720 -wrap 0x2000 0x100 -E0x200 background353535",[])
+	ui.fishLogCount := ui.fishGui.addText("x267 y2 w40 h30 backgroundTrans ceedc82",ui.fishCount)
+	ui.fishLogCount.setFont("s18","Impact") 
+	ui.fishLog := ui.fishGui.addText("x2 y30 w298 h690 background353535")
+	ui.fishLogText := ui.fishGui.addListbox("x2 y33 w298 h660 -wrap 0x2000 0x100 -E0x200 background353535",[])
 	ui.fishLogText.setFont("s13 cBBBBBB")
+	ui.fishLogFooterOutline := ui.fishGui.addText("x2 y719 w298 h1 background" ui.bgColor[1])
+	ui.fishLogFooter := ui.fishGui.addText("x2 y720 w298 h30 background454545")
+	ui.fishLogSessionTime := ui.fishGui.addText("section right x7 y722 w60 h30 c" ui.fontColor[3] " backgroundTrans","00:00:00")
+	ui.fishLogSessionTime.setFont("s18","Arial")
+	ui.fishLogSessionTimeLabel := ui.fishGui.addText("x+8 ys+4 w65 h30 backgroundTrans c" ui.fontColor[5],"Session")
+	ui.fishLogSessionTimeLabel.setFont("s12 Bold","Helvetica")
+	ui.fishLogTimerSpace := ui.fishGui.addText("x+7 ys-2 w1 h30 background" ui.bgColor[1])
+	ui.fishLogAfkTimeLabel := ui.fishGui.addText("section right x+5 ys+4 w40 h30 c" ui.fontColor[5] " backgroundTrans","AFK")
+	ui.fishLogAfkTimeLabel.setFont("s12 Bold","Helvetica")
+	ui.fishLogAfkTime := ui.fishGui.addText("right x+7 ys-4 w92 h30 c" ui.fontColor[3] " backgroundTrans","00:00:00")
+	ui.fishLogAfkTime.setFont("s18","Arial")
+	ui.waitToggle.onEvent("click",toggleWait)
+	ui.twitchToggle.onEvent("click",toggleTwitch)
+	
+
 	winSetAlwaysOnTop(0,"ahk_exe fishingPlanet.exe")
 
 	;msgBox(winGetMinMax("ahk_exe fishingPlanet.exe"))
 	winActivate("ahk_exe fishingPlanet.exe")
 	;if (winGetMinMax("ahk_exe fishingPlanet.exe") == 0)
-	sleep(1500)
+	sleep(500)
 	WinSetStyle("-0xC00000","ahk_exe fishingplanet.exe")
 	winGetPos(&x,&y,&w,&h,"ahk_exe fishingPlanet.exe")
 	while (w > 1280 || h > 720) && a_index < 4 {
@@ -335,7 +400,7 @@ createGui(*) {
 	}
 	; OnMessage(0x0202, moveWindow)
 	; moveWindow(*) {
-	ui.fishGui.show("x" x-400 " y" y-30 " w1700 h840 noActivate")
+	ui.fishGui.show("x" x-300 " y" y-30 " w1584 h814 noActivate")
 	;ui.fishGui.onEvent("focus",appFocused)
 	appFocused(*) {
 		winActivate("ahk_exe fishingPlanet.exe")
@@ -357,17 +422,25 @@ WM_LBUTTONDOWN_callback(this_control*) {
 }
 
 WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
-	if hwnd == ui.fishGui.hwnd {
-		winGetPos(&x,&y,&w,&h,ui.fishGui.hwnd)
-		winMove(x+400,y+30,,,"ahk_exe fishingplanet.exe")
-		;msgBox('here')
+	try {
+		(hwnd == ui.fishGui.hwnd)
+			? moveFP()
+			: 0
+	}	catch {
+		return 0
+	}
+	moveFP(*) {
+		
+			winGetPos(&x,&y,&w,&h,ui.fishGui)
+			winMove(x+300,y+30,,,"ahk_exe fishingplanet.exe")
+			return 1
 	}
 }
 
 exitFunc(*) {
 		WinSetStyle("+0xC00000","ahk_exe fishingplanet.exe")
 		winActivate("ahk_exe fishingPlanet.exe")
-		sleep(250)
-		send("{alt down}{enter}{alt up}")
+		;sleep(250)
+		;send("{alt down}{enter}{alt up}")
 	exitApp
 }
