@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.3.2"
+A_FileVersion := "1.1.3.3"
 #requires autoHotkey v2.0+
 #singleInstance
 
@@ -53,7 +53,7 @@ initApp(*) {
 		if fileExist(cfg.file)
 			ui.appVersion := iniRead(cfg.file,"System","version",1111)
 			
-			ui.appVersion := subStr(1,4,subStr(7,-7,a_scriptName))
+			ui.appVersion := subStr(subStr(a_scriptName,7,-7),1,4)
 			iniWrite(ui.appVersion,cfg.file,"System","version")
 			
 			if !dirExist(cfg.installDir)
