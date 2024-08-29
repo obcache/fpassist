@@ -1,25 +1,40 @@
-A_FileVersion := "1.1.1.6"
+A_FileVersion := "1.1.1.7"
 #requires autoHotkey v2.0+
 #singleInstance
 
 persistent()
-
 cfg := object()
-cfg.debug := false
-
+cfg.installDir := a_scriptDir "\fpassist"
 ui := object()
+cfg.debug := false
+setWorkingDir(a_scriptDir)
+
+if a_isCompiled {
+	if !dirExist(cfg.installDir)
+		dirCreate(cfg.installDir)
+	if !dirExist(cfg.installDir "/redist")
+		dirCreate(cfg.installDir "/redist")
+	if !dirExist(cfg.installDir "/logs")
+		dirCreate(cfg.installDir "/logs")
+	if !dirExist(cfg.installDir "/fishPics")
+		dirCreate(cfg.installDir "/fishPics")
+		
+	fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
+	fileCopy(a_scriptFullPath,cfg.installDir,1)
+	run(cfg.installDir "/" a_scriptName)
+	exitApp
+}
+
 ui.sessionStartTime := A_Now
 ui.autoFish := false
 ui.fishLogArr := array()
 ui.fishCount := 0
 ui.reeledIn := false
 ui.isCasting := false
+ui.autoclickerActive := false
 
 ui.bgColor := ["222222","444444","666666","888888","AAAAAA","CCCCCC","EEEEEE"]
 ui.fontColor := ["EEEEEE","CCCCCC","AAAAAA","DDDDDD","666666","888888","444444"]
-
-jigMethod := [1,2,3]
-
 
 ui.startKey := "F3"
 ui.stopKey := "F4"
@@ -27,7 +42,18 @@ ui.reloadKey := "F5"
 ui.twitchKey := "F6"
 ui.waitKey := "F7"
 ui.exitKey := "F8"
-ui.autoclickerActive := false
+
+
+
+Loop Reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
+	if inStr(regRead(),"fishingPlanet.exe")
+		if inStr(gameExecutable := a_loopRegName,"fishingPlanet.exe") {
+			run(subStr(a_loopRegName,1,strLen(a_loopRegName)-16))
+			winWait("ahk_exe fishingPlanet.exe")
+			break
+		}
+}
+
 hotIfWinActive("ahk_exe fishingPlanet.exe")
 	hotKey(ui.startKey,autoFishStart)
 	hotKey(ui.stopKey,autoFishStop)
@@ -56,13 +82,16 @@ hotIfWinActive("ahk_exe fishingPlanet.exe")
 	; ^+enter:: {
 		; ui.autoclickerActive := false
 	; }		
+
 hotIf()
-	toggleWait(*) {
+
+toggleWait(*) {
 		ui.waitToggle.value := !ui.waitToggle.value
-	}
-	toggleTwitch(*) {
+}
+
+toggleTwitch(*) {
 		ui.twitchToggle.value := !ui.twitchToggle.value
-	}
+}
 	
 /* oneFish(*) {
 	cast()
@@ -79,6 +108,7 @@ autoFishStop(*) {
 	ui.fishStatusText.text := "Stopped"
 }
 
+
 autoFishStart(*) {
 	ui.autoFish := 1
 	ui.startButton.opt("hidden")
@@ -92,8 +122,31 @@ autoFishStart(*) {
 	}
 }
 
+checkFocus(*) {
+	fishFocus := (ui.autoFish)
+					? !(winActive("ahk_exe fishingPlanet.exe"))
+						? 0
+						: 1
+					: 1
+		
+	if !fishFocus
+		autoFishStop()
+}
+
 
 cast(*) {
+	
+	send("{WheelDown}")
+	sleep(250)
+	send("{WheelDown}")
+	sleep(250)
+	send("{WheelDown}")
+	sleep(250)
+	send("{WheelDown}")
+	sleep(250)
+	send("{WheelDown}")
+	sleep(250)
+	send("{WheelUp 2}")
 	if !ui.autoFish
 		return
 	if !ui.reeledIn
@@ -134,7 +187,7 @@ cast(*) {
 		return	
 	sleep(1000)
 	if !ui.autoFish
-		return	
+		return	 
 	sleep(1000)
 	if !ui.autoFish
 		return	
@@ -142,23 +195,37 @@ cast(*) {
 	ui.isCasting := false
 }
 
+landFish(*) {
+	lineHealth := round(pixelGetColor(1090,300))
+	rodHealth := round(pixelGetColor(1150,300))
+	reelHealth := round(pixelGetColor(1220,300))
+	(dirExist("./logs"))
+		? 0
+		: dirCreate("./logs")
+		
+	fileAppend(lineHealth " :: " rodHealth " :: " reelHealth,"./logs/fplog.txt")
+	if lineHealth > maxStress || rodHealth > maxStress || reelHealth > maxStress {
+		send("{NumpadSub}")
+	} else {
+		send("{NumpadAdd}")
+	}
+}
+maxStress := 0
 retrieve(*) {
 	if !ui.autoFish
 		return
-	ui.fishStatusText.text := "Retrieving / Jigging" 
+	ui.fishStatusText.text := "Retrieving" 
 	log("Retrieving")
-	while !(reeledIn()) && ui.autoFish {
-		jigMechanic := 3
+	while !ui.reeledIn && ui.autoFish {
+		jigMechanic := 5	
 		if a_index < 30 && !(isHooked()) {
-			jigMechanic := round(random(1,8))
+			jigMechanic := round(random(1,12))
 		}
 		switch jigMechanic {
 			case 1,2: ;twitch
 				if ui.twitchToggle.value {
 					log("Retrieve Mechanic: Twitch")
-					;send("{space down}")
 					loop round(random(1,2)) {
-						;send("{space down}")
 						send("{RShift down}")
 						sleep(150)
 						send("{RShift up}")
@@ -168,31 +235,30 @@ retrieve(*) {
 			case 3,4: ;pause
 				if ui.waitToggle.value {
 					log("Retrieve Mechanic: Pause")
-					loop round(random(4)) {
+					; loop round(random(4)) {
 						sleep(1000)
 						if !ui.autoFish
 							return
 					}
-				}
+				;}
 				sleep(round(random(1,999)))
-			case 5,6,7,8: ;reel
+			case 5,6,7,8,9,10,11,12: ;reel
 				log("Retrieve Mechanic: Reel")
 				if !ui.reeledIn
 					send("{space down}")
-				loop round(random(2,4)) {
-					if !ui.reeledIn
-						sleep(1000)
-				}
-				if !ui.reeledIn
-					sleep(round(random(1,999)))
-				send("{space up}")
+				; loop round(random(2,4)) {
+				; if !ui.reeledIn
+					sleep(500)
+				; }
+				; if !ui.reeledIn
+					; sleep(round(random(1,999)))
+					send("{space up}")
 			}
 	}
 	if !ui.autoFish
 		return
 	sleep(3000)
 	if fishCaught() {
-		log("Fish Caught!")
 		ui.fishLogCount.text += 1
 		send("{space}")
 		sleep(1000)
@@ -201,8 +267,8 @@ retrieve(*) {
 	} else {	
 		log("No Fish Detected.")
 	}
-}
 
+}
 
 updateAfkTime(*) {
 	secondsElapsed := a_now-ui.afkStartTime
@@ -216,6 +282,7 @@ updateSessionTime(*) {
 setTimer(updateSessionTime,1000)
 setTimer(checkReel,500,100)
 checkReel(*) {
+	checkFocus()
 	if ui.isCasting
 		return
 	ui.checkReel1 := round(pixelGetColor(1027,637))
@@ -240,7 +307,7 @@ checkReel(*) {
 }
 
 isHooked(*) {
-	hookedPixel := round(pixelGetColor(1220,420)) 
+	hookedPixel := round(pixelGetColor(1220,230)) 
 	if (hookedPixel > (round(0x3BCC3C) - 10000) && hookedPixel < (round(0x3BCC3C) + 10000)) {
 		log("HOOKED!")
 		ui.isHooked := 1
@@ -280,6 +347,10 @@ fishCaught(*) {
 	fishCaughtPixel := round(pixelGetColor(450,575))
 	log("Analyzing Catch: " fishCaughtPixel)
 	if (fishCaughtPixel >= 16250871) {
+		if !(DirExist("./fishPics"))
+			DirCreate("./fishPics")
+		run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "./fishPics/" formatTime(,"yyMMddhhmmss") ".png",,"hide")
+		log("Fish Caught!")
 		return 1
 	} else {
 		return 0
@@ -294,6 +365,8 @@ toggleLog(*) {
 }
 
 cleanExit(*) {
+	msgBox('here')
+	winKill("ahk_exe fishingplanet.exe")
 	exitApp
 }
 
@@ -302,7 +375,7 @@ appReload(*) {
 }
 
 log(msg) {
-	if ui.fishLogArr.length > 32 {
+	if ui.fishLogArr.length > 33 {
 		ui.fishLogArr.removeAt(1)
 		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
 		ui.fishLogText.delete()
@@ -327,12 +400,14 @@ createGui(*) {
 	ui.fpBg := ui.fishGui.addText("x300 y31 w1280 h720 c010203 background010203")
 	ui.titleBarText := ui.fishGui.addText("x305 y5 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet")
 	ui.titleBarText.setFont("s13","Arial Bold")
+
 	ui.appFrame.onEvent("click",WM_LBUTTONDOWN_callback)
 	ui.appFrame2.onEvent("click",WM_LBUTTONDOWN_callback)
 	;ui.titleBar3.onEvent("click",WM_LBUTTONDOWN_callback)
 	ui.fishStatus := ui.fishGui.addText("x301 y750 w1280 h61 cBBBBBB background353535")
 	ui.fishStatusText := ui.fishGui.addText("x8 y760 w1280 h60 cBBBBBB backgroundTrans","Ready to Cast")
 	ui.fishStatusText.setFont("s24")
+	
 	ui.twitchToggle := ui.fishGui.addCheckbox("x320 y753 w130 h30 background353535 c" ui.fontColor[3],"Twitch [F6]")
 	ui.twitchToggle.setFont("s12")
 	ui.twitchToggle.value := true
@@ -353,7 +428,7 @@ createGui(*) {
 	; ui.logButton.onEvent("click",toggleLog)
 	ui.exitButton := ui.fishGui.addText("section x+48 ys+0 w160 h60 cBBBBBB backgroundTrans","[F8] Exit")
 	ui.exitButton.setFont("s22","Helvetica")
-	ui.exitButton.onEvent("click",exitFunc)
+	ui.exitButton.onEvent("click",cleanExit)
 	ui.fishLogHeader := ui.fishGui.addText("x2 y1 w296 h28 background222222")
 	ui.fishLogHeaderSpace := ui.fishGui.addText("x300 y1 w1 h29 background" ui.bgColor[3])
 	ui.fishLogHeaderText := ui.fishGui.addText("x5 y2 w300 h28 c353535 backgroundTrans","Log")
@@ -365,7 +440,7 @@ createGui(*) {
 	ui.fishLogCount := ui.fishGui.addText("x267 y2 w40 h30 backgroundTrans ceedc82",ui.fishCount)
 	ui.fishLogCount.setFont("s18","Impact") 
 	ui.fishLog := ui.fishGui.addText("x2 y30 w298 h690 background353535")
-	ui.fishLogText := ui.fishGui.addListbox("x2 y33 w298 h660 -wrap 0x2000 0x100 -E0x200 background353535",[])
+	ui.fishLogText := ui.fishGui.addListbox("x2 y33 w298 h680 -wrap 0x2000 0x100 -E0x200 background353535",[])
 	ui.fishLogText.setFont("s13 cBBBBBB")
 	ui.fishLogFooterOutline := ui.fishGui.addText("x2 y719 w298 h1 background" ui.bgColor[1])
 	ui.fishLogFooter := ui.fishGui.addText("x2 y720 w298 h30 background454545")
@@ -409,7 +484,6 @@ createGui(*) {
 }
 onExit(exitFunc)
 
-hotIfWinActive("ahk_exe fishingPlanet.exe")
 ;onMessage(0x0200,WM_LBUTTONDOWN)
 onMessage(0x47,WM_WINDOWPOSCHANGED)
 WM_LBUTTONDOWN(wparam,lparam,msg,hwnd) {
@@ -444,3 +518,6 @@ exitFunc(*) {
 		;send("{alt down}{enter}{alt up}")
 	exitApp
 }
+	ui.titleBarExitButton := ui.fishGui.addText("x1554 y1 w27 h27 background" ui.bgColor[1] " c" ui.fontColor[2],"T")
+	ui.titleBarExitButton.setFont("s24","wingdings 2")
+	ui.titleBarExitButton.onEvent("click",cleanExit)
