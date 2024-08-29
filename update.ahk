@@ -78,7 +78,7 @@ if (A_Args.length > 0) && FileExist("./versions/" A_Args[1]) {
 			pbNotify("Skipping upgrade. You can re-trigger it from the setup tab`nWhenever you are ready to upgrade.",2500)
 		}
 	} 
-	
+	pbNotify("v" latestVersion "`nv" currentVersion)
 }
 
 pbNotify(NotifyMsg,Duration := 10,YN := "")
