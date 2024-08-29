@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.3.1"
+A_FileVersion := "1.1.3.2"
 #requires autoHotkey v2.0+
 #singleInstance
 
@@ -66,6 +66,7 @@ initApp(*) {
 			dirCreate(cfg.installDir "/fishPics")
 			
 		fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
+		fileInstall("./update.exe",cfg.installDir "/update.exe",1)
 		fileCopy(a_scriptFullPath,cfg.installDir "\fpassist.exe",1)
 		run(cfg.installDir "/fpassist.exe")
 		exitApp
