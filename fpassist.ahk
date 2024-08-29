@@ -1,10 +1,10 @@
-A_FileVersion := "1.1.1.7"
+A_FileVersion := "1.1.1.9"
 #requires autoHotkey v2.0+
 #singleInstance
 
 persistent()
 cfg := object()
-cfg.installDir := a_scriptDir "\fpassist"
+cfg.installDir := a_mydocuments "\fpassist"
 ui := object()
 cfg.debug := false
 setWorkingDir(a_scriptDir)
@@ -364,11 +364,7 @@ toggleLog(*) {
 		: (ui.fishLog.opt("hidden"),ui.fishLogText.opt("hidden"))
 }
 
-cleanExit(*) {
-	msgBox('here')
-	winKill("ahk_exe fishingplanet.exe")
-	exitApp
-}
+
 
 appReload(*) {
 	reload()
@@ -511,11 +507,18 @@ WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
 	}
 }
 
+
+cleanExit(*) {
+exitFunc()
+}
+
 exitFunc(*) {
-		WinSetStyle("+0xC00000","ahk_exe fishingplanet.exe")
-		winActivate("ahk_exe fishingPlanet.exe")
-		;sleep(250)
-		;send("{alt down}{enter}{alt up}")
+		;msgBox('here')
+	WinSetStyle("+0xC00000","ahk_exe fishingplanet.exe")
+	winActivate("ahk_exe fishingPlanet.exe")
+	;sleep(250)
+	;send("{alt down}{enter}{alt up}")
+	winKill("ahk_exe fishingplanet.exe")
 	exitApp
 }
 	ui.titleBarExitButton := ui.fishGui.addText("x1554 y1 w27 h27 background" ui.bgColor[1] " c" ui.fontColor[2],"T")
