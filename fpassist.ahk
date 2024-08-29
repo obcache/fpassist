@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.3.0"
+A_FileVersion := "1.1.3.1"
 #requires autoHotkey v2.0+
 #singleInstance
 
