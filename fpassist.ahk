@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.3.6"
+A_FileVersion := "1.1.3.7"
 #requires autoHotkey v2.0+
 #singleInstance
 
@@ -7,7 +7,7 @@ try
 	run("./update.exe")
 
 cfg := object()
-cfg.installDir := a_mydocuments "\fpassist"
+cfg.installDir := a_mydocuments "\fpassist\"
 cfg.file := cfg.installDir "\fpassist.ini"
 cfg.debug := iniRead(cfg.file,"System","Debug",false)
 cfg.twitchToggleValue := iniRead(cfg.file,"Game","TwitchToggle",true)
@@ -55,16 +55,19 @@ initApp(*) {
 				dirCreate(cfg.installDir "/logs")
 			if !dirExist(cfg.installDir "/img")
 				dirCreate(cfg.installDir "/img")
-		if !dirExist(cfg.installDir "/fishPics")
-			dirCreate(cfg.installDir "/fishPics")
+			if !dirExist(cfg.installDir "/fishPics")
+				dirCreate(cfg.installDir "/fishPics")
 		
-		fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
-		fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
+			fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
+			fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
 	
-		fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
-		fileInstall("./update.exe",cfg.installDir "/update.exe",1)
-		fileCopy(a_scriptFullPath,cfg.installDir "\fpassist.exe",1)
-		run(cfg.installDir "/fpassist.exe")
+			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
+			try
+			fileInstall("./update.exe",cfg.installDir "/update.exe",1)
+			try
+			fileCopy(a_scriptFullPath,cfg.installDir "/fpassist.exe",1)
+			try
+			run(cfg.installDir "/fpassist.exe")
 		exitApp
 	}
 }
