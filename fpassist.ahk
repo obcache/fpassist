@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.4.0"
+A_FileVersion := "1.1.4.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -20,7 +20,7 @@ setWorkingDir(a_scriptDir)
 #include <libGui>
 
 verifyInstall()
-initApp()
+
 initGui()
 
 
@@ -42,11 +42,10 @@ verifyInstall(*) {
 				(inStr(a_cmdLine,"/restart"))
 					? true
 					: false
+	if !fileExist("./fpassist.ini")
+		install()
 }
 
-initApp(*) {
-	install()
-}
 
 initGui(*) {
 	cfg.castAdjust := iniRead(cfg.file,"Game","CastAdjust",2000)
@@ -421,34 +420,38 @@ initGui(*) {
 		ui.fishGui.opt("-caption owner" winGetId("ahk_exe fishingPlanet.exe"))
 		ui.fishGui.backColor := ui.bgColor[1]
 		winSetTransColor("010203",ui.fishGui.hwnd)
-		ui.appFrame := ui.fishGui.addText("x0 y0 w1584 h814 c" ui.fontColor[3] " background" ui.bgColor[3])
+		ui.appFrame := ui.fishGui.addText("x0 y0 w1583 h814 c" ui.fontColor[3] " background" ui.bgColor[3])
 
-		ui.appFrame2 := ui.fishGui.addText("x1 y1 w1582 h812 c" ui.fontColor[1] " background" ui.bgColor[2])
-		ui.fpBg := ui.fishGui.addText("x300 y31 w1280 h720 c010203 background010203")
-		ui.titleBar := ui.fishGui.addText("x306 y3 w1276 h26 cC7C7C7 background" ui.bgColor[2])
+		ui.appFrame2 := ui.fishGui.addText("x1 y1 w1581 h812 c" ui.fontColor[1] " background" ui.bgColor[2])
+		ui.fpBg := ui.fishGui.addText("x301 y31 w1279 h719 c010203 background010203")
+		ui.titleBar := ui.fishGui.addText("x301 y2 w1252 h27 cC7C7C7 background" ui.bgColor[1])
 		ui.titleBar.onEvent("click",wm_lbuttonDown_callback)
-		ui.titleBarText := ui.fishGui.addText("x305 y5 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" a_fileVersion ")")
+		ui.titleBarText := ui.fishGui.addText("x305 y6 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" a_fileVersion ")")
 		ui.titleBarText.setFont("s13","Arial Bold")
-
+		ui.titleBarExitButton := ui.fishGui.addText("x1554 y2 w26 h27 center background" ui.bgColor[1] " c" ui.fontColor[2],"T")
+		ui.titleBarExitButton.setFont("s21","wingdings 2")
+		ui.titleBarExitButton.onEvent("click",cleanExit)
 		;ui.appFrame.onEvent("click",WM_LBUTTONDOWN_callback)
 		;ui.appFrame2.onEvent("click",WM_LBUTTONDOWN_callback)
 		;ui.titleBar3.onEvent("click",WM_LBUTTONDOWN_callback)
-		ui.fishStatus := ui.fishGui.addText("x301 y750 w1280 h61 cBBBBBB background" ui.bgColor[2])
-		ui.fishStatusText := ui.fishGui.addText("x8 y760 w1280 h60 cBBBBBB backgroundTrans","Ready to Cast")
+		ui.fishStatus := ui.fishGui.addText("x2 y752 w1580 h61 cBBBBBB background" ui.bgColor[1])
+		ui.fishStatusText := ui.fishGui.addText("x15 y765 w1280 h60 cBBBBBB backgroundTrans","Ready to Cast")
 		ui.fishStatusText.setFont("s24")
-		ui.twitchToggleButton := ui.fishGui.addPicture("section x320 y753 w45 h25 backgroundTrans",(cfg.twitchToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
+		ui.twitchToggleButton := ui.fishGui.addPicture("section x320 y755 w45 h25 backgroundTrans",(cfg.twitchToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
 		ui.twitchToggleButton.onEvent("click",toggleTwitch)
 		ui.twitchToggle := ui.fishGui.addText("x+5 ys+1 w130 h30 backgroundTrans c" ui.fontColor[3],"Twitch [F6]")
 		ui.twitchToggle.setFont("s12")
 				
-		ui.waitToggleButton := ui.fishGui.addPicture("section x320 y782 w45 h25 backgroundTrans",(cfg.waitToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
+		ui.waitToggleButton := ui.fishGui.addPicture("section x320 y784 w45 h25 backgroundTrans",(cfg.waitToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
 		ui.waitToggleButton.onEvent("click",toggleWait)
 		ui.waitToggle := ui.fishGui.addText("x+5 ys+1 w130 h30 backgroundTrans c" ui.fontColor[3],"Stop n Go [F7]")
 		ui.waitToggle.setFont("s12")
-		ui.castAdjustBg := ui.fishGui.addText("x500 y752 w140 h60 background" ui.bgColor[1])
-		ui.castAdjust := ui.fishGui.addSlider("section toolTip buddy2ui.castAdjustText center x500 y760 w140 h20 c" ui.bgColor[1] " range1600-2200",1910)
+		ui.castAdjustBg := ui.fishGui.addText("x500 y752 w140 h58 background" ui.bgColor[1])
+		ui.castAdjustBg := ui.fishGui.addText("x501 y753 w138 h56 background" ui.bgColor[1])
+		ui.castAdjustBg := ui.fishGui.addText("x502 y754 w136 h54 background" ui.bgColor[1])
+		ui.castAdjust := ui.fishGui.addSlider("section toolTip buddy2ui.castAdjustText center x500 y753 w140 h20 c" ui.bgColor[1] " range1600-2200",1910)
 		ui.castAdjust.onEvent("change",castAdjustChanged)
-				ui.castAdjustLabel := ui.fishGui.addText("xs-24 y+0 w80 h40 right backgroundTrans","Cast`nAdjust")
+				ui.castAdjustLabel := ui.fishGui.addText("xs-24 y+2 w80 h40 right backgroundTrans","Cast`nAdjust")
 		ui.castAdjustLabel.setFont("s11 c" ui.fontColor[3])
 		ui.castAdjustText := ui.fishGui.addText("x+10 ys+22 left w80 h40 backgroundTrans c" ui.fontColor[5],cfg.castAdjust)
 		ui.castAdjustText.setFont("s20")
@@ -457,7 +460,7 @@ initGui(*) {
 			ui.castAdjustText.text := cfg.castAdjust
 		}
 
-		ui.startButton := ui.fishGui.addText("section x1060 y760 w160 h60 cBBBBBB backgroundTrans","[F3] Start")
+		ui.startButton := ui.fishGui.addText("section x1060 y765 w160 h60 cBBBBBB backgroundTrans","[F3] Start")
 		ui.startButton.setFont("s22","Helvetica")
 		ui.startButton.onEvent("click",autoFishStart)
 		ui.stopButton := ui.fishGui.addText("x+-160 ys+0 w160 h60 cBBBBBB hidden cCCCC33 backgroundTrans","[F4] Stop")
@@ -470,7 +473,7 @@ initGui(*) {
 		; ui.logButton.setFont("s22","Helvetica")
 		; ui.logButton.onEvent("click",toggleLog)
 		ui.exitButton := ui.fishGui.addText("section x+48 ys+0 w160 h60 cBBBBBB backgroundTrans","[F8] Exit")
-		ui.exitButton.setFont("s22","Helvetica")
+		ui.exitButton.setFont("s22","Helvetica")	
 		ui.exitButton.onEvent("click",cleanExit)
 		ui.fishLogHeader := ui.fishGui.addText("x2 y1 w296 h28 background222222")
 		ui.fishLogHeaderSpace := ui.fishGui.addText("x300 y1 w1 h29 background" ui.bgColor[3])
@@ -579,9 +582,8 @@ exitFunc(*) {
 	iniWrite(cfg.castAdjust,cfg.file,"Game","CastAdjust")
 	;sleep(250)
 	;send("{alt down}{enter}{alt up}")
-	winKill("ahk_exe fishingplanet.exe")
+	if winExist("ahk_exe fishingPlanet.exe")
+		winKill("ahk_exe fishingPlanet.exe")
 	exitApp
 }
-	ui.titleBarExitButton := ui.fishGui.addText("x1554 y1 w27 h27 background" ui.bgColor[1] " c" ui.fontColor[2],"T")
-	ui.titleBarExitButton.setFont("s24","wingdings 2")
-	ui.titleBarExitButton.onEvent("click",cleanExit)
+
