@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.4.5"
+A_FileVersion := "1.1.4.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -181,10 +181,21 @@ initGui(*) {
 	}
 
 	cast(*) {
+		
 		log("Adjusting Reel Speed")
-		MouseClick("WheelDown",,,9) 
-		sleep(250)
-		MouseClick("WheelUp",,,1)
+		send("{WheelDown}") 
+		sleep(150)
+		send("{WheelDown}") 
+		sleep(150)
+		send("{WheelDown}") 
+		sleep(150)
+		send("{WheelDown}") 
+		sleep(150)
+		send("{WheelDown}") 
+		sleep(150)
+		send("{WheelDown}") 
+		sleep(150)
+		send("{WheelUp 2}")
 		sleep(250)
 		
 		if !ui.autoFish || !ui.reeledIn
@@ -194,11 +205,12 @@ initGui(*) {
 		ui.isCasting := true
 		
 		log("Casting")
-		(sleep500(5)) ? exit : 0
+		send("{Backspace}")
+		(sleep500(3)) ? exit : 0
 		send("{space down}")
 		sleep(cfg.castAdjust)
 		send("{space up}")
-		(sleep500(12)) ? exit : 0		
+		(sleep500(10)) ? exit : 0		
 		
 		ui.isCasting := false
 	}
