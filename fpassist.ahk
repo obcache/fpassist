@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.3.4"
+A_FileVersion := "1.1.3.3"
 #requires autoHotkey v2.0+
 #singleInstance
 
@@ -9,10 +9,8 @@ try
 cfg := object()
 cfg.installDir := a_mydocuments "\fpassist"
 cfg.file := cfg.installDir "\fpassist.ini"
-cfg.debug := iniRead(cfg.file,"System","Debug",false)
-cfg.twitchToggleValue := iniRead(cfg.file,"Game","TwitchToggle",true)
-cfg.waitToggleValue := iniRead(cfg.file,"Game","WaitToggle",true)
 ui := object()
+cfg.debug := false
 setWorkingDir(a_scriptDir)
 
 #include <libGlobal>
@@ -45,22 +43,28 @@ verifyInstall(*) {
 
 initApp(*) {
 		
-	if a_isCompiled {
+	try
+		ui.appVersion := iniRead(cfg.file,"System","version",1111)
+	try
+		ui.appVersion := subStr(1,4,subStr(7,-7,a_scriptName))
+	try
+		iniWrite(ui.appVersion,cfg.file,"System","version")
+	if a_isCompiled && !fileExist(cfg.file) {
 		if fileExist(cfg.file)
+			ui.appVersion := iniRead(cfg.file,"System","version",1111)
+			
+			ui.appVersion := subStr(subStr(a_scriptName,7,-7),1,4)
+			iniWrite(ui.appVersion,cfg.file,"System","version")
+			
 			if !dirExist(cfg.installDir)
 				dirCreate(cfg.installDir)
 			if !dirExist(cfg.installDir "/redist")
 				dirCreate(cfg.installDir "/redist")
 			if !dirExist(cfg.installDir "/logs")
 				dirCreate(cfg.installDir "/logs")
-			if !dirExist(cfg.installDir "/img")
-				dirCreate(cfg.installDir "/img")
 		if !dirExist(cfg.installDir "/fishPics")
 			dirCreate(cfg.installDir "/fishPics")
-		
-		fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
-		fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
-	
+			
 		fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 		fileInstall("./update.exe",cfg.installDir "/update.exe",1)
 		fileCopy(a_scriptFullPath,cfg.installDir "\fpassist.exe",1)
@@ -70,8 +74,7 @@ initApp(*) {
 }
 
 initGui(*) {
-	cfg.castAdjust := iniRead(cfg.file,"Game","CastAdjust",2000)
-	ui.sessionStartTime := A_Now
+		ui.sessionStartTime := A_Now
 	ui.autoFish := false
 	ui.fishLogArr := array()
 	ui.fishCount := 0
@@ -91,16 +94,14 @@ initGui(*) {
 
 
 
-	if !processExist("fishingPlanet.exe")
-		Loop Reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
-		
-			if inStr(regRead(),"fishingPlanet.exe")
-				if inStr(gameExecutable := a_loopRegName,"fishingPlanet.exe") {
-					run(subStr(a_loopRegName,1,strLen(a_loopRegName)-16))
-					winWait("ahk_exe fishingPlanet.exe")
-					break
-				}
-		}	
+	Loop Reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
+		if inStr(regRead(),"fishingPlanet.exe")
+			if inStr(gameExecutable := a_loopRegName,"fishingPlanet.exe") {
+				run(subStr(a_loopRegName,1,strLen(a_loopRegName)-16))
+				winWait("ahk_exe fishingPlanet.exe")
+				break
+			}
+	}	
 
 	hotIfWinActive("ahk_exe fishingPlanet.exe")
 		hotKey(ui.startKey,autoFishStart)
@@ -109,7 +110,7 @@ initGui(*) {
 		hotKey(ui.twitchKey,toggleTwitch)
 		hotKey(ui.waitKey,toggleWait)
 		hotKey(ui.exitKey,cleanExit)
-; Numpad0:: {
+		; Numpad0:: {
 			; oneFish()
 		; }
 		
@@ -134,15 +135,11 @@ initGui(*) {
 	hotIf()
 
 	toggleWait(*) {
-			(cfg.waitToggleValue := !cfg.waitToggleValue)
-				? ui.waitToggleButton.value := "./img/toggle_on.png"
-				: ui.waitToggleButton.value := "./img/toggle_off.png"
+			ui.waitToggle.value := !ui.waitToggle.value
 	}
-	
+
 	toggleTwitch(*) {
-			(cfg.twitchToggleValue := !cfg.twitchToggleValue)
-				? ui.twitchToggleButton.value := "./img/toggle_on.png"
-				: ui.twitchToggleButton.value := "./img/toggle_off.png"
+			ui.twitchToggle.value := !ui.twitchToggle.value
 	}
 		
 	/* oneFish(*) {
@@ -169,12 +166,6 @@ initGui(*) {
 		setTimer(updateAfkTime,1000)
 
 		while ui.autoFish == 1 {
-			;checkRewards()
-			;checkAds()
-			(sleep500(10)) ? exit : 0
-			send("{Esc down}")
-			sleep(500)
-			send("{Esc}")
 			cast()
 			retrieve()
 		}
@@ -191,37 +182,65 @@ initGui(*) {
 			autoFishStop()
 	}
 
-	sleep500(loopCount := 1) {
-		errorLevel := 0
-		loop loopCount {
-			if ui.autoFish
-				sleep(500)
-			else
-				errorLevel := 1
-		}
-		return errorLevel
-	}
 
 	cast(*) {
-		log("Adjusting Reel Speed")
-		MouseClick("WheelDown",,,9) 
-		sleep(250)
-		MouseClick("WheelUp",,,1)
-		sleep(250)
 		
-		if !ui.autoFish || !ui.reeledIn
+		send("{WheelDown}")
+		sleep(250)
+		send("{WheelDown}")
+		sleep(250)
+		send("{WheelDown}")
+		sleep(250)
+		send("{WheelDown}")
+		sleep(250)
+		send("{WheelDown}")
+		sleep(250)
+		send("{WheelUp 2}")
+		if !ui.autoFish
+			return
+		if !ui.reeledIn
 			return
 			
 		ui.fishStatusText.text := "Casting...."
-		ui.isCasting := true
 		
 		log("Casting")
-		(sleep500(5)) ? exit : 0
-		send("{space down}")
-		sleep(cfg.castAdjust)
-		send("{space up}")
-		(sleep500(12)) ? exit : 0		
+		sleep(1000) 
+		if !ui.autoFish
+			return
+		sleep(1000)
+		if !ui.autoFish 
+			return
+		sleep(500)
+		if !ui.autoFish
+			return
 		
+		ui.isCasting := true
+		send("{space down}")
+		sleep(1000)
+		if !ui.autoFish
+			return
+		sleep(1000)
+		if !ui.autoFish
+			return
+		send("{space up}")
+		if !ui.autoFish
+			return	 
+		sleep(1000)
+		if !ui.autoFish
+			return	
+		sleep(1000)
+		if !ui.autoFish
+			return	
+		sleep(1000)
+		if !ui.autoFish
+			return	
+		sleep(1000)
+		if !ui.autoFish
+			return	 
+		sleep(1000)
+		if !ui.autoFish
+			return	
+		sleep(1000)
 		ui.isCasting := false
 	}
 
@@ -285,15 +304,15 @@ initGui(*) {
 						send("{space up}")
 				}
 		}
-		
-		(sleep500(6)) ? exit : 0
-		
+		if !ui.autoFish
+			return
+		sleep(3000)
 		if fishCaught() {
 			ui.fishLogCount.text += 1
 			send("{space}")
-			(sleep500(2)) ? exit : 0
+			sleep(1000)
 			send("{backspace}")
-			(sleep500(3)) ? exit : 0
+			sleep(1500)
 		} else {	
 			log("No Fish Detected.")
 		}
@@ -310,7 +329,7 @@ initGui(*) {
 	}
 
 	setTimer(updateSessionTime,1000)
-	setTimer(checkReel,200)
+	setTimer(checkReel,500,100)
 	checkReel(*) {
 		checkFocus()
 		if ui.isCasting
@@ -373,39 +392,17 @@ initGui(*) {
 		} 
 
 	fishCaught(*) {
+		winActivate("ahk_exe fishingPlanet.exe")
 		fishCaughtPixel := round(pixelGetColor(450,575))
 		log("Analyzing Catch: " fishCaughtPixel)
 		if (fishCaughtPixel >= 16250871) {
 			if !(DirExist("./fishPics"))
 				DirCreate("./fishPics")
 			run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "./fishPics/" formatTime(,"yyMMddhhmmss") ".png",,"hide")
-			sleep(1000)
 			log("Fish Caught!")
 			return 1
 		} else {
 			return 0
-		}
-	}
-	
-	checkRewards(*) {
-		rewardScreenPixel := round(pixelGetColor(213,529))
-		log("Reward Screen Pixel: " rewardScreenPixel)
-		if (rewardScreenPixel >= 16250871) {
-			log("Challenge Completion Detected")
-			log("Claiming Reward")
-			mouseClick("left",213,529)
-			sleep(500)
-		}
-	}
-
-	checkAds(*) {
-		AdScreenPixel := round(pixelGetColor(1037,625))
-		log("AdScreen Pixel: " AdScreenPixel)
-		if (AdScreenPixel >= 16250871) {
-			log("Ad Screen Detected")
-			log("Dismissing Ad")
-			mouseClick("left",1037,625)
-			sleep(500)
 		}
 	}
 
@@ -446,35 +443,22 @@ initGui(*) {
 
 		ui.appFrame2 := ui.fishGui.addText("x1 y1 w1582 h812 c" ui.fontColor[1] " background" ui.bgColor[1])
 		ui.fpBg := ui.fishGui.addText("x300 y31 w1280 h720 c010203 background010203")
-		ui.titleBar := ui.fishGui.addText("x306 y3 w1276 h26 cC7C7C7 background" ui.bgColor[1])
-		ui.titleBar.onEvent("click",wm_lbuttonDown_callback)
-		ui.titleBarText := ui.fishGui.addText("x305 y5 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" a_fileVersion ")")
+		ui.titleBarText := ui.fishGui.addText("x305 y5 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" ui.appVersion ")")
 		ui.titleBarText.setFont("s13","Arial Bold")
 
-		;ui.appFrame.onEvent("click",WM_LBUTTONDOWN_callback)
-		;ui.appFrame2.onEvent("click",WM_LBUTTONDOWN_callback)
+		ui.appFrame.onEvent("click",WM_LBUTTONDOWN_callback)
+		ui.appFrame2.onEvent("click",WM_LBUTTONDOWN_callback)
 		;ui.titleBar3.onEvent("click",WM_LBUTTONDOWN_callback)
 		ui.fishStatus := ui.fishGui.addText("x301 y750 w1280 h61 cBBBBBB background353535")
 		ui.fishStatusText := ui.fishGui.addText("x8 y760 w1280 h60 cBBBBBB backgroundTrans","Ready to Cast")
 		ui.fishStatusText.setFont("s24")
-		ui.twitchToggleButton := ui.fishGui.addPicture("section x320 y753 w45 h25 backgroundTrans",(cfg.twitchToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
-		ui.twitchToggleButton.onEvent("click",toggleTwitch)
-		ui.twitchToggle := ui.fishGui.addText("x+5 ys+1 w130 h30 backgroundTrans c" ui.fontColor[3],"Twitch [F6]")
+		
+		ui.twitchToggle := ui.fishGui.addCheckbox("x320 y753 w130 h30 background353535 c" ui.fontColor[3],"Twitch [F6]")
 		ui.twitchToggle.setFont("s12")
-				
-		ui.waitToggleButton := ui.fishGui.addPicture("section x320 y782 w45 h25 backgroundTrans",(cfg.waitToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
-		ui.waitToggleButton.onEvent("click",toggleWait)
-		ui.waitToggle := ui.fishGui.addText("x+5 ys+1 w130 h30 backgroundTrans c" ui.fontColor[3],"Stop n Go [F7]")
+		ui.twitchToggle.value := true
+		ui.waitToggle := ui.fishGui.addCheckbox("x320 y778 w130 h30 background353535 c" ui.fontColor[3],"Wait [F7]")
 		ui.waitToggle.setFont("s12")
-
-		ui.castAdjust := ui.fishGui.addSlider("section toolTip x500 y760  w130 h20 c" ui.bgColor[3] " range1000-2500",1900)
-		ui.castAdjust.onEvent("change",castAdjustChanged)
-	
-		castAdjustChanged(*) {
-			cfg.castAdjust := ui.castAdjust.value
-		}
-		ui.castAdjustLabel := ui.fishGui.addText("xs+0 y+0 w130 h20 center backgroundTrans","Cast Adjust")
-		ui.castAdjustLabel.setFont("s12 c" ui.fontColor[3])
+		ui.waitToggle.value := true
 		ui.startButton := ui.fishGui.addText("section x1060 y760 w160 h60 cBBBBBB backgroundTrans","[F3] Start")
 		ui.startButton.setFont("s22","Helvetica")
 		ui.startButton.onEvent("click",autoFishStart)
@@ -518,19 +502,14 @@ initGui(*) {
 		ui.twitchToggle.onEvent("click",toggleTwitch)
 		
 
-		try
-			winSetAlwaysOnTop(0,"ahk_exe fishingPlanet.exe")
+	winSetAlwaysOnTop(0,"ahk_exe fishingPlanet.exe")
 
 		;msgBox(winGetMinMax("ahk_exe fishingPlanet.exe"))
-		try
-			winActivate("ahk_exe fishingPlanet.exe")
+		winActivate("ahk_exe fishingPlanet.exe")
 		;if (winGetMinMax("ahk_exe fishingPlanet.exe") == 0)
 		sleep(500)
-		try
-			WinSetStyle("-0xC00000","ahk_exe fishingplanet.exe")
-		try
-			winGetPos(&x,&y,&w,&h,"ahk_exe fishingPlanet.exe")
-		try
+		WinSetStyle("-0xC00000","ahk_exe fishingplanet.exe")
+		winGetPos(&x,&y,&w,&h,"ahk_exe fishingPlanet.exe")
 		while (w > 1280 || h > 720) && a_index < 4 {
 			sleep(2000)
 			send("{alt down}{enter}{alt up}")
@@ -541,10 +520,8 @@ initGui(*) {
 		}
 		; OnMessage(0x0202, moveWindow)
 		; moveWindow(*) {
-		try
-			ui.fishGui.show("x" x-300 " y" y-30 " w1584 h814 noActivate")
+		ui.fishGui.show("x" x-300 " y" y-30 " w1584 h814 noActivate")
 		;ui.fishGui.onEvent("focus",appFocused)
-		
 		appFocused(*) {
 			winActivate("ahk_exe fishingPlanet.exe")
 		}
@@ -556,13 +533,11 @@ initGui(*) {
 	onMessage(0x47,WM_WINDOWPOSCHANGED)
 	WM_LBUTTONDOWN(wparam,lparam,msg,hwnd) {
 		;msgBox(hwnd.hwnd)
-		if hwnd == wparam.hwnd
-			postMessage("0xA1",2,,,"A")
+		postMessage("0xA1",2,,,"A")
 	}
 
 	WM_LBUTTONDOWN_callback(this_control*) {
-		postMessage("0xA1",2,,,"A")
-	;	WM_LBUTTONDOWN(0,0,0,this_control)
+		WM_LBUTTONDOWN(0,0,0,this_control)
 	}
 
 	WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
@@ -588,13 +563,8 @@ exitFunc()
 
 exitFunc(*) {
 ;msgBox('here')
-	try
-		winActivate("ahk_exe fishingPlanet.exe")
-	try
-		WinSetStyle("+0xC00000","ahk_exe fishingplanet.exe")
-	iniWrite(cfg.twitchToggleValue,cfg.file,"Game","TwitchToggle")
-	iniWrite(cfg.waitToggleValue,cfg.file,"Game","WaitToggle")
-	iniWrite(cfg.castAdjust,cfg.file,"Game","CastAdjust")
+	winActivate("ahk_exe fishingPlanet.exe")
+	WinSetStyle("+0xC00000","ahk_exe fishingplanet.exe")
 	;sleep(250)
 	;send("{alt down}{enter}{alt up}")
 	winKill("ahk_exe fishingplanet.exe")
