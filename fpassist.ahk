@@ -1,4 +1,5 @@
-A_FileVersion := "1.1.3.7"
+A_FileVersion := "1.1.3.9"
+A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
 
@@ -44,19 +45,10 @@ verifyInstall(*) {
 }
 
 initApp(*) {
-		
+		install()
 	if a_isCompiled {
 		if fileExist(cfg.file)
-			if !dirExist(cfg.installDir)
-				dirCreate(cfg.installDir)
-			if !dirExist(cfg.installDir "/redist")
-				dirCreate(cfg.installDir "/redist")
-			if !dirExist(cfg.installDir "/logs")
-				dirCreate(cfg.installDir "/logs")
-			if !dirExist(cfg.installDir "/img")
-				dirCreate(cfg.installDir "/img")
-			if !dirExist(cfg.installDir "/fishPics")
-				dirCreate(cfg.installDir "/fishPics")
+
 		
 			fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
 			fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
@@ -443,13 +435,13 @@ initGui(*) {
 	createGui(*) {
 		ui.fishGui := gui()
 		ui.fishGui.opt("-caption owner" winGetId("ahk_exe fishingPlanet.exe"))
-		ui.fishGui.backColor := "444444"
+		ui.fishGui.backColor := ui.bgColor[1]
 		winSetTransColor("010203",ui.fishGui.hwnd)
 		ui.appFrame := ui.fishGui.addText("x0 y0 w1584 h814 c" ui.fontColor[3] " background" ui.bgColor[3])
 
-		ui.appFrame2 := ui.fishGui.addText("x1 y1 w1582 h812 c" ui.fontColor[1] " background" ui.bgColor[1])
+		ui.appFrame2 := ui.fishGui.addText("x1 y1 w1582 h812 c" ui.fontColor[1] " background" ui.bgColor[2])
 		ui.fpBg := ui.fishGui.addText("x300 y31 w1280 h720 c010203 background010203")
-		ui.titleBar := ui.fishGui.addText("x306 y3 w1276 h26 cC7C7C7 background" ui.bgColor[1])
+		ui.titleBar := ui.fishGui.addText("x306 y3 w1276 h26 cC7C7C7 background" ui.bgColor[2])
 		ui.titleBar.onEvent("click",wm_lbuttonDown_callback)
 		ui.titleBarText := ui.fishGui.addText("x305 y5 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" a_fileVersion ")")
 		ui.titleBarText.setFont("s13","Arial Bold")
@@ -457,7 +449,7 @@ initGui(*) {
 		;ui.appFrame.onEvent("click",WM_LBUTTONDOWN_callback)
 		;ui.appFrame2.onEvent("click",WM_LBUTTONDOWN_callback)
 		;ui.titleBar3.onEvent("click",WM_LBUTTONDOWN_callback)
-		ui.fishStatus := ui.fishGui.addText("x301 y750 w1280 h61 cBBBBBB background353535")
+		ui.fishStatus := ui.fishGui.addText("x301 y750 w1280 h61 cBBBBBB background" ui.bgColor[2])
 		ui.fishStatusText := ui.fishGui.addText("x8 y760 w1280 h60 cBBBBBB backgroundTrans","Ready to Cast")
 		ui.fishStatusText.setFont("s24")
 		ui.twitchToggleButton := ui.fishGui.addPicture("section x320 y753 w45 h25 backgroundTrans",(cfg.twitchToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
@@ -469,15 +461,18 @@ initGui(*) {
 		ui.waitToggleButton.onEvent("click",toggleWait)
 		ui.waitToggle := ui.fishGui.addText("x+5 ys+1 w130 h30 backgroundTrans c" ui.fontColor[3],"Stop n Go [F7]")
 		ui.waitToggle.setFont("s12")
-
-		ui.castAdjust := ui.fishGui.addSlider("section toolTip x500 y760  w130 h20 c" ui.bgColor[3] " range1000-2500",1900)
+		ui.castAdjustBg := ui.fishGui.addText("x500 y752 w140 h60 background" ui.bgColor[1])
+		ui.castAdjust := ui.fishGui.addSlider("section toolTip buddy2ui.castAdjustText center x500 y760 w140 h20 c" ui.bgColor[1] " range1600-2200",1910)
 		ui.castAdjust.onEvent("change",castAdjustChanged)
-	
+				ui.castAdjustLabel := ui.fishGui.addText("xs-24 y+0 w80 h40 right backgroundTrans","Cast`nAdjust")
+		ui.castAdjustLabel.setFont("s11 c" ui.fontColor[3])
+		ui.castAdjustText := ui.fishGui.addText("x+10 ys+22 left w80 h40 backgroundTrans c" ui.fontColor[5],cfg.castAdjust)
+		ui.castAdjustText.setFont("s20")
 		castAdjustChanged(*) {
 			cfg.castAdjust := ui.castAdjust.value
+			ui.castAdjustText.text := cfg.castAdjust
 		}
-		ui.castAdjustLabel := ui.fishGui.addText("xs+0 y+0 w130 h20 center backgroundTrans","Cast Adjust")
-		ui.castAdjustLabel.setFont("s12 c" ui.fontColor[3])
+
 		ui.startButton := ui.fishGui.addText("section x1060 y760 w160 h60 cBBBBBB backgroundTrans","[F3] Start")
 		ui.startButton.setFont("s22","Helvetica")
 		ui.startButton.onEvent("click",autoFishStart)
