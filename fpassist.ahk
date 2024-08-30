@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.4.4"
+A_FileVersion := "1.1.4.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -226,7 +226,7 @@ initGui(*) {
 		log("Retrieving")
 		while !ui.reeledIn && ui.autoFish {
 			jigMechanic := 5	
-			if a_index < 60 && !(isHooked()) {
+			if a_index < 90 && !(isHooked()) {
 				jigMechanic := round(random(1,12))
 			}
 			switch jigMechanic {
