@@ -1,11 +1,11 @@
-A_FileVersion := "1.1.3.9"
+A_FileVersion := "1.1.4.0"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
 
 persistent()
-try
-	run("./update.exe")
+;try
+	;run("./update.exe")
 
 cfg := object()
 cfg.installDir := a_mydocuments "\fpassist\"
@@ -45,23 +45,7 @@ verifyInstall(*) {
 }
 
 initApp(*) {
-		install()
-	if a_isCompiled {
-		if fileExist(cfg.file)
-
-		
-			fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
-			fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
-	
-			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
-			try
-			fileInstall("./update.exe",cfg.installDir "/update.exe",1)
-			try
-			fileCopy(a_scriptFullPath,cfg.installDir "/fpassist.exe",1)
-			try
-			run(cfg.installDir "/fpassist.exe")
-		exitApp
-	}
+	install()
 }
 
 initGui(*) {
