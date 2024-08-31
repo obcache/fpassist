@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.5.2"
+A_FileVersion := "1.1.5.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -231,12 +231,11 @@ cast(*) {
 	sleep(100)
 	
 	loop cfg.dragLevel[cfg.profileSelected] {
-		
-		
-		
-		}
+		send("{+}") 
+		sleep(100)
+	}
 	
-	send("{= " cfg.dragLevel[cfg.profileSelected] "}")
+	
 	send("{Backspace}")
 	(sleep500(3)) ? exit : 0            
 	send("{space down}")
@@ -271,7 +270,7 @@ retrieve(*) {
 	while !ui.reeledIn && ui.autoFish {
 		jigMechanic := 5	
 		if a_index < 90 && !(isHooked()) {
-			jigMechanic := round(random(1,12))
+			jigMechanic := round(random(1,10))
 		}
 		switch jigMechanic {
 			case 3,2: ;twitch
