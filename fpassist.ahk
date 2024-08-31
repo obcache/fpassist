@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.4.6"
+A_FileVersion := "1.1.4.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -6,23 +6,29 @@ A_AppName := "fpassist"
 persistent()
 ;try
 	;run("./update.exe")
-
+	
+setWorkingDir(a_scriptDir)
 cfg := object()
+cfg.file := "./fpassist.ini"
 cfg.installDir := a_mydocuments "\fpassist\"
-cfg.file := cfg.installDir "\fpassist.ini"
 cfg.debug := iniRead(cfg.file,"System","Debug",false)
 cfg.twitchToggleValue := iniRead(cfg.file,"Game","TwitchToggle",true)
 cfg.waitToggleValue := iniRead(cfg.file,"Game","WaitToggle",true)
+cfg.profileSelected := iniRead(cfg.file,"Game","ProfileSelected",1)
+cfg.dragLevel := strSplit(iniRead(cfg.file,"Game","DragLevel","5,6,7"),",")
+cfg.reelSpeed := strSplit(iniRead(cfg.file,"Game","ReelSpeed","1,2,2"),",")
+cfg.castAdjust := strSplit(iniRead(cfg.file,"Game","CastAdjust","1950,1975,2000"),",")
+
 ui := object()
-setWorkingDir(a_scriptDir)
 
 #include <libGlobal>
 #include <libGui>
 
 verifyInstall()
+getFpExe()
+startFp()
 
 initGui()
-
 
 verifyInstall(*) {
 	if !a_isAdmin {
@@ -48,7 +54,6 @@ verifyInstall(*) {
 
 
 initGui(*) {
-	cfg.castAdjust := iniRead(cfg.file,"Game","CastAdjust",2000)
 	ui.sessionStartTime := A_Now
 	ui.autoFish := false
 	ui.fishLogArr := array()
@@ -66,20 +71,6 @@ initGui(*) {
 	ui.twitchKey := "F6"
 	ui.waitKey := "F7"
 	ui.exitKey := "F8"
-
-
-
-	if !processExist("fishingPlanet.exe")
-		Loop Reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
-		
-			if inStr(regRead(),"fishingPlanet.exe")
-				if inStr(gameExecutable := a_loopRegName,"fishingPlanet.exe") {
-					run(subStr(a_loopRegName,1,strLen(a_loopRegName)-16))
-					winWait("ahk_exe fishingPlanet.exe")
-					break
-				}
-		}	
-
 	hotIfWinActive("ahk_exe fishingPlanet.exe")
 		hotKey(ui.startKey,autoFishStart)
 		hotKey(ui.stopKey,autoFishStop)
@@ -87,6 +78,44 @@ initGui(*) {
 		hotKey(ui.twitchKey,toggleTwitch)
 		hotKey(ui.waitKey,toggleWait)
 		hotKey(ui.exitKey,cleanExit)
+	hotif()
+}
+
+getFpExe(*) {
+	if !processExist("fishingPlanet.exe")
+		Loop Reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
+			if inStr(regRead(),"fishingPlanet.exe")
+				if inStr(gameExecutable := a_loopRegName,"fishingPlanet.exe") {
+					ui.fpExe := subStr(a_loopRegName,1,strLen(a_loopRegName)-16)
+					break
+				}
+		}	
+	startFp()
+}
+
+startFp(*) {
+	if !winExist("ahk_exe fishingPlanet.exe")
+		run(ui.fpExe)
+	else
+		winActivate("ahk_exe fishingPlanet.exe")
+	winWait("ahk_exe fishingPlanet.exe")
+	winSetAlwaysOnTop(0,"ahk_exe fishingPlanet.exe")
+	WinSetStyle("-0xC00000","ahk_exe fishingplanet.exe")
+	winMove((a_screenwidth/2)-590,(a_screenheight/2)-370,1280,720,"ahk_exe fishingPlanet.exe")
+	winGetPos(&x,&y,&w,&h,"ahk_exe fishingPlanet.exe")
+	while (w > 1280 || h > 720) && a_index < 4 {
+		;send("{alt down}{enter}{alt up}")
+		sleep(1000)
+		winMove((a_screenwidth/2)-590,(a_screenheight/2)-370,1280,720,"ahk_exe fishingPlanet.exe" 		)
+		
+	}
+}
+
+checkFp(*) {
+	if !winExist("ahk_exe fishingPlanet.exe")
+		exitApp
+}
+
 ; Numpad0:: {
 			; oneFish()
 		; }
@@ -108,10 +137,7 @@ initGui(*) {
 		; ^+enter:: {
 			; ui.autoclickerActive := false
 		; }		
-
-	hotIf()
-
-	toggleWait(*) {
+toggleWait(*) {
 			(cfg.waitToggleValue := !cfg.waitToggleValue)
 				? ui.waitToggleButton.value := "./img/toggle_on.png"
 				: ui.waitToggleButton.value := "./img/toggle_off.png"
@@ -149,7 +175,7 @@ initGui(*) {
 		while ui.autoFish == 1 {
 			;checkRewards()
 			;checkAds()
-			(sleep500(10)) ? exit : 0
+			(sleep500(4)) ? exit : 0
 			send("{Esc down}")
 			sleep(500)
 			send("{Esc}")
@@ -169,9 +195,12 @@ initGui(*) {
 			autoFishStop()
 	}
 
-	sleep500(loopCount := 1) {
+	sleep500(loopCount := 1,stopOnReel := false) {
 		errorLevel := 0
 		loop loopCount {
+			if stopOnReel
+				if checkReel() 
+					return
 			if ui.autoFish
 				sleep(500)
 			else
@@ -181,39 +210,33 @@ initGui(*) {
 	}
 
 	cast(*) {
+		if !ui.autoFish {
+			return
+		}
+
+		ui.isCasting := true
+		log("Casting")
+		ui.fishStatusText.text := "Casting...."
 		
 		log("Adjusting Reel Speed")
-		send("{WheelDown}") 
-		sleep(150)
-		send("{WheelDown}") 
-		sleep(150)
-		send("{WheelDown}") 
-		sleep(150)
-		send("{WheelDown}") 
-		sleep(150)
-		send("{WheelDown}") 
-		sleep(150)
-		send("{WheelDown}") 
-		sleep(150)
-		send("{WheelUp 2}")
-		sleep(250)
+		send("{K 6}") ;Down to Reverse 
+		sleep(500)
+		send("{L " cfg.reelSpeed[cfg.profileSelected] "}") 
 		
-		if !ui.autoFish || !ui.reeledIn
-			return
-			
-		ui.fishStatusText.text := "Casting...."
-		ui.isCasting := true
-		
-		log("Casting")
+		log("Adjusting Drag")
+		send("{- 8}")
+		sleep(400)
+		send("{= " cfg.dragLevel[cfg.profileSelected] "}")
+
 		send("{Backspace}")
-		(sleep500(3)) ? exit : 0
+		(sleep500(3)) ? exit : 0            
 		send("{space down}")
-		sleep(cfg.castAdjust)
+		sleep(cfg.castAdjust[cfg.profileSelected])
 		send("{space up}")
 		(sleep500(10)) ? exit : 0		
 		
 		ui.isCasting := false
-	}
+	}          
 
 	landFish(*) {
 		lineHealth := round(pixelGetColor(1090,300))
@@ -242,7 +265,7 @@ initGui(*) {
 				jigMechanic := round(random(1,12))
 			}
 			switch jigMechanic {
-				case 1,2: ;twitch
+				case 3,2: ;twitch
 					if ui.twitchToggle.value {
 						log("Retrieve Mechanic: Twitch")
 						loop round(random(1,2)) {
@@ -252,7 +275,7 @@ initGui(*) {
 							sleep(round(random(200,400)))
 						}
 					}
-				case 3,4: ;pause
+				case 1,4: ;pause
 					if ui.waitToggle.value {
 						log("Retrieve Mechanic: Pause")
 						; loop round(random(4)) {
@@ -268,10 +291,10 @@ initGui(*) {
 						send("{space down}")
 					; loop round(random(2,4)) {
 					; if !ui.reeledIn
-						sleep(500)
+						sleep500(8,1)
 					; }
 					; if !ui.reeledIn
-						; sleep(round(random(1,999)))
+					; sleep(round(random(1,999)))
 						send("{space up}")
 				}
 		}
@@ -299,8 +322,9 @@ initGui(*) {
 		ui.fishLogSessionTime.text := format("{:02}",floor(secondsElapsed/3600)) ":" format("{:02}",floor(secondsElapsed/60))
 	}
 
-	setTimer(updateSessionTime,1000)
-	setTimer(checkReel,200)
+	;setTimer(updateSessionTime,1000)
+setTimer(checkReel,200)
+	
 	checkReel(*) {
 		checkFocus()
 		if ui.isCasting
@@ -399,7 +423,7 @@ initGui(*) {
 		}
 	}
 
-	toggleLog(*) {
+toggleLog(*) {
 		static logVisible := false
 		(logVisible := !logVisible)
 			? (ui.fishLog.opt("-hidden"),ui.fishLogText.opt("-hidden"))
@@ -461,17 +485,54 @@ initGui(*) {
 		ui.castAdjustBg := ui.fishGui.addText("x500 y752 w140 h58 background" ui.bgColor[1])
 		ui.castAdjustBg := ui.fishGui.addText("x501 y753 w138 h56 background" ui.bgColor[1])
 		ui.castAdjustBg := ui.fishGui.addText("x502 y754 w136 h54 background" ui.bgColor[1])
-		ui.castAdjust := ui.fishGui.addSlider("section toolTip buddy2ui.castAdjustText center x500 y753 w140 h20 c" ui.bgColor[1] " range1600-2200",1910)
+		ui.castAdjust := ui.fishGui.addSlider("section toolTip buddy2ui.castAdjustText center x500 y753 w140 h20 c" ui.bgColor[1] " range1900-2050",1910)
 		ui.castAdjust.onEvent("change",castAdjustChanged)
 				ui.castAdjustLabel := ui.fishGui.addText("xs-24 y+2 w80 h40 right backgroundTrans","Cast`nAdjust")
 		ui.castAdjustLabel.setFont("s11 c" ui.fontColor[3])
-		ui.castAdjustText := ui.fishGui.addText("x+10 ys+22 left w80 h40 backgroundTrans c" ui.fontColor[5],cfg.castAdjust)
+		ui.castAdjustText := ui.fishGui.addText("x+10 ys+22 left w80 h40 backgroundTrans c" ui.fontColor[5],cfg.castAdjust[cfg.profileSelected])
 		ui.castAdjustText.setFont("s20")
 		castAdjustChanged(*) {
-			cfg.castAdjust := ui.castAdjust.value
-			ui.castAdjustText.text := cfg.castAdjust
+			cfg.castAdjust[cfg.profileSelected] := ui.castAdjust.value
+			ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
+			ui.profileIcon.focus()
 		}
-
+		ui.reelSpeed := ui.fishGui.addSlider("ys+0 x+0 w20 vertical h45 range4-8  tooltip c" ui.fontColor[5],cfg.reelSpeed[cfg.profileSelected])
+		ui.reelSpeed.onEvent("change",reelSpeedChanged)
+		
+		ui.reelSpeedText := ui.fishGui.addText("ys+42 x+-22 center w30 h13 backgroundTrans c" ui.fontColor[5],"Drag")
+		ui.dragLevel := ui.fishGui.addSlider("ys+0 x+10 w20 vertical h45 range1-3 tooltip c" ui.fontColor[5],cfg.dragLevel[cfg.profileSelected])
+		ui.dragLevel.onEvent("change",dragLevelChanged)
+		dragLevelChanged(*) {
+			cfg.dragLevel[cfg.profileSelected] := ui.dragLevel.value
+			ui.profileIcon.focus()
+		}
+		reelSpeedChanged(*) {
+			cfg.reelSpeed[cfg.profileSelected] := ui.reelSpeed.value
+			ui.profileIcon.focus()
+		}
+		ui.dragLevelText := ui.fishGui.addText("ys+42 x+-25 center w30 h13 backgroundTrans c" ui.fontColor[5],"Speed")
+		ui.profileIcon := ui.fishGui.addPicture("section x720 y760 w240 h50 backgroundTrans","./img/rod.png")
+		cfg.profileSelected := iniRead(cfg.file,"Game","ProfileSelected",1)
+		ui.profileText := ui.fishGui.addText("x840 y778 w240 h25 c" ui.fontColor[5] " backgroundTrans","Profile #" cfg.profileSelected)
+		ui.profileText.setFont("s18")
+		ui.profileIcon.onEvent("click",changeProfile)
+		ui.profileText.onEvent("click",changeProfile)
+		changeProfile(*) {
+			switch cfg.profileSelected {
+				case 1:
+					cfg.profileSelected := 2
+				case 2:
+					cfg.profileSelected := 3
+				case 3:
+					cfg.profileSelected := 1
+			}
+			ui.dragLevel.value := cfg.dragLevel[cfg.profileSelected]
+			ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
+			ui.castAdjust.value := cfg.castAdjust[cfg.profileSelected]
+			ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
+			ui.profileText.text := "Profile #" cfg.profileSelected
+			ui.profileIcon.focus()
+		}
 		ui.startButton := ui.fishGui.addText("section x1060 y765 w160 h60 cBBBBBB backgroundTrans","[F3] Start")
 		ui.startButton.setFont("s22","Helvetica")
 		ui.startButton.onEvent("click",autoFishStart)
@@ -489,7 +550,7 @@ initGui(*) {
 		ui.exitButton.onEvent("click",cleanExit)
 		ui.fishLogHeader := ui.fishGui.addText("x2 y1 w296 h28 background222222")
 		ui.fishLogHeaderSpace := ui.fishGui.addText("x300 y1 w1 h29 background" ui.bgColor[3])
-		ui.fishLogHeaderText := ui.fishGui.addText("x5 y2 w300 h28 c353535 backgroundTrans","Log")
+		ui.fishLogHeaderText := ui.fishGui.addText("x10 y2 w300 h28 c353535 backgroundTrans","Log")
 		ui.fishLogHeaderText.setFont("s14 cAAAAAA","Bold")
 		ui.fishLogCountLabel := ui.fishGui.addText("x220 y1 w40 h25 backgroundTrans right cAAAAAA"," Fish")
 		ui.fishLogCountLabel.setFont("s11","Helvetica")
@@ -514,40 +575,18 @@ initGui(*) {
 		ui.waitToggle.onEvent("click",toggleWait)
 		ui.twitchToggle.onEvent("click",toggleTwitch)
 		
+		if winExist("ahk_exe fishingPlanet.exe")
+			winGetPos(&x,&y,&w,&h,"ahk_exe fishingPlanet.exe")
 
-		try
-			winSetAlwaysOnTop(0,"ahk_exe fishingPlanet.exe")
-
-		;msgBox(winGetMinMax("ahk_exe fishingPlanet.exe"))
-		try
-			winActivate("ahk_exe fishingPlanet.exe")
-		;if (winGetMinMax("ahk_exe fishingPlanet.exe") == 0)
 		sleep(500)
-		try
-			WinSetStyle("-0xC00000","ahk_exe fishingplanet.exe")
-		try
-			winGetPos(&x,&y,&w,&h,"ahk_exe fishingPlanet.exe")
-		try
-		while (w > 1280 || h > 720) && a_index < 4 {
-			sleep(2000)
-			send("{alt down}{enter}{alt up}")
-			sleep(2000)
-			WinSetStyle("-0xC00000","ahk_exe fishingplanet.exe")
-			winMove((a_screenwidth/2)-590,(a_screenheight/2)-370,1280,720,"ahk_exe fishingPlanet.exe" 		)
-			winGetPos(&x,&y,&w,&h,"ahk_exe fishingPlanet.exe")
-		}
-		; OnMessage(0x0202, moveWindow)
-		; moveWindow(*) {
-		try
-			ui.fishGui.show("x" x-300 " y" y-30 " w1584 h814 noActivate")
-		;ui.fishGui.onEvent("focus",appFocused)
-		
-		appFocused(*) {
-			winActivate("ahk_exe fishingPlanet.exe")
-		}
-		; }
+
+		ui.fishGui.show("x" (a_screenwidth/2)-890 " y" y-30 " w1584 h814 noActivate")
+
 	}
-	onExit(exitFunc)
+
+
+
+onExit(exitFunc)
 
 	;onMessage(0x0200,WM_LBUTTONDOWN)
 	onMessage(0x47,WM_WINDOWPOSCHANGED)
@@ -577,7 +616,7 @@ initGui(*) {
 				return 1
 		}
 	}
-}
+
 
 cleanExit(*) {
 exitFunc()
@@ -585,17 +624,24 @@ exitFunc()
 
 exitFunc(*) {
 ;msgBox('here')
-	try
-		winActivate("ahk_exe fishingPlanet.exe")
-	try
-		WinSetStyle("+0xC00000","ahk_exe fishingplanet.exe")
+	winActivate("ahk_exe fishingPlanet.exe")
+	WinSetStyle("+0xC00000","ahk_exe fishingplanet.exe")
 	iniWrite(cfg.twitchToggleValue,cfg.file,"Game","TwitchToggle")
 	iniWrite(cfg.waitToggleValue,cfg.file,"Game","WaitToggle")
-	iniWrite(cfg.castAdjust,cfg.file,"Game","CastAdjust")
+	loop 3 {
+		castAdjustList .= cfg.castAdjust[a_index] ","
+		reelSpeedList .= cfg.reelSpeed[a_index] ","
+		dragLevelList .= cfg.dragLevel[a_index] ","
+	}
+	iniWrite(rtrim(castAdjustList,","),cfg.file,"Game","CastAdjust")
+	iniWrite(rtrim(reelSpeedList,","),cfg.file,"Game","ReelSpeed")
+	iniWrite(rtrim(dragLevelList,","),cfg.file,"Game","DragLevel")
+	
 	;sleep(250)
 	;send("{alt down}{enter}{alt up}")
-	if winExist("ahk_exe fishingPlanet.exe")
-		winKill("ahk_exe fishingPlanet.exe")
+	; if winExist("ahk_exe fishingPlanet.exe")
+		; winKill("ahk_exe fishingPlanet.exe")
 	exitApp
 }
 
+setTimer(checkFp,200)

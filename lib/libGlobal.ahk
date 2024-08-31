@@ -125,7 +125,7 @@ install(*) {
 			
 	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_Desktop "\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img2/attack_icon.ico")
 	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_StartMenu "\Programs\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img2/attack_icon.ico")
-	IniWrite(cfg.installDir,cfg.installDir "/fpassist.ini","System","cfg.installDir")
+	IniWrite(cfg.installDir,cfg.installDir "/fpassist.ini","System","InstallDir")
 	Run(cfg.installDir "\" A_AppName ".exe")
 	sleep(4500)
 	exitApp
