@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.5.0"
+A_FileVersion := "1.1.5.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -488,10 +488,10 @@ if ui.fishLogArr.length > 33 {
 			ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
 			ui.profileIcon.focus()
 		}
-		ui.reelSpeed := ui.fishGui.addSlider("ys+0 x+10 w20 vertical h40 range4-8 background111111 tooltip c" ui.fontColor[5],cfg.reelSpeed[cfg.profileSelected])
+		ui.reelSpeed := ui.fishGui.addSlider("ys+0 x+10 w20 vertical h40 range1-3 background111111 tooltip c" ui.fontColor[5],cfg.reelSpeed[cfg.profileSelected])
 		ui.reelSpeed.onEvent("change",reelSpeedChanged)
 		ui.reelSpeedText := ui.fishGui.addText("ys+38 x+-27 center w30 h13 backgroundTrans c" ui.fontColor[5],"Speed")
-		ui.dragLevel := ui.fishGui.addSlider("ys+0 x+15 w20 vertical background111111 h40 range1-3 tooltip c" ui.fontColor[5],cfg.dragLevel[cfg.profileSelected])
+		ui.dragLevel := ui.fishGui.addSlider("ys+0 x+15 w20 vertical background111111 h40 range3-7 tooltip c" ui.fontColor[5],cfg.dragLevel[cfg.profileSelected])
 		ui.dragLevel.onEvent("change",dragLevelChanged)
 		dragLevelChanged(*) {
 			cfg.dragLevel[cfg.profileSelected] := ui.dragLevel.value
