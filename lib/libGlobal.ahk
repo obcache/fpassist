@@ -117,6 +117,11 @@ install(*) {
 	fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 	fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
 	fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
+	fileInstall("./img/profile1.png",cfg.installDir "/img/profile1.png",1)
+	fileInstall("./img/profile2.png",cfg.installDir "/img/profile2.png",1)
+	fileInstall("./img/profile3.png",cfg.installDir "/img/profile3.png",1)
+	fileInstall("./img/rod.png",cfg.installDir "/img/rod.png",1)
+	
 	fileInstall("./img/hooman.ico",cfg.installDir "/img/hooman.ico",1)
 	fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 	fileInstall("./update.exe",cfg.installDir "/update.exe",1)
