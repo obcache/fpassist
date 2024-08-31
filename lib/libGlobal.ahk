@@ -1,5 +1,5 @@
-#SingleInstance
 #Requires AutoHotKey v2.0+
+#SingleInstance
 #Warn All, Off
 
 if (InStr(A_LineFile,A_ScriptFullPath)){
@@ -88,7 +88,7 @@ install(*) {
 					; if !(FileExist(cfg.installDir "/fpassist.themes"))
 						; FileInstall("./fpassist.themes",cfg.installDir "/fpassist.themes",1)
 					; if !(fileExist(cfg.installDir "/fpassist.db"))
-						; fileInstall("./fpassist.db",cfg.installDir "/fpassist.db",1)	
+					; fileInstall("./fpassist.db",cfg.installDir "/fpassist.db",1)	
 				}
 			}
 		} else {
@@ -117,9 +117,6 @@ install(*) {
 	fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 	fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
 	fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
-	fileInstall("./img/profile1.png",cfg.installDir "/img/profile1.png",1)
-	fileInstall("./img/profile2.png",cfg.installDir "/img/profile2.png",1)
-	fileInstall("./img/profile3.png",cfg.installDir "/img/profile3.png",1)
 	fileInstall("./img/rod.png",cfg.installDir "/img/rod.png",1)
 	
 	fileInstall("./img/hooman.ico",cfg.installDir "/img/hooman.ico",1)
@@ -202,15 +199,14 @@ loadScreen(visible := true,NotifyMsg := "FPAssist Loading",Duration := 10) {
 		ui.notifyGui.AddText("y5 w300 h35 cBABABA center BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
 		ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
 		ui.loadingProgress := ui.notifyGui.addProgress("smooth x+-301 y+-21 w300 h20 cABABAB background252525")
+		ui.loadingProgress.value := 0
 		;setTimer(loadingProgressStep,100)
 		ui.notifyGui.AddText("xs hidden")
-	
-		tmpX := iniRead(cfg.file,"Interface","GuiX",200)
-		tmpY := iniRead(cfg.file,"Interface","GuiY",200)
+		ui.guiX := iniRead("./fpassist.ini","System","GuiX",0)
+		ui.guiY := iniRead("./fpassist.ini","System","GuiY",0)
 		
-		ui.notifyGui.Show("w350 h70")
+		ui.notifyGui.show("x" ui.guiX " y" ui.guiY " w1584 h814 noActivate")
 		winGetPos(&x,&y,&w,&h,ui.notifyGui.hwnd)
-		ui.notifyGui.move((tmpX+275)-(w/2),(tmpY+95)-(h/2))
 		drawOutline(ui.notifyGui,1,1,w-2,h-2,"454545","757575",1)
 		drawOutline(ui.notifyGui,2,2,w-4,h-4,"858585","454545",1)
 		while transparent < 245 {
@@ -219,10 +215,7 @@ loadScreen(visible := true,NotifyMsg := "FPAssist Loading",Duration := 10) {
 			sleep(1)
 		}
 		winSetTransparent("Off",ui.notifyGui.hwnd)
-	
 	} else {
-		try {
-			setTimer(loadingProgressStep,0)
 			transparent := 255
 			while transparent > 20 {
 				winSetTransparent(transparent,ui.notifyGui.hwnd)
@@ -233,7 +226,7 @@ loadScreen(visible := true,NotifyMsg := "FPAssist Loading",Duration := 10) {
 			ui.notifyGui.destroy()
 		}
 	}
-}
+
 
 
 
@@ -271,12 +264,12 @@ createPbConsole(title) {
 	ui.pbConsoleBg.backColor := "304030"
 	ui.pbConsoleHandle := ui.pbConsoleBg.addPicture("w700 h400 background203020","")
 	ui.pbConsoleBg.show("w700 h400 noActivate")
-	winSetTransparent(160,ui.pbConsoleBg)
+	;winSetTransparent(160,ui.pbConsoleBg)
 	ui.pbConsole := gui()
 	ui.pbConsole.opt("-caption AlwaysOnTop")
 	ui.pbConsole.backColor := transColor
 	ui.pbConsole.color := transColor
-	winSetTransColor(transColor,ui.pbConsole)
+	;winSetTransColor(transColor,ui.pbConsole)
 	ui.pbConsoleTitle := ui.pbConsole.addText("x8 y4 w700 h35 section center background303530 c859585",title)
 	ui.pbConsoleTitle.setFont("s20","Verdana Bold")
 
