@@ -22,6 +22,14 @@ initTrayMenu(*) {
 	A_TrayMenu.Default := "Show Window"
 }
 
+
+
+sendIfWinActive(msg,win := "A") {
+	(winActive(win))
+		? send(msg)
+		: exit
+}
+
 install(*) {
 	if !a_isCompiled
 		return
@@ -118,7 +126,7 @@ install(*) {
 	fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
 	fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
 	fileInstall("./img/rod.png",cfg.installDir "/img/rod.png",1)
-	
+	fileInstall("./img/button_log.png",cfg.installDir "/img/button_log.png",1)
 	fileInstall("./img/hooman.ico",cfg.installDir "/img/hooman.ico",1)
 	fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 	fileInstall("./update.exe",cfg.installDir "/update.exe",1)
@@ -133,102 +141,138 @@ install(*) {
 	exitApp
 }
 
+
+
+getGamePath(*) {
+	Loop Reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
+		if inStr(regRead(),ui.gameExe)
+			if inStr(ui.gameExe := a_loopRegName,ui.gameExe) {
+				return subStr(a_loopRegName,1,strLen(a_loopRegName)-16)
+			}
+	}	
+}
+
 runApp(appName) {
 	global
 	For app in ComObject('Shell.Application').NameSpace('shell:AppsFolder').Items
 	(app.Name = appName) && RunWait('explorer shell:appsFolder\' app.Path,,,&appPID)
 }
 
-
-NotifyOSD(NotifyMsg,Duration := 10,Alignment := "Left",YN := "")
-{
-	if !InStr("LeftRightCenter",Alignment)
-		Alignment := "Left"
-		
-	Transparent := 250
-	try
-		ui.notifyGui.Destroy()
-	ui.notifyGui			:= Gui()
-	ui.notifyGui.Title 		:= "Notify"
-
-	ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow +Owner" ui.mainGui.hwnd)  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
-	ui.notifyGui.BackColor := cfg.ThemePanel1Color  ; Can be any RGB color (it will be made transparent below).
-	ui.notifyGui.SetFont("s16")  ; Set a large font size (32-point).
-	ui.notifyGui.AddText("c" cfg.ThemeFont1Color " " Alignment " BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
-	ui.notifyGui.AddText("xs hidden")
-	
-	WinSetTransparent(0,ui.notifyGui)
-	ui.notifyGui.Show("NoActivate Autosize")  ; NoActivate avoids deactivating the currently active window.
-	ui.notifyGui.GetPos(&x,&y,&w,&h)
-	
-	winGetPos(&GuiX,&GuiY,&GuiW,&GuiH,ui.mainGui.hwnd)
-	ui.notifyGui.Show("x" (GuiX+(GuiW/2)-(w/2)) " y" GuiY+(100-(h/2)) " NoActivate")
-	guiVis(ui.notifyGui,true)
-	drawOutlineNotifyGui(1,1,w,h,cfg.ThemeBorderDarkColor,cfg.ThemeBorderLightColor,1)
-	drawOutlineNotifyGui(2,2,w-2,h-2,cfg.ThemeBright2Color,cfg.ThemeBright2Color,1)
-	
-	if (YN) {
-		ui.notifyGui.AddText("xs hidden")
-		ui.notifyYesButton := ui.notifyGui.AddPicture("ys x30 y30","./Img/button_yes.png")
-		ui.notifyYesButton.OnEvent("Click",notifyConfirm)
-		ui.notifyNoButton := ui.notifyGui.AddPicture("ys","/Img/button_no.png")
-		ui.notifyNoButton.OnEvent("Click",notifyCancel)
-		SetTimer(waitOSD,-10000)
-	} else {
-		ui.Transparent := 250
-		try {
-			WinSetTransparent(ui.Transparent,ui.notifyGui)
-			setTimer () => (sleep(duration),fadeOSD()),-100
+verifyInstall(*) {
+	if !a_isAdmin {
+		try
+		{
+			if a_isCompiled
+				run '*runAs "' a_scriptFullPath '" /restart'
+			else
+				run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
+				run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
 		}
+		exitApp()
 	}
-	waitOSD() {
-		ui.notifyGui.destroy()
-		notifyOSD("Timed out waiting for response.`nPlease try your action again",-1000)
-	}
+
+	a_cmdLine := DllCall("GetCommandLine", "str")
+	a_restarted := 
+	(inStr(a_cmdLine,"/restart"))
+					? true
+					: false
+	if !fileExist("./fpassist.ini")
+		install()
+}	
+
+onExit(exitFunc)
+
+cleanExit(*) {
+	if winExist(ui.game)
+		winKill()
+	if processExist("fishingPlanet.exe")
+		processClose("fishingPlanet.exe")
+	exitFunc()
 }
 
-loadScreen(visible := true,NotifyMsg := "FPAssist Loading",Duration := 10) {
-	if (visible) {
-		Transparent := 0
-		ui.notifyGui			:= Gui()
-		ui.notifyGui.Title 		:= "fpassist Loading"
-
-		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
-		ui.notifyGui.BackColor := "353535" ; Can be any RGB color (it will be made transparent below).
-		ui.notifyGui.SetFont("s22")  ; Set a large font size (32-point).
-		ui.notifyGui.AddText("y5 w300 h35 cBABABA center BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
-		ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
-		ui.loadingProgress := ui.notifyGui.addProgress("smooth x+-301 y+-21 w300 h20 cABABAB background252525")
-		ui.loadingProgress.value := 0
-		;setTimer(loadingProgressStep,100)
-		ui.notifyGui.AddText("xs hidden")
-		ui.guiX := iniRead("./fpassist.ini","System","GuiX",0)
-		ui.guiY := iniRead("./fpassist.ini","System","GuiY",0)
-		
-		ui.notifyGui.show("x" ui.guiX " y" ui.guiY " w1584 h814 noActivate")
-		winGetPos(&x,&y,&w,&h,ui.notifyGui.hwnd)
-		drawOutline(ui.notifyGui,1,1,w-2,h-2,"454545","757575",1)
-		drawOutline(ui.notifyGui,2,2,w-4,h-4,"858585","454545",1)
-		while transparent < 245 {
-			winSetTransparent(transparent,ui.notifyGui.hwnd)
-			transparent += 8
-			sleep(1)
-		}
-		winSetTransparent("Off",ui.notifyGui.hwnd)
-	} else {
-			transparent := 255
-			while transparent > 20 {
-				winSetTransparent(transparent,ui.notifyGui.hwnd)
-				transparent -= 8
-				sleep(1)
-			}
-			ui.notifyGui.hide()
-			ui.notifyGui.destroy()
-		}
+exitFunc(*) {
+	if winExist(ui.game) {
+		winActivate(ui.game)
+		WinSetStyle("+0xC00000",ui.game)
 	}
+	winGetPos(&x,&y,&w,&h,ui.fishGui.hwnd)
+	iniWrite(x,cfg.file,"System","GuiX")
+	iniWrite(y,cfg.file,"System","GuiY")
+	iniWrite(w,cfg.file,"System","GuiW")
+	iniWrite(h,cfg.file,"System","GuiH")
+	iniWrite(cfg.twitchToggleValue,cfg.file,"Game","TwitchToggle")
+	iniWrite(cfg.waitToggleValue,cfg.file,"Game","WaitToggle")
+	loop 3 {
+		castAdjustList .= cfg.castAdjust[a_index] ","
+		reelSpeedList .= cfg.reelSpeed[a_index] ","
+		dragLevelList .= cfg.dragLevel[a_index] ","
+	}
+	iniWrite(rtrim(castAdjustList,","),cfg.file,"Game","CastAdjust")
+	iniWrite(rtrim(reelSpeedList,","),cfg.file,"Game","ReelSpeed")
+	iniWrite(rtrim(dragLevelList,","),cfg.file,"Game","DragLevel")
+		
+	exitApp
+}
 
 
+ ; NotifyOSD(NotifyMsg,Duration := 10,Alignment := "Left",YN := "") {
+	; if !InStr("LeftRightCenter",Alignment)
+		; Alignment := "Left"
+		
+	; Transparent := 250
+	; try
+		; ui.notifyGui.Destroy()
+	; ui.notifyGui			:= Gui()
+	; ui.notifyGui.Title 		:= "Notify"
 
+	; ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow +Owner" ui.mainGui.hwnd)  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
+	; ui.notifyGui.BackColor := cfg.ThemePanel1Color  ; Can be any RGB color (it will be made transparent below).
+	; ui.notifyGui.SetFont("s16")  ; Set a large font size (32-point).
+	; ui.notifyGui.AddText("c" cfg.ThemeFont1Color " " Alignment " BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
+	; ui.notifyGui.AddText("xs hidden")
+	
+	; WinSetTransparent(0,ui.notifyGui)
+	; ui.notifyGui.Show("NoActivate Autosize")  ; NoActivate avoids deactivating the currently active window.
+	; ui.notifyGui.GetPos(&x,&y,&w,&h)
+	
+	; winGetPos(&GuiX,&GuiY,&GuiW,&GuiH,ui.mainGui.hwnd)
+	; ui.notifyGui.Show("x" (GuiX+(GuiW/2)-(w/2)) " y" GuiY+(100-(h/2)) " NoActivate")
+	; guiVis(ui.notifyGui,true)
+	; drawOutlineNotifyGui(1,1,w,h,cfg.ThemeBorderDarkColor,cfg.ThemeBorderLightColor,1)
+	; drawOutlineNotifyGui(2,2,w-2,h-2,cfg.ThemeBright2Color,cfg.ThemeBright2Color,1)
+	
+	; if (YN) {
+		; ui.notifyGui.AddText("xs hidden")
+		; ui.notifyYesButton := ui.notifyGui.AddPicture("ys x30 y30","./Img/button_yes.png")
+		; ui.notifyYesButton.OnEvent("Click",notifyConfirm)
+		; ui.notifyNoButton := ui.notifyGui.AddPicture("ys","/Img/button_no.png")
+		; ui.notifyNoButton.OnEvent("Click",notifyCancel)
+		; SetTimer(waitOSD,-10000)
+	; } else {
+		; ui.Transparent := 250
+		; try {
+			; WinSetTransparent(ui.Transparent,ui.notifyGui)
+			; setTimer () => (sleep(duration),fadeOSD()),-100
+		; }
+	; }
+	; waitOSD() {
+		; ui.notifyGui.destroy()
+		; notifyOSD("Timed out waiting for response.`nPlease try your action again",-1000)
+	; }
+; }
+
+log(msg) {
+	if ui.fishLogArr.length > 33 {
+		ui.fishLogArr.removeAt(1)
+		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
+		ui.fishLogText.delete()
+		ui.fishLogText.add(ui.fishLogArr)
+	} else {
+		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
+		ui.fishLogText.delete()
+		ui.fishLogText.add(ui.fishLogArr)
+	}
+}
 
 killMe(*) {
 	ExitApp
