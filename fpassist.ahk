@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.5.8"
+A_FileVersion := "1.1.6.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -30,6 +30,8 @@ ui.reeledIn := true
 #include <libGui>
 
 verifyInstall()
+if a_isCompiled && a_scriptName != "fpassist.exe"
+	exitApp
 startGame()
 initGui()
 
@@ -67,8 +69,7 @@ startGame(*) {
 		run(getGamePath())		
 		winWait(ui.game)
 		winSetTransparent(1,ui.game)
-		
-		sleep(8000)
+		sleep(10000)
 		winMove(0,0,,,ui.game)
 		winSetStyle("-0xC00000",ui.game)
 	} else {

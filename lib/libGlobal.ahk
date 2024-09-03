@@ -137,7 +137,7 @@ install(*) {
 	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_StartMenu "\Programs\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img2/attack_icon.ico")
 	IniWrite(cfg.installDir,cfg.installDir "/fpassist.ini","System","InstallDir")
 	Run(cfg.installDir "\" A_AppName ".exe")
-	sleep(4500)
+	sleep(500)
 	exitApp
 }
 
@@ -195,23 +195,25 @@ exitFunc(*) {
 		winActivate(ui.game)
 		WinSetStyle("+0xC00000",ui.game)
 	}
-	winGetPos(&x,&y,&w,&h,ui.fishGui.hwnd)
-	iniWrite(x,cfg.file,"System","GuiX")
-	iniWrite(y,cfg.file,"System","GuiY")
-	iniWrite(w,cfg.file,"System","GuiW")
-	iniWrite(h,cfg.file,"System","GuiH")
-	iniWrite(cfg.twitchToggleValue,cfg.file,"Game","TwitchToggle")
-	iniWrite(cfg.waitToggleValue,cfg.file,"Game","WaitToggle")
-	loop 3 {
-		castAdjustList .= cfg.castAdjust[a_index] ","
-		reelSpeedList .= cfg.reelSpeed[a_index] ","
-		dragLevelList .= cfg.dragLevel[a_index] ","
-	}
-	iniWrite(rtrim(castAdjustList,","),cfg.file,"Game","CastAdjust")
-	iniWrite(rtrim(reelSpeedList,","),cfg.file,"Game","ReelSpeed")
-	iniWrite(rtrim(dragLevelList,","),cfg.file,"Game","DragLevel")
+	try {
+		winGetPos(&x,&y,&w,&h,ui.fishGui.hwnd)
+		iniWrite(x,cfg.file,"System","GuiX")
+		iniWrite(y,cfg.file,"System","GuiY")
+		iniWrite(w,cfg.file,"System","GuiW")
+		iniWrite(h,cfg.file,"System","GuiH")
+		iniWrite(cfg.twitchToggleValue,cfg.file,"Game","TwitchToggle")
+		iniWrite(cfg.waitToggleValue,cfg.file,"Game","WaitToggle")
+		loop 3 {
+			castAdjustList .= cfg.castAdjust[a_index] ","
+			reelSpeedList .= cfg.reelSpeed[a_index] ","
+			dragLevelList .= cfg.dragLevel[a_index] ","
+		}
+		iniWrite(rtrim(castAdjustList,","),cfg.file,"Game","CastAdjust")
+		iniWrite(rtrim(reelSpeedList,","),cfg.file,"Game","ReelSpeed")
+		iniWrite(rtrim(dragLevelList,","),cfg.file,"Game","DragLevel")
 		
-	exitApp
+	}
+
 }
 
 
@@ -310,7 +312,7 @@ createPbConsole(title) {
 	ui.pbConsoleBg.show("w700 h400 noActivate")
 	;winSetTransparent(160,ui.pbConsoleBg)
 	ui.pbConsole := gui()
-	ui.pbConsole.opt("-caption AlwaysOnTop")
+	ui.pbConsole.opt("-caption")
 	ui.pbConsole.backColor := transColor
 	ui.pbConsole.color := transColor
 	;winSetTransColor(transColor,ui.pbConsole)
