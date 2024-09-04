@@ -99,7 +99,7 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
 		ui.notifyGui.BackColor := "353535" ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
-		ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/button_log.png")
+		;ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/button_log.png")
 		;ui.notifyGui.AddText("x" (1580/2)-100 " y" (810/2) " c252525 center BackgroundTrans","Please Wait")  ; XX & YY serve to 00auto-size the window.
 		;ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
 		ui.loadingProgress := ui.notifyGui.addProgress("smooth x0 y750 w1580 h60 c202020 background404040")
