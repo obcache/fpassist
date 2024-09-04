@@ -9,20 +9,27 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 	Return
 }
 
+drawButton(x,y,w,h) {
+		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
+		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background111111")
+		ui.fishGui.addText("x" x+2 " y" y+2 " w" w-4 " h" h-4 " background" ui.bgColor[1])
+}
 
 statPanel(*) {
 	ui.sessionStartTime := a_now
 	ui.afkStartTime := a_now
 	
-	ui.statCoord := map("x",664,"y",755,"w",435,"h",56)
+	ui.statCoord := map("x",664,"y",753,"w",435,"h",60)
 	x := ui.statCoord["x"] + 8
 	y := ui.statCoord["y"] + 4
 	w := ui.statCoord["w"]
 	h := ui.statCoord["h"]
 
-	ui.statPanelOutline2 := ui.fishGui.addText("x" ui.statCoord["x"]-1 " y" ui.statCoord["y"]-1 " w" ui.statCoord["w"]+2 " h" ui.statCoord["h"]+2 " background" ui.bgColor[3])
-	ui.statPanelOutline := ui.fishGui.addText("x" ui.statCoord["x"]-1 " y" ui.statCoord["y"]-1 " w" ui.statCoord["w"] " h" ui.statCoord["h"] " background" ui.bgColor[5])
-	ui.statPanelBg := ui.fishGui.addText("x" ui.statCoord["x"] " y" ui.statCoord["y"] " w" ui.statCoord["w"] " h" ui.statCoord["h"] " background" ui.bgColor[1])
+
+
+	ui.statPanelBg := ui.fishGui.addText("x" ui.statCoord["x"] " y" ui.statCoord["y"] " w" ui.statCoord["w"] " h" ui.statCoord["h"] " background" ui.bgColor[3])
+	ui.statPanelOutline := ui.fishGui.addText("x" ui.statCoord["x"]+1 " y" ui.statCoord["y"]+1 " w" ui.statCoord["w"]-2 " h" ui.statCoord["h"]-2 " background111111")
+	ui.statPanelOutline2 := ui.fishGui.addText("x" ui.statCoord["x"]+2 " y" ui.statCoord["y"]+2 " w" ui.statCoord["w"]-4 " h" ui.statCoord["h"]-4 " background" ui.bgColor[1])
 	;msgBox(ui.statCoord["w"])
 	
 	ui.statSessionStartTimeLabel := ui.fishGui.addText("x" 7+x " y" 5+y " right section w70 r1 backgroundTrans c" ui.fontColor[3],"Session Start: ")
@@ -99,7 +106,10 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
 		ui.notifyGui.BackColor := "353535" ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
-		;ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/button_log.png")
+		;if a_isCompiled 
+		ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/fp_splash.png")
+		; else
+			; ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/fp_splash.png")
 		;ui.notifyGui.AddText("x" (1580/2)-100 " y" (810/2) " c252525 center BackgroundTrans","Please Wait")  ; XX & YY serve to 00auto-size the window.
 		;ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
 		ui.loadingProgress := ui.notifyGui.addProgress("smooth x0 y750 w1580 h60 c202020 background404040")
@@ -167,11 +177,6 @@ drawOutlineNamed(outLineName, guiName, X, Y, W, H, Color1 := "Black", Color2 := 
 
 
 
-drawButton(x,y,w,h) {
-		ui.fishGui.addText("x" x " y" y " w" w " h" h " background111111")
-		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background888888")
-		ui.fishGui.addText("x" x+2 " y" y+2 " w" w-4 " h" h-4 " background111111")
-}
 
 onMessage(0x47,WM_WINDOWPOSCHANGED)
 WM_LBUTTONDOWN(wparam,lparam,msg,hwnd) {

@@ -30,123 +30,118 @@ sendIfWinActive(msg,win := "A") {
 		: exit
 }
 
-install(*) {
-	if !a_isCompiled
-		return
-		
-	if StrCompare(A_ScriptDir,cfg.installDir) {
-		createPbConsole("fpassist Install")
-		pbConsole("Running standalone executable, attempting to install")
-		if !(DirExist(cfg.installDir)) {
-			pbConsole("Attempting to create install folder")
-			try	{
-				Dir
-				Create(cfg.installDir)
-				SetWorkingDir(cfg.installDir)
-			} catch {
-				sleep(1500)
-				pbConsole("Cannot Create Folder at the Install Location.")
-				pbConsole("Suspect permissions issue with the desired install location")
-				pbConsole("`n`nTERMINATING")
-				sleep(4000)
-				ExitApp
+install() {
+	Global
+	InstallDir := cfg.installDir
+	if (A_IsCompiled)
+	{
+		if !inStr(A_ScriptDir,InstallDir)
+  		{
+			errorLevel := 1
+			createPbConsole("fpassist Install")
+			pbConsole("Running standalone executable, attempting to install")
+			if !(DirExist(InstallDir))
+			{
+				pbConsole("Attempting to create install folder")
+				try
+				{
+					if !DirCreate(InstallDir) 
+						errorLevel := 0
+					SetWorkingDir(InstallDir)
+				} catch {
+					sleep(1500)
+					pbConsole("Cannot Create Folder at the Install Location.")
+					pbConsole("Suspect permissions issue with the desired install location")
+					pbConsole("`n`nTERMINATING")
+					sleep(4000)
+					ExitApp
+				}
+				pbConsole("Successfully created install location at " InstallDir)
+				sleep(1000)
 			}
-			pbConsole("Successfully created install location at " cfg.installDir)
+			pbConsole("Copying executable to install location")
 			sleep(1000)
-		}
-		pbConsole("Copying executable to install location")
-		sleep(1000)
-		try{
-			FileCopy(A_ScriptFullPath, cfg.installDir "/" A_AppName ".exe", true)
-		}
+			try{
+				FileCopy(A_ScriptFullPath, InstallDir "/" A_AppName ".exe", true)
+			}
 
-		if (FileExist(cfg.installDir "/fpassist.ini"))
-		{
-			msgBoxResult := MsgBox("Previous install detected. `nAttempt to preserve your existing settings?",, "Y/N T300")
+			if (FileExist(InstallDir "/fpassist.ini"))
+			{
+				msgBoxResult := MsgBox("Previous install detected. `nAttempt to preserve your existing settings?",, "Y/N T300")
+				
+				switch msgBoxResult {
+					case "No": 
+					{
+						sleep(1000)
+						pbConsole("`nReplacing existing configuration files with updated and clean files")
+						FileInstall("./fpassist.ini",InstallDir "/fpassist.ini",1)
+					} 
+					case "Yes": 
+					{
+						cfg.ThemeFont1Color := "00FFFF"
+						sleep(1000)
+						pbConsole("`nPreserving existing configuration may cause issues.")
+						pbConsole("If you encounter issues,try installing again, choosing NO.")
+					}
+					case "Timeout":
+					{
+						setTimer () => pbNotify("Timed out waiting for your response.`Attempting to update using your exiting config files.`nIf you encounter issues, re-run the install `nselecting the option to replace your existing files.",5000),-100
+						if !fileExist("./fpassist.ini")
+							fileInstall("./fpassist.ini",installDir "/fpassist.ini")	
+					}
+				}
+			} else {
+				sleep(1000)
+				pbConsole("This seems to be the first time you're running fpassist.")
+				pbConsole("A fresh install to " A_MyDocuments "\fpassist is being performed.")
+
+				FileInstall("./fpassist.ini",InstallDir "/fpassist.ini",1)
+			}
+			if !(DirExist(InstallDir "\lib"))
+			{
+				DirCreate(InstallDir "\lib")
+			}			
+			if !(DirExist(InstallDir "\Img"))
+			{
+				DirCreate(InstallDir "\Img")
+			}
+			if !(DirExist(InstallDir "\Redist"))
+			{
+				DirCreate(InstallDir "\Redist")
+			}
+			if !(DirExist(InstallDir "\fishPics"))
+			{
+				DirCreate(InstallDir "\fishPics")
+			}
+			if !(DirExist(InstallDir "\logs"))
+			{
+				DirCreate(InstallDir "\logs")
+			}
+			FileInstall("./Img/fp_splash.png",InstallDir "/img/fp_splash.png",1)
+			FileInstall("./Img/toggle_on.png",InstallDir "/img/toggle_on.png",1) 
+			FileInstall("./Img/toggle_off.png",InstallDir "/Img/toggle_off.png",true)
+			FileInstall("./Img/rod.png",InstallDir "/Img/rod.png",true)
+			fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
+			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
+			FileInstall("./update.exe",InstallDir "/update.exe",1)
+			FileInstall("./fpassist_currentBuild.dat",InstallDir "/fpassist_currentBuild.dat",1)
+			fileInstall("./img/hooman.ico",installDir "/img/hooman.ico",1)
+
+			pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
 			
-			switch msgBoxResult {
-				case "No": 
-				{
-					sleep(1000)
-					pbConsole("`nReplacing existing configuration files with updated and clean files")
-					FileInstall("./fpassist.ini",cfg.installDir "/fpassist.ini",1)
-					;FileInstall("./fpassist.themes",cfg.installDir "/fpassist.themes",1)
-					;FileInstall("./AfkData.csv",cfg.installDir "/AfkData.csv",1)
-					;fileInstall("./fpassist.db",cfg.installDir "/fpassist.db",1)
-				} 
-				case "Yes": 
-				{
-					cfg.ThemeFont1Color := "00FFFF"
-					sleep(1000)
-					pbConsole("`nPreserving existing configuration may cause issues.")
-					pbConsole("If you encounter issues,try installing again, choosing NO.")
-					; if !(FileExist(cfg.installDir "/AfkData.csv"))
-						; FileInstall("./AfkData.csv",cfg.installDir "/AfkData.csv",1)
-					; if !(FileExist(cfg.installDir "/fpassist.themes"))
-						; FileInstall("./fpassist.themes",cfg.installDir "/fpassist.themes",1)
-					; if !(fileExist(cfg.installDir "/fpassist.db"))
-						; fileInstall("./fpassist.db",cfg.installDir "/fpassist.db",1)
-				}
-				case "Timeout":
-				{
-					setTimer () => pbNotify("Timed out waiting for your response.`Attempting to update using your exiting config files.`nIf you encounter issues, re-run the install `nselecting the option to replace your existing files.",5000),-100
-					if !fileExist("./fpassist.ini")
-						fileInstall("./fpassist.ini",cfg.installDir "/fpassist.ini")
-					; if !(FileExist(cfg.installDir "/AfkData.csv"))
-						; FileInstall("./AfkData.csv",cfg.installDir "/AfkData.csv",1)
-					; if !(FileExist(cfg.installDir "/fpassist.themes"))
-						; FileInstall("./fpassist.themes",cfg.installDir "/fpassist.themes",1)
-					; if !(fileExist(cfg.installDir "/fpassist.db"))
-					; fileInstall("./fpassist.db",cfg.installDir "/fpassist.db",1)	
-				}
-			}
-		} else {
-			sleep(1000)
-			pbConsole("This seems to be the first time you're running fpassist.")
-			pbConsole("A fresh install to " A_MyDocuments "\fpassist is being performed.")
-
-			FileInstall("./fpassist.ini",cfg.installDir "/fpassist.ini",1)
-			; FileInstall("./fpassist.themes",cfg.installDir "/fpassist.themes",1)
-			; FileInstall("./AfkData.csv",cfg.installDir "/AfkData.csv",1)
-			; fileInstall("./fpassist.db",cfg.installDir "/fpassist.db",1)
-
+			fileCreateShortcut(installDir "/fpassist.exe", A_Desktop "\fpassist.lnk",installDir,,"Fishing Planet Assist",installDir "/img/hooman.ico")
+			fileCreateShortcut(installDir "/fpassist.exe", A_StartMenu "\Programs\fpassist.lnk",installDir,,"fpassist Gaming Assistant",installDir "/img/hooman.ico")
+			IniWrite(installDir,installDir "/fpassist.ini","System","InstallDir")
+			if errorLevel
+				return errorLevel
+			Run(InstallDir "\" A_AppName ".exe")
+			sleep(4500)
+			ExitApp
+		
 		}
 	}
-	if !dirExist(cfg.installDir)
-		dirCreate(cfg.installDir)
-	if !dirExist(cfg.installDir "/redist")
-		dirCreate(cfg.installDir "/redist")
-	if !dirExist(cfg.installDir "/logs")
-		dirCreate(cfg.installDir "/logs")
-	if !dirExist(cfg.installDir "/img")
-		dirCreate(cfg.installDir "/img")
-	if !dirExist(cfg.installDir "/fishPics")
-		dirCreate(cfg.installDir "/fishPics")
-		
-	fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
-	fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
-	fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
-	fileInstall("./img/rod.png",cfg.installDir "/img/rod.png",1)
-	fileInstall("./img/button_log.png",cfg.installDir "/img/button_log.png",1)
-	fileInstall("./img/hooman.ico",cfg.installDir "/img/hooman.ico",1)
-	fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
-	fileInstall("./update.exe",cfg.installDir "/update.exe",1)
-	pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
-	;installLog("Copied Assets to: " cfg.installDir)
-			
-	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_Desktop "\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img/hooman.ico")
-	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_StartMenu "\Programs\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img/hooman.ico")
-	IniWrite(cfg.installDir,cfg.installDir "/fpassist.ini","System","InstallDir")
 	
-	Run(cfg.installDir "\" A_AppName ".exe")
-	
-	
-	
-	sleep(500)
-	exitApp
 }
-
-
 
 getGamePath(*) {
 	Loop Reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
@@ -163,27 +158,21 @@ runApp(appName) {
 	(app.Name = appName) && RunWait('explorer shell:appsFolder\' app.Path,,,&appPID)
 }
 
-verifyInstall(*) {
+verifyAdmin(*) {
 	if !a_isAdmin {
-		try
-		{
-			if a_isCompiled
-				run '*runAs "' a_scriptFullPath '" /restart'
-			else
-				run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
-				run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
-		}
-		exitApp()
+		if a_isCompiled
+			run '*runAs "' a_scriptFullPath '" /restart'
+		else
+			run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
+			run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
+		
 	}
 
 	a_cmdLine := DllCall("GetCommandLine", "str")
 	a_restarted := 
 	(inStr(a_cmdLine,"/restart"))
 					? true
-					: false
-	if !fileExist("./fpassist.ini")
-		install()
-	loadScreen()
+					: false		
 }	
 
 onExit(exitFunc)
@@ -214,56 +203,8 @@ exitFunc(*) {
 		iniWrite(rtrim(dragLevelList,","),cfg.file,"Game","DragLevel")
 	}
 	
-	
 	exitApp
 }
-
-
- ; NotifyOSD(NotifyMsg,Duration := 10,Alignment := "Left",YN := "") {
-	; if !InStr("LeftRightCenter",Alignment)
-		; Alignment := "Left"
-		
-	; Transparent := 250
-	; try
-		; ui.notifyGui.Destroy()
-	; ui.notifyGui			:= Gui()
-	; ui.notifyGui.Title 		:= "Notify"
-
-	; ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow +Owner" ui.mainGui.hwnd)  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
-	; ui.notifyGui.BackColor := cfg.ThemePanel1Color  ; Can be any RGB color (it will be made transparent below).
-	; ui.notifyGui.SetFont("s16")  ; Set a large font size (32-point).
-	; ui.notifyGui.AddText("c" cfg.ThemeFont1Color " " Alignment " BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
-	; ui.notifyGui.AddText("xs hidden")
-	
-	; WinSetTransparent(0,ui.notifyGui)
-	; ui.notifyGui.Show("NoActivate Autosize")  ; NoActivate avoids deactivating the currently active window.
-	; ui.notifyGui.GetPos(&x,&y,&w,&h)
-	
-	; winGetPos(&GuiX,&GuiY,&GuiW,&GuiH,ui.mainGui.hwnd)
-	; ui.notifyGui.Show("x" (GuiX+(GuiW/2)-(w/2)) " y" GuiY+(100-(h/2)) " NoActivate")
-	; guiVis(ui.notifyGui,true)
-	; drawOutlineNotifyGui(1,1,w,h,cfg.ThemeBorderDarkColor,cfg.ThemeBorderLightColor,1)
-	; drawOutlineNotifyGui(2,2,w-2,h-2,cfg.ThemeBright2Color,cfg.ThemeBright2Color,1)
-	
-	; if (YN) {
-		; ui.notifyGui.AddText("xs hidden")
-		; ui.notifyYesButton := ui.notifyGui.AddPicture("ys x30 y30","./Img/button_yes.png")
-		; ui.notifyYesButton.OnEvent("Click",notifyConfirm)
-		; ui.notifyNoButton := ui.notifyGui.AddPicture("ys","/Img/button_no.png")
-		; ui.notifyNoButton.OnEvent("Click",notifyCancel)
-		; SetTimer(waitOSD,-10000)
-	; } else {
-		; ui.Transparent := 250
-		; try {
-			; WinSetTransparent(ui.Transparent,ui.notifyGui)
-			; setTimer () => (sleep(duration),fadeOSD()),-100
-		; }
-	; }
-	; waitOSD() {
-		; ui.notifyGui.destroy()
-		; notifyOSD("Timed out waiting for response.`nPlease try your action again",-1000)
-	; }
-; }
 
 log(msg) {
 	if ui.fishLogArr.length > 33 {
@@ -281,9 +222,6 @@ log(msg) {
 killMe(*) {
 	ExitApp
 }
-restartApp(*) {
-	reload()
-}
 
 arr2str(arrayName) {
 	loop arrayName.Length
@@ -296,31 +234,18 @@ newGuid(*) {
 	return ComObjCreate("Scriptlet.TypeLib").GUID
 }
 
-
-
-; iniEditor(*) {
-	; loop read configFilename {
-	; if substr(a_loopReadline,1,1) = "[" {
-		; this_section := ltrim(rtrim(a_loopReadline,"]"),"[")
-		
-; }
-
-
 createPbConsole(title) {
 	transColor := "010203"
 	ui.pbConsoleBg := gui()
 	ui.pbConsoleBg.backColor := "304030"
 	ui.pbConsoleHandle := ui.pbConsoleBg.addPicture("w700 h400 background203020","")
 	ui.pbConsoleBg.show("w700 h400 noActivate")
-	;winSetTransparent(160,ui.pbConsoleBg)
 	ui.pbConsole := gui()
 	ui.pbConsole.opt("-caption")
 	ui.pbConsole.backColor := transColor
 	ui.pbConsole.color := transColor
-	;winSetTransColor(transColor,ui.pbConsole)
 	ui.pbConsoleTitle := ui.pbConsole.addText("x8 y4 w700 h35 section center background303530 c859585",title)
 	ui.pbConsoleTitle.setFont("s20","Verdana Bold")
-
 
 	drawOutlineNamed("pbConsoleTitle",ui.pbConsole,6,4,692,35,"253525","202520",2)
 	ui.pbConsoleData := ui.pbConsole.addText("xs+10 w680 h380 backgroundTrans cA5C5A5","")
@@ -331,14 +256,17 @@ createPbConsole(title) {
 	ui.pbConsole.show("w700 h400 noActivate")
 	ui.pbConsoleBg.opt("-caption owner" ui.pbConsole.hwnd)
 }
+
 hidePbConsole(*) {
 	guiVis(ui.pbConsole,false)
 	guiVis(ui.pbConsoleBg,false)
 }
+
 showPbConsole(*) {
 	guiVis(ui.pbConsole,false)
 	guiVis(ui.pbConsoleBg,false)
 }
+
 pbConsole(msg) {
 	if !hasProp(ui,"pbConsole")
 		createPbConsole("fpassist Console")
