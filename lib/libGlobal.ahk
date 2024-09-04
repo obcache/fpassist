@@ -127,7 +127,6 @@ install(*) {
 	fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
 	fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
 	fileInstall("./img/rod.png",cfg.installDir "/img/rod.png",1)
-	fileInstall("./img/fp_splash.png",cfg.installDir "/img/fp_splash.png",1)
 	fileInstall("./img/button_log.png",cfg.installDir "/img/button_log.png",1)
 	fileInstall("./img/hooman.ico",cfg.installDir "/img/hooman.ico",1)
 	fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
@@ -138,6 +137,7 @@ install(*) {
 	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_Desktop "\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img/hooman.ico")
 	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_StartMenu "\Programs\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img/hooman.ico")
 	IniWrite(cfg.installDir,cfg.installDir "/fpassist.ini","System","InstallDir")
+	
 	Run(cfg.installDir "\" A_AppName ".exe")
 	
 	
