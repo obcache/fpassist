@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.6.2"
+A_FileVersion := "1.1.6.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -71,7 +71,7 @@ startGame(*) {
 		winMove(0,0,,,ui.game)
 		winSetTransparent(1,ui.game)
 		
-		loop 100 {
+		loop 60 {
 			sleep(200)
 			ui.loadingProgress.value += 1
 		}
@@ -232,22 +232,24 @@ calibrate(*) {
 	ui.fishStatusText.text := "Calibrating"
 	log("Adjusting Drag")
 	loop 10 {
-		sendIfWinActive("{NumpadSub}",ui.game)
-		sleep(150)
+		winActivate(ui.game)
+		send("{NumpadSub}")
+		sleep(200)
 	}
 	loop cfg.dragLevel[cfg.profileSelected] {
-		sendIfWinActive("{NumpadAdd}",ui.game) 
-		sleep(150)
+		send("{NumpadAdd}")
+		sleep(200)
 	}
 	
 	log("Adjusting Reel Speed")
-	loop 5 {
-		send("{k}")
+	loop 10 {
+		winActivate(ui.game)
+		click("wheelDown")
 		sleep(200)
 	}	 
 	
 	loop cfg.reelSpeed[cfg.profileSelected] {
-		send("{l}") 
+		click("wheelUp") 
 		sleep(200)
 	}
 	ui.fishStatusText.text := ""
@@ -262,10 +264,11 @@ cast(*) {
 	calibrate()
 	
 	ui.isCasting := true
-	
+	ui.fishStatusText.text := "Cleaning Up Screen"
 	send("{backspace}")
-	(sleep500(3)) ? exit : 0            
-	
+	(sleep500(3)) ? exit : 0 
+	log("Casting")
+	ui.fishStatusText.text := "Cast"
 	sendIfWinActive("{space down}",ui.game)
 	sleep(cfg.castAdjust[cfg.profileSelected])
 	sendIfWinActive("{space up}",ui.game)
@@ -338,6 +341,7 @@ retrieve(*) {
 	
 	if fishCaught() {
 		ui.fishLogCount.text += 1
+		ui.statFishCount.text := ui.fishLogCount.text
 		sendIfWinActive("{space}",ui.game)
 		(sleep500(2)) ? exit : 0
 		sendIfWinActive("{backspace}",ui.game)
@@ -562,13 +566,13 @@ createGui(*) {
 	ui.exitButton.onEvent("click",cleanExit)
 	ui.fishLogHeader := ui.fishGui.addText("x2 y1 w296 h28 background222222")
 	ui.fishLogHeaderSpace := ui.fishGui.addText("x300 y1 w1 h29 background" ui.bgColor[3])
-	ui.fishLogHeaderText := ui.fishGui.addText("x10 y2 w300 h28 c353535 backgroundTrans","Log")
+	ui.fishLogHeaderText := ui.fishGui.addText("x10 y2 w300 h28 c353535 backgroundTrans","Activity")
 	ui.fishLogHeaderText.setFont("s14 cAAAAAA","Bold")
-	ui.fishLogCountLabel := ui.fishGui.addText("x220 y1 w40 h25 backgroundTrans right cAAAAAA"," Fish")
+	ui.fishLogCountLabel := ui.fishGui.addText("x215 y1 w40 h25 backgroundTrans right cAAAAAA"," Fish")
 	ui.fishLogCountLabel.setFont("s11","Helvetica")
-	ui.fishLogCountLabel2 := ui.fishGui.addText("x220 y12 w40 h25 backgroundTrans right cAAAAAA","Count")
+	ui.fishLogCountLabel2 := ui.fishGui.addText("x215 y12 w40 h25 backgroundTrans right cAAAAAA","Count")
 	ui.fishLogCountLabel2.setFont("s11","Helvetica")
-	ui.fishLogCount := ui.fishGui.addText("x269 y1 w40 h30 backgroundTrans cc1c1c1",ui.fishCount)
+	ui.fishLogCount := ui.fishGui.addText("x264 y1 w40 h30 backgroundTrans cc1c1c1",ui.fishCount)
 	ui.fishLogCount.setFont("s18","Impact") 
 	ui.fishLog := ui.fishGui.addText("x1 y31 w296 h688 background353535")
 	ui.fishLog := ui.fishGui.addText("x2 y32 w298 h686 background111111")
@@ -580,7 +584,7 @@ createGui(*) {
 	ui.fishLogFooterOutline2 := ui.fishGui.addText("x2 y722 w296 h28 background" ui.bgColor[1])
 	ui.fishLogFooterOutline3 := ui.fishGui.addText("x3 y723 w294 h26 background" ui.bgColor[2])
 	ui.fishLogFooter := ui.fishGui.addText("x4 y724 w293 h25 background9C9C9C") ;61823A
-	ui.fishStatusText := ui.fishGui.addText("section x5 y723 w220 h23 c333333 backgroundTrans","Ready to Cast")
+	ui.fishStatusText := ui.fishGui.addText("section x5 y723 w220 h23 c333333 backgroundTrans","Ready")
 	ui.fishStatusText.setFont("s15","Calibri")
 	ui.fishLogTimerOutline := ui.fishGui.addText("x1047 y710 w268 h40 background" ui.bgColor[3])
 	ui.fishLogTimerOutline2 := ui.fishGui.addText("x1048 y711 w266 h38 background" ui.bgColor[1])
