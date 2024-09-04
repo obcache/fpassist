@@ -40,7 +40,8 @@ install(*) {
 		if !(DirExist(cfg.installDir)) {
 			pbConsole("Attempting to create install folder")
 			try	{
-				DirCreate(cfg.installDir)
+				Dir
+				Create(cfg.installDir)
 				SetWorkingDir(cfg.installDir)
 			} catch {
 				sleep(1500)
@@ -126,9 +127,10 @@ install(*) {
 	fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
 	fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
 	fileInstall("./img/rod.png",cfg.installDir "/img/rod.png",1)
+	fileInstall("./img/startup_fp.png",cfg.installDir "/img/startup_fp.png",1)
 	fileInstall("./img/button_log.png",cfg.installDir "/img/button_log.png",1)
 	fileInstall("./img/hooman.ico",cfg.installDir "/img/hooman.ico",1)
-	fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
+	fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 	fileInstall("./update.exe",cfg.installDir "/update.exe",1)
 	pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
 	;installLog("Copied Assets to: " cfg.installDir)
@@ -137,6 +139,9 @@ install(*) {
 	fileCreateShortcut(cfg.installDir "/fpassist.exe", A_StartMenu "\Programs\fpassist.lnk",cfg.installDir,,"fpassist Gaming Assistant",cfg.installDir "/img2/attack_icon.ico")
 	IniWrite(cfg.installDir,cfg.installDir "/fpassist.ini","System","InstallDir")
 	Run(cfg.installDir "\" A_AppName ".exe")
+	
+	
+	
 	sleep(500)
 	exitApp
 }
@@ -178,6 +183,7 @@ verifyInstall(*) {
 					: false
 	if !fileExist("./fpassist.ini")
 		install()
+	loadScreen()
 }	
 
 onExit(exitFunc)
@@ -196,11 +202,6 @@ exitFunc(*) {
 		WinSetStyle("+0xC00000",ui.game)
 	}
 	try {
-		winGetPos(&x,&y,&w,&h,ui.fishGui.hwnd)
-		iniWrite(x,cfg.file,"System","GuiX")
-		iniWrite(y,cfg.file,"System","GuiY")
-		iniWrite(w,cfg.file,"System","GuiW")
-		iniWrite(h,cfg.file,"System","GuiH")
 		iniWrite(cfg.twitchToggleValue,cfg.file,"Game","TwitchToggle")
 		iniWrite(cfg.waitToggleValue,cfg.file,"Game","WaitToggle")
 		loop 3 {
@@ -211,9 +212,10 @@ exitFunc(*) {
 		iniWrite(rtrim(castAdjustList,","),cfg.file,"Game","CastAdjust")
 		iniWrite(rtrim(reelSpeedList,","),cfg.file,"Game","ReelSpeed")
 		iniWrite(rtrim(dragLevelList,","),cfg.file,"Game","DragLevel")
-		
 	}
-
+	
+	
+	exitApp
 }
 
 

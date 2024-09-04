@@ -1,4 +1,4 @@
-A_FileVersion := "1.1.6.1"
+A_FileVersion := "1.1.6.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -11,7 +11,7 @@ setWorkingDir(a_scriptDir)
 ui := object()
 cfg := object()
 tmp := object()
-loadScreen()
+
 cfg.file := "./fpassist.ini"
 cfg.installDir := a_mydocuments "\fpassist\"
 cfg.debug := iniRead(cfg.file,"System","Debug",false)
@@ -34,7 +34,7 @@ if a_isCompiled && a_scriptName != "fpassist.exe"
 	exitApp
 startGame()
 initGui()
-
+createGui()
 
 initGui(*) {
 	ui.sessionStartTime := A_Now
@@ -66,30 +66,40 @@ initGui(*) {
 
 startGame(*) {
 	if !winExist(ui.game) {
-		run(getGamePath())		
+		run(getGamePath(),,"Hide")		
 		winWait(ui.game)
+		winMove(0,0,,,ui.game)
 		winSetTransparent(1,ui.game)
-		sleep(10000)
+		
+		loop 100 {
+			sleep(200)
+			ui.loadingProgress.value += 1
+		}
 		winMove(0,0,,,ui.game)
 		winSetStyle("-0xC00000",ui.game)
 	} else {
 		winActivate(ui.game)
 		winWait(ui.game)	
 		winSetStyle("-0xC00000",ui.game)
+		setTimer(startupProgress2,120)
 	}
 	winSetTransparent(1,ui.game)
 	winMove(0,0,1280,720,ui.game)
 	sleep(1000)
+	ui.loadingProgress.value += 4
 	winGetPos(&x,&y,&w,&h,ui.game)
 	while w != 1280 || h != 720 {
 		sleep(1000)
 		if w == a_screenWidth && h == a_screenHeight {
+			winActivate("ahk_exe fishingPlanet.exe")
 			send("{alt down}{enter}{alt up}")
-			sleep(1000)
+			sleep(500)
+			ui.loadingProgress.value += 2
 			winMove(0,0,1280,720,ui.game)
-			sleep(1000)
+			sleep(500)
+			ui.loadingProgress.value += 2
 			winGetPos(&x,&y,&w,&h,ui.game)
-			send("{enter}")
+			;send("{enter}")
 		}
 	winSetStyle("-0xC00000",ui.game)
 	winSetTransparent(0,ui.game) 
@@ -433,7 +443,7 @@ timerFadeOut(*) {
 	}
 }
 
-createGui()
+
 createGui(*) {
 	ui.fishGui := gui()
 	ui.fishGui.opt("-caption owner" winGetId(ui.game))

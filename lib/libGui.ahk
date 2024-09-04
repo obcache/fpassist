@@ -62,29 +62,53 @@ statPanel(*) {
 }
 startupProgress(*) {
 	try {
-		ui.loadingProgress.value += 10
-		if ui.loadingProgress.value >= 100
+		ui.loadingProgress.value += 1
+		if ui.loadingProgress.value >= 100 {
+		
 			setTimer(startupProgress,0)
+		}
 	}
+	
+}
+
+startupProgress0(*) {
+	try {
+		ui.loadingProgress.value += 1
+		if ui.loadingProgress.value >= 20 {
+			setTimer(startupProgress0,0)
+		}
+	}
+	
+}
+startupProgress2(*) {
+	try {
+		ui.loadingProgress.value += 2
+		if ui.loadingProgress.value >= 100 {
+		
+			setTimer(startupProgress2,0)
+		}
+	}
+	
 }
 loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 	if (visible) {
 		Transparent := 0
 		ui.notifyGui			:= Gui()
-		ui.notifyGui.Title 		:= "fpassist Loading"
+		ui.notifyGui.Title 		:= "Loading.  Please Wait...."
 
 		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
 		ui.notifyGui.BackColor := "353535" ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
-		ui.notifyGui.AddText("x" (1580/2)-100 " y" (810/2) " c252525 center BackgroundTrans","Please Wait")  ; XX & YY serve to 00auto-size the window.
+		ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/startup_fp.png")
+		;ui.notifyGui.AddText("x" (1580/2)-100 " y" (810/2) " c252525 center BackgroundTrans","Please Wait")  ; XX & YY serve to 00auto-size the window.
 		;ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
-		ui.guiX := iniRead("./fpassist.ini","System","GuiX",0)
-		ui.guiY := iniRead("./fpassist.ini","System","GuiY",0)
-		ui.guiW := iniRead("./fpassist.ini","System","GuiW",0)
-		ui.guiH := iniRead("./fpassist.ini","System","GuiH",0)
 		ui.loadingProgress := ui.notifyGui.addProgress("smooth x0 y750 w1580 h60 cABABAB background252525")
 		ui.loadingProgress.value := 0
-		setTimer(startupProgress,30)
+		if winExist(ui.game) {
+			setTimer(startupProgress,32)
+		} else {
+			setTimer(startupProgress0,200)
+		}
 
 		;setTimer(loadingProgressStep,100)
 		ui.notifyGui.AddText("xs hidden")
@@ -101,7 +125,7 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 		winSetTransparent("Off",ui.notifyGui.hwnd)
 	} else {
 			transparent := 255
-			while transparent > 20 {
+			while transparent < 20 {
 				winSetTransparent(transparent,ui.notifyGui.hwnd)
 				transparent -= 8
 				sleep(1)
