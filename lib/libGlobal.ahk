@@ -191,16 +191,18 @@ exitFunc(*) {
 		WinSetStyle("+0xC00000",ui.game)
 	}
 	try {
-		iniWrite(cfg.twitchToggleValue,cfg.file,"Game","TwitchToggle")
-		iniWrite(cfg.waitToggleValue,cfg.file,"Game","WaitToggle")
 		loop 3 {
 			castAdjustList .= cfg.castAdjust[a_index] ","
 			reelSpeedList .= cfg.reelSpeed[a_index] ","
 			dragLevelList .= cfg.dragLevel[a_index] ","
+			twitchLevelList .= cfg.twitchLevel[a_index] ","
+			pauseLevelList .= cfg.pauseLevel[a_index] ","
 		}
 		iniWrite(rtrim(castAdjustList,","),cfg.file,"Game","CastAdjust")
 		iniWrite(rtrim(reelSpeedList,","),cfg.file,"Game","ReelSpeed")
 		iniWrite(rtrim(dragLevelList,","),cfg.file,"Game","DragLevel")
+		iniWrite(rtrim(twitchLevelList,","),cfg.file,"Game","TwitchLevel")
+		iniWrite(rtrim(pauseLevelList,","),cfg.file,"Game","Pause")
 	}
 	
 	exitApp
