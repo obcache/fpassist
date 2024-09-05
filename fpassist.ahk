@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.3.1"
+A_FileVersion := "1.2.3.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -243,26 +243,26 @@ sleep500(loopCount := 1,stopOnReel := false) {
 calibrate(*) {
 	ui.fishStatusText.text := "Calibrating"
 	log("Adjusting Drag")
-	loop 10 {
+	loop 12 {
 		winActivate(ui.game)
 		send("{NumpadSub}")
-		sleep(200)
+		sleep(100)
 	}
 	loop cfg.dragLevel[cfg.profileSelected] {
 		send("{NumpadAdd}")
-		sleep(200)
+		sleep(100)
 	}
 	
 	log("Adjusting Reel Speed")
-	loop 10 {
+	loop 6 {
 		winActivate(ui.game)
 		click("wheelDown")
-		sleep(200)
+		sleep(100)
 	}	 
 	
 	loop cfg.reelSpeed[cfg.profileSelected] {
 		click("wheelUp") 
-		sleep(200)
+		sleep(100)
 	}
 	ui.fishStatusText.text := ""
 }
