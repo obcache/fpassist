@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.3.4"
+A_FileVersion := "1.2.3.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -83,7 +83,7 @@ startGame(*) {
 		winMove(0,0,,,ui.game)
 		winSetTransparent(1,ui.game)
 		
-		loop 60 {
+		loop 40 {
 			sleep(200)
 			ui.loadingProgress.value += 1
 		}
@@ -161,18 +161,20 @@ autoFishStart(*) {
 	
 	ui.fishLogAfkTime.opt("-hidden")
 	;timerFadeIn()
-	if !reeledIn() {
-		; osdNotify("Line still out. Reeling In.")
-		reelIn()
-		sendIfWinActive("{space up}")
-	}
+
 	while ui.autoFish == 1 {
-		(sleep500(4,0)) ? exit : 0
-		cast()
-		if !reeledIn()
+	checkRewards()
+	checkAds()
+	(sleep500(4,0)) ? exit : 0
+	if (ui.autoFish) || !(reeledIn())
+			reelIn()
+		if (ui.autoFish) || !(reeledIn())
+			cast()
+		if (ui.autoFish) || !(reeledIn())
 			retrieve()
 	}
 }
+
 
 reelIn(*) {
 		ui.fishStatusText.text := "Reeling In"
@@ -246,23 +248,23 @@ calibrate(*) {
 	loop 12 {
 		winActivate(ui.game)
 		send("{NumpadSub}")
-		sleep(100)
+		sleep(50)
 	}
 	loop cfg.dragLevel[cfg.profileSelected] {
 		send("{NumpadAdd}")
-		sleep(100)
+		sleep(50)
 	}
 	
 	log("Adjusting Reel Speed")
 	loop 6 {
 		winActivate(ui.game)
 		click("wheelDown")
-		sleep(100)
+		sleep(50)
 	}	 
 	
 	loop cfg.reelSpeed[cfg.profileSelected] {
 		click("wheelUp") 
-		sleep(100)
+		sleep(50)
 	}
 	ui.fishStatusText.text := ""
 }
@@ -314,9 +316,6 @@ landFish(*) {
 
 maxStress := 0
 retrieve(*) {
-	if !(ui.autoFish) || (reeledIn()) {
-		return 1
-	}
 	ui.fishStatusText.text := "Retrieve" 
 	log("Retrieve Begin")
 	while !reeledIn() && ui.autoFish {
@@ -328,7 +327,7 @@ retrieve(*) {
 			case 1,2,3: ;twitch
 				if jigMechanic <= cfg.twitchLevel[cfg.profileSelected] {
 					ui.fishStatusText.text := "Retrieve: Twitch"
-					log("Retrieve Mechanic: Twitch")
+					log("Retrieve: Twitch")
 					loop round(random(1,2)) {
 						send("{RShift down}")
 						sleep(150)
@@ -423,12 +422,14 @@ fishCaught(*) {
 }
 
 checkRewards(*) {
-	rewardScreenPixel := round(pixelGetColor(213,529))
-	log("Reward Screen Pixel: " rewardScreenPixel)
-	if (rewardScreenPixel >= 16250871) {
+	;msgBox(round(pixelGetColor(75,180)))
+	if round(pixelGetColor(75,180)) > 8311586-10000 || round(pixelGetColor(75,180)) < 8311586+10000 {
 		log("Challenge Completion Detected")
 		log("Claiming Reward")
-		mouseClick("left",213,529)
+		MouseMove(210,525)
+		send("{LButton Down}")
+		sleep(350)
+		send("{LButton Up}")
 		sleep(500)
 	}
 }
@@ -485,11 +486,12 @@ createGui(*) {
 	;ui.controlBox := ui.fishGui.addText("x2 y752 w660 h59 background353535")
 	;ui.controlBox2 := ui.fishGui.addText("x3 y753 w658 h57 background888888")
 	;ui.controlBox3 := ui.fishGui.addText("x4 y754 w656 h55 background353535")
-	
+	slider("reelSpeed",,5,755,20,50,"1-4",1,1,"center","Speed","vertical","b")
+	slider("dragLevel",,38,755,20,50,"1-12",1,1,"center","Drag","vertical","b")
 	slider("twitchLevel",,295,760,50,15,"0-3",1,1,"center","Twitch")
 	slider("pauseLevel",,295,783,50,15,"0-3",1,1,"center","Stop && Go")
 	slider("castTime",,227,755,20,50,"2-6",1,1,"center","Cast","vertical","b")
-	slider("sinkTime",,260,755,20,50,"1-6",1,1,"center","Sink","vertical","b")
+	slider("sinkTime",,260,755,20,50,"1-10 ",1,1,"center","Sink","vertical","b")
 	; ui.twitchLevel := ui.fishGui.addSlider("section x20 tickInterval1 y758 w49 h15 range0-3 toolTip center",1)
 	; ui.twitchLevel.opt("vTwitchLevel")
 	; ui.twitchLevel.onEvent("change",sliderChange)
@@ -550,24 +552,24 @@ createGui(*) {
 		ui.profileIcon.focus()
 	}
 	
-	ui.reelSpeed := ui.fishGui.addSlider("ys-3 x+-185 w20 vertical h50 tickInterval1 range1-4 background" ui.bgColor[1] " tooltip c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
-	ui.reelSpeed.onEvent("change",reelSpeedChanged)
-	ui.reelSpeedText := ui.fishGui.addText("ys+39 x+-27 center w30 h13 backgroundTrans c" ui.fontColor[4],"Speed")
-	ui.dragLevel := ui.fishGui.addSlider("ys-3 x+12 w20 vertical background" ui.bgColor[1] " h50 tickInterval1 range2-12 tooltip c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
-	ui.dragLevel.onEvent("change",dragLevelChanged)
-	dragLevelChanged(*) {
-		cfg.dragLevel[cfg.profileSelected] := ui.dragLevel.value
-		ui.statDragLevel.text := ui.dragLevel.value
-		ui.dragLevelText.redraw()
-		ui.profileIcon.focus()
-	}
-	reelSpeedChanged(*) {
-		cfg.reelSpeed[cfg.profileSelected] := ui.reelSpeed.value
-		ui.statReelSpeed.text := ui.reelSpeed.value
-		ui.reelSpeedText.redraw()
-		ui.profileIcon.focus()
-	}
-	ui.dragLevelText := ui.fishGui.addText("ys+39 x+-26 center w30 h13 backgroundTrans c" ui.fontColor[4],"Drag")
+	; ui.reelSpeed := ui.fishGui.addSlider("ys-3 x+-185 w20 vertical h50 tickInterval1 range1-4 background" ui.bgColor[1] " tooltip c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
+	; ui.reelSpeed.onEvent("change",reelSpeedChanged)
+	; ui.reelSpeedText := ui.fishGui.addText("ys+39 x+-27 center w30 h13 backgroundTrans c" ui.fontColor[4],"Speed")
+	; ui.dragLevel := ui.fishGui.addSlider("ys-3 x+12 w20 vertical background" ui.bgColor[1] " h50 tickInterval1 range2-12 tooltip c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
+	; ui.dragLevel.onEvent("change",dragLevelChanged)
+	; dragLevelChanged(*) {
+		; cfg.dragLevel[cfg.profileSelected] := ui.dragLevel.value
+		; ui.statDragLevel.text := ui.dragLevel.value
+		; ui.dragLevelText.redraw()
+		; ui.profileIcon.focus()
+	; }
+	; reelSpeedChanged(*) {
+		; cfg.reelSpeed[cfg.profileSelected] := ui.reelSpeed.value
+		; ui.statReelSpeed.text := ui.reelSpeed.value
+		; ui.reelSpeedText.redraw()
+		; ui.profileIcon.focus()
+	; }
+	; ui.dragLevelText := ui.fishGui.addText("ys+39 x+-26 center w30 h13 backgroundTrans c" ui.fontColor[4],"Drag")
 	ui.profileBg := ui.fishGui.addText("x405 y758 w240 h50 background606060") 
 	ui.profileBg2 := ui.fishGui.addText("x407 y760 w236 h46 background202020") 
 	ui.profileIcon := ui.fishGui.addPicture("section x405 y765 w240 h42 backgroundTrans","./img/rod.png")
