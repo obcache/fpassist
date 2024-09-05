@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.3.0"
+A_FileVersion := "1.2.3.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -290,6 +290,7 @@ cast(*) {
 	(sleep500(8)) ? exit : 0
 	log("Waiting for Lure to Settle")
 	ui.fishStatusText.text := "Waiting for Lure to Settle"
+	(sleep500(6)) ? exit : 0
 }          
 
 landFish(*) {
