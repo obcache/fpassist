@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.3.2"
+A_FileVersion := "1.2.3.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -162,7 +162,7 @@ autoFishStart(*) {
 	ui.fishLogAfkTime.opt("-hidden")
 	;timerFadeIn()
 	if !reeledIn() {
-		osdNotify("Line still out. Reeling In.")
+		; osdNotify("Line still out. Reeling In.")
 		reelIn()
 		sendIfWinActive("{space up}")
 	}
@@ -170,7 +170,7 @@ autoFishStart(*) {
 		(sleep500(4,0)) ? exit : 0
 		cast()
 		if !reeledIn()
-		retrieve()
+			retrieve()
 	}
 }
 
@@ -198,14 +198,14 @@ osdNotify(msg) {
 
 toggleWait(*) {
 		(cfg.waitToggleValue := !cfg.waitToggleValue)
-			? ui.waitToggleButton.value := "/img/toggle_on.png"
-			: ui.waitToggleButton.value := "/img/toggle_off.png"
+			? ui.waitToggleButton.value := "./img/toggle_on.png"
+			: ui.waitToggleButton.value := "./img/toggle_off.png"
 }
 
 toggleTwitch(*) {
 		(cfg.twitchToggleValue := !cfg.twitchToggleValue)
-			? ui.twitchToggleButton.value := "/img/toggle_on.png"
-			: ui.twitchToggleButton.value := "/img/toggle_off.png"
+			? ui.twitchToggleButton.value := "./img/toggle_on.png"
+			: ui.twitchToggleButton.value := "./img/toggle_off.png"
 }
 
 checkFocus(*) {
@@ -484,11 +484,11 @@ createGui(*) {
 	;ui.controlBox3 := ui.fishGui.addText("x4 y754 w656 h55 background353535")
 	ui.twitchToggleButton := ui.fishGui.addPicture("section x20 y758 w49 h25 backgroundTrans",(cfg.twitchToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
 	ui.twitchToggleButton.onEvent("click",toggleTwitch)
-	ui.twitchToggle := ui.fishGui.addText("x+5 ys+1 w130 h30 backgroundTrans c" ui.fontColor[3],"Twitch [F6]")
+	ui.twitchToggle := ui.fishGui.addText("x+5 ys+1 w110 h30 backgroundTrans c" ui.fontColor[3],"Twitch [F6]")
 	ui.twitchToggle.setFont("s12")
 	ui.waitToggleButton := ui.fishGui.addPicture("section x20 y785 w49 h25 backgroundTrans",(cfg.waitToggleValue) ? "./img/toggle_on.png" : "./img/toggle_off.png")
 	ui.waitToggleButton.onEvent("click",toggleWait)
-	ui.waitToggle := ui.fishGui.addText("section x+5 ys+1 w130 h30 backgroundTrans c" ui.fontColor[3],"Stop n Go [F7]")
+	ui.waitToggle := ui.fishGui.addText("section x+5 ys+1 w110 h30 backgroundTrans c" ui.fontColor[3],"Stop n Go [F7]")
 	ui.waitToggle.setFont("s12")
 	ui.castAdjustBg := ui.fishGui.addText("section x3 ys754 w140 h53 background" ui.bgColor[1])
 	ui.castAdjustBg := ui.fishGui.addText("x194 y755 w138 h53 background" ui.bgColor[1])
