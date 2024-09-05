@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.2.8"
+A_FileVersion := "1.2.3.0"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -286,9 +286,10 @@ cast(*) {
 	sendIfWinActive("{space up}",ui.game)
 
 	ui.isCasting := false
+	
+	(sleep500(8)) ? exit : 0
 	log("Waiting for Lure to Settle")
-	(sleep500(10)) ? exit : 0
-	log("Casting Complete")
+	ui.fishStatusText.text := "Waiting for Lure to Settle"
 }          
 
 landFish(*) {
@@ -312,8 +313,8 @@ retrieve(*) {
 	if !(ui.autoFish) || (reeledIn()) {
 		return 1
 	}
-	ui.fishStatusText.text := "Retrieving" 
-	log("Retrieving")
+	ui.fishStatusText.text := "Retrieve" 
+	log("Retrieve Begin")
 	while !reeledIn() && ui.autoFish {
 		jigMechanic := 5	
 		if a_index < 90 && !(isHooked()) {
@@ -322,7 +323,7 @@ retrieve(*) {
 		switch jigMechanic {
 			case 3,2: ;twitch
 				if ui.twitchToggle.value {
-					ui.fishStatusText.text := "Retrieve Mechanic: Twitch"
+					ui.fishStatusText.text := "Retrieve: Twitch"
 					log("Retrieve Mechanic: Twitch")
 					loop round(random(1,2)) {
 						send("{RShift down}")
@@ -333,16 +334,16 @@ retrieve(*) {
 				}
 			case 1,4: ;pause
 				if ui.waitToggle.value {
-				ui.fishStatusText.text := "Retrieve Mechanic: Pause"
-					log("Retrieve Mechanic: Pause")
+				ui.fishStatusText.text := "Retrieve: Pause"
+					log("Retrieve: Pause")
 						sleep(1000)
 						if !ui.autoFish
 							return
 					}
 				sleep(round(random(1,999)))
 			case 5,6,7,8,9,10,11,12: ;reel
-				ui.fishStatusText.text := "Retrieve Mechanic: Reel"
-				log("Retrieve Mechanic: Reel")
+				ui.fishStatusText.text := "Retrieve: Reel"
+				log("Retrieve: Reel")
 				if !ui.reeledIn
 					sendIfWinActive("{space down}",ui.game)
 					sleep500(8,1)
@@ -494,18 +495,18 @@ createGui(*) {
 	ui.castAdjust := ui.fishGui.addSlider("section toolTip background" ui.bgColor[1] " buddy2ui.castAdjustText center x185 y755 w140 h18  range1000-2500",1910)
 	ui.castAdjust.onEvent("change",castAdjustChanged)
 	ui.castAdjustLabel := ui.fishGui.addText("xs-24 y+2 w80 h40 right backgroundTrans","Cast`nAdjust")
-	ui.castAdjustLabel.setFont("s11 c" ui.fontColor[3])
-	ui.castAdjustText := ui.fishGui.addText("x+10 ys+20 left w80 h30 backgroundTrans c" ui.fontColor[5],cfg.castAdjust[cfg.profileSelected])
+	ui.castAdjustLabel.setFont("s11 c" ui.fontColor[4])
+	ui.castAdjustText := ui.fishGui.addText("x+10 ys+20 left w80 h30 backgroundTrans c" ui.fontColor[3],cfg.castAdjust[cfg.profileSelected])
 	ui.castAdjustText.setFont("s20")
 	castAdjustChanged(*) {
 		cfg.castAdjust[cfg.profileSelected] := ui.castAdjust.value
 		ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
 		ui.profileIcon.focus()
 	}
-	ui.reelSpeed := ui.fishGui.addSlider("ys+0 x+10 w20 vertical h48 tickInterval1 range1-4 background" ui.bgColor[1] " tooltip c" ui.fontColor[5],cfg.reelSpeed[cfg.profileSelected])
+	ui.reelSpeed := ui.fishGui.addSlider("ys+0 x+10 w20 vertical h48 tickInterval1 range1-4 background" ui.bgColor[1] " tooltip c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
 	ui.reelSpeed.onEvent("change",reelSpeedChanged)
-	ui.reelSpeedText := ui.fishGui.addText("ys+40 x+-24 center w30 h13 backgroundTrans c" ui.fontColor[5],"Speed")
-	ui.dragLevel := ui.fishGui.addSlider("ys+0 x+15 w20 vertical background" ui.bgColor[1] " h48 tickInterval1 range2-12 tooltip c" ui.fontColor[5],cfg.dragLevel[cfg.profileSelected])
+	ui.reelSpeedText := ui.fishGui.addText("ys+42 x+-25 center w30 h13 backgroundTrans c" ui.fontColor[4],"Speed")
+	ui.dragLevel := ui.fishGui.addSlider("ys+0 x+15 w20 vertical background" ui.bgColor[1] " h48 tickInterval1 range2-12 tooltip c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
 	ui.dragLevel.onEvent("change",dragLevelChanged)
 	dragLevelChanged(*) {
 		cfg.dragLevel[cfg.profileSelected] := ui.dragLevel.value
@@ -519,10 +520,10 @@ createGui(*) {
 		ui.reelSpeedText.redraw()
 		ui.profileIcon.focus()
 	}
-	ui.dragLevelText := ui.fishGui.addText("ys+40 x+-27 center w30 h13 backgroundTrans c" ui.fontColor[5],"Drag")
+	ui.dragLevelText := ui.fishGui.addText("ys+42 x+-25 center w30 h13 backgroundTrans c" ui.fontColor[4],"Drag")
 	ui.profileIcon := ui.fishGui.addPicture("section x415 y762 w240 h42 backgroundTrans","./img/rod.png")
 	cfg.profileSelected := iniRead(cfg.file,"Game","ProfileSelected",1)
-	ui.profileText := ui.fishGui.addText("x478 y778 w240 h25 c" ui.fontColor[5] " backgroundTrans","Profile #" cfg.profileSelected)
+	ui.profileText := ui.fishGui.addText("x478 y778 w240 h25 c" ui.fontColor[3] " backgroundTrans","Profile #" cfg.profileSelected)
 	ui.profileText.setFont("s16","calibri")
 	ui.profileIcon.onEvent("click",changeProfile)
 	ui.profileText.onEvent("click",changeProfile)
