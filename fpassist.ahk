@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.3.8"
+A_FileVersion := "1.2.3.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -131,7 +131,9 @@ autoFishStop(*) {
 	ui.fishLogAfkTime.opt("+hidden")
 	ui.fishLogAfkTimeLabel.opt("+hidden")
 	ui.fishLogAfkTimeLabel2.opt("+hidden")
-	ui.secondsElapsed := 0
+	ui.bigFishCaught.opt("+hidden")
+	ui.bigFishCaughtLabel.opt("+hidden")
+	ui.bigFishCaughtLabel2.opt("+hidden")	ui.secondsElapsed := 0
 	ui.startButtonBg.opt("background353535")
 	ui.startButtonBg.redraw()
 	if !fileExist(a_scriptDir "/logs/current_log.txt")
@@ -156,6 +158,9 @@ autoFishStart(*) {
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
+	ui.bigFishCaught.opt("-hidden")
+	ui.bigFishCaughtLabel.opt("-hidden")
+	ui.bigFishCaughtLabel2.opt("-hidden")
 	ui.startButtonBg.opt("background907010")
 	ui.startButtonBg.redraw()
 	
@@ -180,7 +185,7 @@ reelIn(*) {
 			sleep(150)
 		}
 		
-		while !reeledIn() {
+		while ui.autoFish && !reeledIn() {
 			sendIfWinActive("{space down}",ui.game)
 			sleep(1000)
 		}
@@ -320,22 +325,22 @@ retrieve(*) {
 	while !reeledIn() && ui.autoFish {
 		jigMechanic := 5	
 		if a_index < 90 && !(isHooked()) {
-			jigMechanic := round(random(1,12))
+			jigMechanic := round(random(1,9))
 		}
 		switch jigMechanic {
 			case 1,2,3: ;twitch
-				if jigMechanic <= cfg.twitchLevel[cfg.profileSelected] {
+				if jigMechanic < cfg.twitchLevel[cfg.profileSelected] + 1 {
 					ui.fishStatusText.text := "Retrieve: Twitch"
 					log("Retrieve: Twitch")
 					loop round(random(1,2)) {
-						send("{RShift down}")
+						send("{RButton Down}")
 						sleep(150)
-						send("{RShift up}")
+						send("{RButton Up}")
 						sleep(round(random(200,400)))
 					}
 				}
 			case 4,5,6: ;pause
-				if jigMechanic <= cfg.pauseLevel[cfg.profileSelected]+3 {
+				if jigMechanic < cfg.pauseLevel[cfg.profileSelected] + 4 {
 				ui.fishStatusText.text := "Retrieve: Pause"
 					log("Retrieve: Pause")
 						sleep(1000)
@@ -343,7 +348,7 @@ retrieve(*) {
 							return
 					}
 				sleep(round(random(1,999)))
-			case 7,8,9,10,11,12: ;reel
+			case 7,8,9: ;reel
 				ui.fishStatusText.text := "Retrieve: Reel"
 				log("Retrieve: Reel")
 				if !ui.reeledIn
@@ -355,9 +360,6 @@ retrieve(*) {
 	(sleep500(6)) ? exit : 0
 	
 	if fishCaught() {
-		ui.fishLogCount.text += 1
-		ui.statFishCount.text := ui.fishLogCount.text
-		ui.bigFishCaught.text := ui.fishLogCount.text
 		sendIfWinActive("{space}",ui.game)
 		(sleep500(2)) ? exit : 0
 		sendIfWinActive("{backspace}",ui.game)
@@ -383,11 +385,11 @@ reeledIn(*) {
 	ui.checkReel5 := round(pixelGetColor(1036,644))
 	;msgBox(substr(ui.checkReel1 "`n" ui.checkReel2 "`n" ui.checkReel3 "`n" ui.checkReel4 "`n" ui.checkReel5)
 	;log(substr(ui.checkReel1,1,5) ":" subStr(ui.checkReel2,1,5) ":" subStr(ui.checkReel3,1,5) ":" subStr(ui.checkReel4,1,5) ";" subStr(ui.checkReel5,1,5))
-	if (ui.checkReel1 >= 16250871
-		&& ui.checkReel2 >= 16250871
-		&& ui.checkReel3 >= 16250871
-		&& ui.checkReel4 >= 16250871
-		&& ui.checkReel5 < 6250871) {
+	if (ui.checkReel1 >= 12250871
+		&& ui.checkReel2 >= 12250871
+		&& ui.checkReel3 >= 12250871
+		&& ui.checkReel4 >= 12250871
+		&& ui.checkReel5 < 12250871) {
 			;log("Reeled In")
 			ui.reeledIn := 1
 		} else
@@ -415,6 +417,10 @@ fishCaught(*) {
 		run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" formatTime(,"yyMMddhhmmss") ".png",,"hide")
 		sleep(1000)
 		log("Fish Caught!")
+		if ui.fishLogCount.text < 999
+			ui.fishLogCount.text += 1
+			ui.statFishCount.text := ui.fishLogCount.text
+			ui.bigFishCaught.text := format("{:03i}",ui.fishLogCount.text)
 		return 1
 	} else {
 		return 0
@@ -471,9 +477,10 @@ createGui(*) {
 	ui.fishGui.opt("-caption owner" winGetId(ui.game))
 	ui.fishGui.backColor := ui.bgColor[1]
 	winSetTransColor("010203",ui.fishGui.hwnd)
-	ui.appFrame := ui.fishGui.addText("x0 y0 w1583 h814 c" ui.fontColor[3] " background" ui.bgColor[1])
-	ui.appFrame2 := ui.fishGui.addText("x1 y1 w1581 h812 c" ui.fontColor[1] " background" ui.bgColor[1])
-	ui.fpBg := ui.fishGui.addText("x301 y31 w1279 h719 c010203 background010203")
+	ui.appFrame := ui.fishGui.addText("x0 y0 w1582 h752 c" ui.fontColor[3] " background" ui.bgColor[1])
+	ui.appFrame2 := ui.fishGui.addText("x1 y1 w1580 h750 c" ui.fontColor[1] " background" ui.bgColor[3])
+	ui.appFrame3 := ui.fishGui.addText("x2 y2 w1578 h748 c" ui.fontColor[3] " background" ui.bgColor[1])
+	ui.fpBg := ui.fishGui.addText("x300 y30 w1279 h719 c010203 background010203")
 	ui.titleBar := ui.fishGui.addText("x301 y2 w1252 h27 cC7C7C7 background" ui.bgColor[1])
 	ui.titleBar.onEvent("click",wm_lbuttonDown_callback)
 	ui.titleBarText := ui.fishGui.addText("x305 y6 w1280 h30 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" a_fileVersion ")")
@@ -546,7 +553,7 @@ createGui(*) {
 	ui.castAdjustLabel2.setFont("s11 c" ui.fontColor[4])
 	ui.castAdjustText := ui.fishGui.addText("x+8 ys+16 left w70 h30 backgroundTrans c" ui.fontColor[3],cfg.castAdjust[cfg.profileSelected])
 	ui.castAdjustText.setFont("s22")
-	castAdjustChanged(*) {
+castAdjustChanged(*) {
 		cfg.castAdjust[cfg.profileSelected] := ui.castAdjust.value
 		ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
 		ui.profileIcon.focus()
@@ -659,17 +666,17 @@ createGui(*) {
 	ui.fishLogTimerOutline3 := ui.fishGui.addText("x1049 y712 w264 h36 background" ui.bgColor[2])
 	ui.fishLogTimer := ui.fishGui.addText("x1050 y713 w263 h35 background3F3F3F") ;61823A
 	ui.timerAnim := ui.fishGui.addText("x1047 y710 w268 h40 background010203")
-	ui.fishLogAfkTimeLabel := ui.fishGui.addText("hidden section right x1019 y695 w80 h40 c" ui.fontColor[1] " backgroundTrans","AFK")
+	ui.fishLogAfkTimeLabel := ui.fishGui.addText("hidden section right x751 y695 w80 h40 c" ui.fontColor[1] " backgroundTrans","AFK")
 	ui.fishLogAfkTimeLabel.setFont("s16","Arial")
-	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x1021 y707 w80 h40 c" ui.fontColor[1] " backgroundTrans","Timer")
+	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x751 y707 w80 h40 c" ui.fontColor[1] " backgroundTrans","Timer")
 	ui.fishLogAfkTimeLabel2.setFont("s19","Arial")
-	ui.fishLogAfkTime := ui.fishGui.addText("hidden x1110 y688 w200 h60 c" ui.fontColor[1] " backgroundTrans","00:00:00")
+	ui.fishLogAfkTime := ui.fishGui.addText("hidden x835 y688 w200 h60 c" ui.fontColor[1] " backgroundTrans","00:00:00")
 	ui.fishLogAfkTime.setFont("s35","Arial")
-	ui.bigFishCaught := ui.fishGui.addText("x860 y657 w160 h300 backgroundTrans c" ui.fontColor[1],"0")
+	ui.bigFishCaught := ui.fishGui.addText("hidden x1160 y666 w160 h300 backgroundTrans c" ui.fontColor[1],format("{:03i}","0"))
 	ui.bigFishCaught.setFont("s54")
-	ui.bigFishCaughtLabel := ui.fishGui.addText("x750 y660 w100 h40 backgroundTrans c" ui.fontColor[1],"Fish")
-	ui.bigFishCaughtLabel.setFont("s28")
-	ui.bigFishCaughtLabel2 := ui.fishGui.addtext("x750 y688 w100 h40 backgroundTrans c" ui.fontColor[1],"Count")
+	ui.bigFishCaughtLabel := ui.fishGui.addText("hidden right x1053 y677 w100 h40 backgroundTrans c" ui.fontColor[1],"Fish")
+	ui.bigFishCaughtLabel.setFont("s24")
+	ui.bigFishCaughtLabel2 := ui.fishGui.addtext("hidden right x1055 y696 w100 h40 backgroundTrans c" ui.fontColor[1],"Count")
 	ui.bigFishCaughtLabel2.setFont("s28")
 	; ui.fishLogAfkTimeText1 := ui.fishGui.addText("section right x1048 y714 w80 h40 c" ui.fontColor[2] " backgroundTrans","AFK")
 	; ui.fishLogAfkTimeText1.setFont("s16 Bold","Cambria")
