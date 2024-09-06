@@ -118,8 +118,8 @@ install() {
 				DirCreate(InstallDir "\logs")
 			}
 			FileInstall("./Img/fp_splash.png",InstallDir "/img/fp_splash.png",1)
-			FileInstall("./Img/toggle_on.png",InstallDir "/img/toggle_on.png",1) 
-			FileInstall("./Img/toggle_off.png",InstallDir "/Img/toggle_off.png",true)
+			FileInstall("./Img/button_fs.png",InstallDir "/img/button_fs.png",1) 
+			FileInstall("./Img/button_close.png",InstallDir "/Img/button_close.png",true)
 			FileInstall("./Img/rod.png",InstallDir "/Img/rod.png",true)
 			fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
