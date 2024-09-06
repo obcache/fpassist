@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.3.5"
+A_FileVersion := "1.2.3.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -163,18 +163,14 @@ autoFishStart(*) {
 	;timerFadeIn()
 
 	while ui.autoFish == 1 {
-	checkRewards()
-	checkAds()
-	(sleep500(4,0)) ? exit : 0
-	if (ui.autoFish) || !(reeledIn())
+		checkRewards()
+		(sleep500(4,0)) ? exit : 0
+		if ui.autoFish && !reeledIn()
 			reelIn()
-		if (ui.autoFish) || !(reeledIn())
+		if ui.autoFish && reeledIn()
 			cast()
-		if (ui.autoFish) || !(reeledIn())
-			retrieve()
 	}
 }
-
 
 reelIn(*) {
 		ui.fishStatusText.text := "Reeling In"
@@ -296,6 +292,9 @@ cast(*) {
 	loop cfg.sinkTime[cfg.profileSelected] {
 		(sleep500(2)) ? exit : 0
 	}
+	
+	if ui.autoFish && reeledIn()
+		retrieve()
 }          
 
 landFish(*) {
@@ -336,7 +335,7 @@ retrieve(*) {
 					}
 				}
 			case 4,5,6: ;pause
-				if jigMechanic <= cfg.pauseLevel[cfg.profileSelected] {
+				if jigMechanic <= cfg.pauseLevel[cfg.profileSelected]+3 {
 				ui.fishStatusText.text := "Retrieve: Pause"
 					log("Retrieve: Pause")
 						sleep(1000)
@@ -358,6 +357,7 @@ retrieve(*) {
 	if fishCaught() {
 		ui.fishLogCount.text += 1
 		ui.statFishCount.text := ui.fishLogCount.text
+		ui.bigFishCaught.text := ui.fishLogCount.text
 		sendIfWinActive("{space}",ui.game)
 		(sleep500(2)) ? exit : 0
 		sendIfWinActive("{backspace}",ui.game)
@@ -423,7 +423,7 @@ fishCaught(*) {
 
 checkRewards(*) {
 	;msgBox(round(pixelGetColor(75,180)))
-	if round(pixelGetColor(75,180)) > 8311586-10000 || round(pixelGetColor(75,180)) < 8311586+10000 {
+	if round(pixelGetColor(75,180)) == 8311586 {
 		log("Challenge Completion Detected")
 		log("Claiming Reward")
 		MouseMove(210,525)
@@ -665,6 +665,12 @@ createGui(*) {
 	ui.fishLogAfkTimeLabel2.setFont("s19","Arial")
 	ui.fishLogAfkTime := ui.fishGui.addText("hidden x1110 y688 w200 h60 c" ui.fontColor[1] " backgroundTrans","00:00:00")
 	ui.fishLogAfkTime.setFont("s35","Arial")
+	ui.bigFishCaught := ui.fishGui.addText("x860 y657 w160 h300 backgroundTrans c" ui.fontColor[1],"0")
+	ui.bigFishCaught.setFont("s54")
+	ui.bigFishCaughtLabel := ui.fishGui.addText("x750 y660 w100 h40 backgroundTrans c" ui.fontColor[1],"Fish")
+	ui.bigFishCaughtLabel.setFont("s28")
+	ui.bigFishCaughtLabel2 := ui.fishGui.addtext("x750 y688 w100 h40 backgroundTrans c" ui.fontColor[1],"Count")
+	ui.bigFishCaughtLabel2.setFont("s28")
 	; ui.fishLogAfkTimeText1 := ui.fishGui.addText("section right x1048 y714 w80 h40 c" ui.fontColor[2] " backgroundTrans","AFK")
 	; ui.fishLogAfkTimeText1.setFont("s16 Bold","Cambria")
 	; ui.fishLogAfkTimeText2 := ui.fishGui.addText("section right x1052 y723 w80 h40 c" ui.fontColor[2] " backgroundTrans","Timer")
