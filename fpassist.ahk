@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.4.0"
+A_FileVersion := "1.2.4.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -433,6 +433,15 @@ checkRewards(*) {
 		log("Challenge Completion Detected")
 		log("Claiming Reward")
 		MouseMove(210,525)
+		send("{LButton Down}")
+		sleep(350)
+		send("{LButton Up}")
+		sleep(500)
+	}
+	if round(pixelGetColor(75,50)) == 8311586 {
+		log("Challenge Completion Detected")
+		log("Claiming Reward")
+		MouseMove(215,630)
 		send("{LButton Down}")
 		sleep(350)
 		send("{LButton Up}")
