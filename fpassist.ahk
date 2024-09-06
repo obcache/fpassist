@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.3.7"
+A_FileVersion := "1.2.3.8"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -293,7 +293,7 @@ cast(*) {
 		(sleep500(2)) ? exit : 0
 	}
 	
-	if ui.autoFish && reeledIn()
+	if ui.autoFish && !reeledIn()
 		retrieve()
 }          
 
