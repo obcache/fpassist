@@ -10,8 +10,44 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 }
 
 goFS(*) {
-	msgBox('here')
-	createGuiFS()
+	fishGuiFSx := a_screenWidth-900
+	fishGuiFSy := a_screenHeight-30-200
+	ui.fishGuiBg := gui()
+	ui.fishGuiBg.opt("-caption -border toolwindow alwaysOnTop")
+	ui.fishGuiBg.backColor := 656565
+	ui.fishGuiBg.addText("x0 y0 w500 h500 background656565")
+	winSetTransparent(150,ui.fishGuiBg)
+	ui.fishGuiBg.show("x" fishGuiFSx " y" fishGuiFSy " w500 h200 noactivate")
+	
+	ui.fullscreen := true
+	ui.fishGui.hide()
+	ui.fishGuiFS := gui()
+
+
+	ui.fishGuiFS.opt("-caption -border +toolWindow alwaysOnTop")
+	ui.fishGuiFS.backColor := "010203"
+	winSetTransColor("010203",ui.fishGuiFS.hwnd)
+	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
+	ui.noFSbutton.onEvent("click",noFS)
+	ui.FishCaughtFS := ui.fishGuiFS.addText("x" fishGuiFSx+100 " y" fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.fontColor[1],format("{:03i}","0"))
+	ui.FishCaughtFS.setFont("s94")
+	ui.FishCaughtLabelFS := ui.fishGuiFS.addText("right x" fishGuiFSx+24 " y" fishGuiFSy+20+5 " w200 h80 backgroundTrans c" ui.fontColor[1],"Fish")
+	ui.FishCaughtLabelFS.setFont("s56","Calibri")
+	ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("right x" fishGuiFSx+20 " y" fishGuiFSy+20+9 " w200 h90 backgroundTrans c" ui.fontColor[1],"Count")
+	ui.FishCaughtLabel2FS.setFont("s60","Calibri")
+	ui.fishLogFS := ui.fishGuiFS.addText("x5 y150 w150 h1200 backgroundTrans c" ui.fontColor[1],"")
+	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
+	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)
+	
+
+}
+
+noFS(*) {
+	winGetPos(&x,&y,&w,&h,ui.fishGui)
+	winMove(x+300,y+30,1280,720,ui.game)
+	ui.fishGui.show()
+
+	ui.fishGuiFS.hide()
 }
 drawButton(x,y,w,h) {
 		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
@@ -258,10 +294,11 @@ WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
 		return 0
 	}
 	moveFP(*) {
-		
+		if !ui.fullScreen {
 			winGetPos(&x,&y,&w,&h,ui.fishGui)
 			winMove(x+300,y+30,,,ui.game)
 			return 1
+		}
 	}
 }
 

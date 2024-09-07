@@ -118,6 +118,7 @@ install() {
 				DirCreate(InstallDir "\logs")
 			}
 			FileInstall("./Img/fp_splash.png",InstallDir "/img/fp_splash.png",1)
+			FileInstall("./Img/button_nofs.png",InstallDir "/img/button_nofs.png",1) 
 			FileInstall("./Img/button_fs.png",InstallDir "/img/button_fs.png",1) 
 			FileInstall("./Img/button_close.png",InstallDir "/Img/button_close.png",true)
 			FileInstall("./Img/rod.png",InstallDir "/Img/rod.png",true)
@@ -203,6 +204,13 @@ log(msg) {
 		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
 		ui.fishLogText.delete()
 		ui.fishLogText.add(ui.fishLogArr)
+	}
+	try {
+		ui.fishLogStr := ""
+		loop ui.fishLogArr.length {
+			ui.fishLogStr .= ui.fishLogArr[a_index] "`n"
+			ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
+		}
 	}
 }
 

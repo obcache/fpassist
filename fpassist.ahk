@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.4.1"
+A_FileVersion := "1.2.4.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -51,6 +51,7 @@ initGui(*) {
 	ui.sessionStartTime := A_Now
 	ui.autoFish := false
 	ui.fishLogArr := array()
+	ui.fullscreen := false
 	ui.fishCount := 0
 	ui.reeledIn := false
 	ui.isCasting := false
@@ -222,19 +223,19 @@ checkFocus(*) {
 }
 
 sleep500(loopCount := 1,stopOnReel := false) {
-	errorLevel := 1
+	errorLevel := 0
 	loop loopCount {
 		if ui.autoFish {
 			if stopOnReel {
 				if !reeledIn() {
 					sleep(500)
-					errorLevel := 0
-				} else {
 					errorLevel := 1
+				} else {
+					errorLevel := 0
 				}
 			} else {
 				sleep(500)
-				errorLevel := 0
+				errorLevel := 1
 			} 
 		} else {
 			errorLevel := 0
@@ -281,7 +282,7 @@ cast(*) {
 	ui.isCasting := true
 	ui.fishStatusText.text := "Cleaning Up Screen"
 	send("{backspace}")
-	(sleep500(3)) ? exit : 0 
+	errorLevel := (!sleep500(3)) ? 1 : exit,0 
 	log("Casting")
 	ui.fishStatusText.text := "Cast"
 	sendIfWinActive("{space down}",ui.game)
@@ -319,17 +320,28 @@ landFish(*) {
 }
 
 maxStress := 0
+mechanic := object()
+mechanic.last := ""
+mechanic.repeats := 0
 retrieve(*) {
 	ui.fishStatusText.text := "Retrieve" 
 	log("Retrieve Begin")
 	while !reeledIn() && ui.autoFish {
 		jigMechanic := 5	
 		if a_index < 90 && !(isHooked()) {
-			jigMechanic := round(random(1,9))
+			jigMechanic := round(random(1,12))
 		}
 		switch jigMechanic {
 			case 1,2,3: ;twitch
-				if jigMechanic < cfg.twitchLevel[cfg.profileSelected] + 1 {
+				if (jigMechanic < cfg.twitchLevel[cfg.profileSelected] + 1) 
+				&& (mechanic.last == "twitch" && mechanic.repeats < 3) 
+				|| (mechanic.last != "twitch") {
+					if mechanic.last == "twitch"  { 
+						mechanic.repeats += 1
+					} else {
+						mechanic.last := "twitch"
+						mechanic.repeats := 1
+					}		
 					ui.fishStatusText.text := "Retrieve: Twitch"
 					log("Retrieve: Twitch")
 					loop round(random(1,2)) {
@@ -337,33 +349,57 @@ retrieve(*) {
 						sleep(150)
 						send("{RButton Up}")
 						sleep(round(random(200,400)))
-					}
-				}
-			case 4,5,6: ;pause
-				if jigMechanic < cfg.pauseLevel[cfg.profileSelected] + 4 {
-				ui.fishStatusText.text := "Retrieve: Pause"
-					log("Retrieve: Pause")
-						sleep(1000)
 						if !ui.autoFish
 							return
 					}
+				}
+			case 4,5,6: ;pause
+				if (jigMechanic < cfg.pauseLevel[cfg.profileSelected] + 4) 
+				&& (mechanic.last == "pause" && mechanic.repeats < 3) 
+				|| (mechanic.last != "pause") {
+					if mechanic.last == "pause"  { 
+						mechanic.repeats += 1
+					} else {
+						mechanic.last := "pause"
+						mechanic.repeats := 1
+					}		
+					ui.fishStatusText.text := "Retrieve: Pause"
+					log("Retrieve: Pause")
+					sleep(1000)
+					if !ui.autoFish
+						return
+				}
 				sleep(round(random(1,999)))
-			case 7,8,9: ;reel
-				ui.fishStatusText.text := "Retrieve: Reel"
-				log("Retrieve: Reel")
-				if !ui.reeledIn
-					sendIfWinActive("{space down}",ui.game)
+				
+			case 7,8,9,10,11,12: ;reel
+				if (mechanic.last == "reel" && mechanic.repeats < 3) 
+				|| (mechanic.last != "reel") {
+					if !ui.reeledIn
+						sendIfWinActive("{space down}",ui.game)		
+					
+					if mechanic.last == "reel"  { 
+						mechanic.repeats += 1
+					} else {
+						mechanic.last := "reel"
+						mechanic.repeats := 1
+					}		
+					ui.fishStatusText.text := "Retrieve: Reel"
+					log("Retrieve: Reel")
+
 					sleep500(8,1)
 					sendIfWinActive("{space up}",ui.game)
-			}
+					if !ui.autoFish
+						return
+				}
+				
+		}
 	}
 	(sleep500(6)) ? exit : 0
-	
 	if fishCaught() {
 		sendIfWinActive("{space}",ui.game)
 		(sleep500(2)) ? exit : 0
 		sendIfWinActive("{backspace}",ui.game)
-		(sleep500(3)) ? exit : 0
+		(sleep500(2)) ? exit : 0
 	} else {	
 		log("No Fish Detected.")
 	}
@@ -410,7 +446,10 @@ isHooked(*) {
 
 fishCaught(*) {
 	fishCaughtPixel := round(pixelGetColor(450,575))
-	log("Analyzing Catch: " fishCaughtPixel)
+	if cfg.debug
+		log("Analyzing Catch: " fishCaughtPixel)
+	else
+		log("Analyzing Catch")
 	if (fishCaughtPixel >= 16000000) {
 		if !(DirExist("./fishPics"))
 			DirCreate("./fishPics")
@@ -494,8 +533,8 @@ createGui(*) {
 	ui.titleBar.onEvent("click",wm_lbuttonDown_callback)
 	ui.titleBarText := ui.fishGui.addText("x305 y6 w900 h30 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" a_fileVersion ")")
 	ui.titleBarText.setFont("s13","Arial Bold")
-	;ui.titleBarFullscreenButton := ui.fishGui.addPicture("x1524 y2 w26 h27 center backgroundTrans","./img/button_fs.png")
-	;ui.titleBarFullscreenButton.onEvent("click",goFS)
+	ui.titleBarFullscreenButton := ui.fishGui.addPicture("x1524 y2 w26 h27 center backgroundTrans","./img/button_fs.png")
+	ui.titleBarFullscreenButton.onEvent("click",goFS)
 	ui.titleBarExitButton := ui.fishGui.addPicture("x1554 y2 w26 h27 center backgroundTrans","./img/button_close.png")
 	ui.titleBarExitButton.onEvent("click",cleanExit)
 	ui.fishStatus := ui.fishGui.addText("x2 y752 w1580 h61 cBBBBBB background" ui.bgColor[1])
