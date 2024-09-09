@@ -52,7 +52,7 @@ noFS(*) {
 drawButton(x,y,w,h) {
 		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
 		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background" ui.bgColor[1])
-		ui.fishGui.addText("x" x+2 " y" y+2 " w" w-4 " h" h-4 " background" ui.bgColor[1])
+		;ui.fishGui.addText("x" x+2 " y" y+2 " w" w-4 " h" h-4 " background" ui.bgColor[1])
 }
 
 statPanel(*) {
@@ -200,15 +200,15 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 		ui.notifyGui.Title 		:= "Loading.  Please Wait...."
 
 		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
-		ui.notifyGui.BackColor := ui.bgColor[2] ; Can be any RGB color (it will be made transparent below).
+		ui.notifyGui.BackColor := ui.bgColor[3] ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
 		;if a_isCompiled 
-		ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/fp_splash.png")
+		ui.notifyGui.addPicture("x0 y0 w1586 h780","./img/fp_splash.png")
 		; else
 			; ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/fp_splash.png")
 		;ui.notifyGui.AddText("x" (1580/2)-100 " y" (810/2) " c252525 center BackgroundTrans","Please Wait")  ; XX & YY serve to 00auto-size the window.
 		;ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
-		ui.loadingProgress := ui.notifyGui.addProgress("smooth x0 y750 w1580 h60 c202020 background404040")
+		ui.loadingProgress := ui.notifyGui.addProgress("smooth x3 y755 w1578 h60 c202020 background404040")
 		ui.loadingProgress.value := 0
 		if winExist(ui.game) {
 			setTimer(startupProgress,32)
@@ -219,7 +219,7 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 		;setTimer(loadingProgressStep,100)
 		ui.notifyGui.AddText("xs hidden")
 
-		ui.notifyGui.show("x0 y0 w1580 h810 noActivate")
+		ui.notifyGui.show("x0 y0 w1584 h816 noActivate")
 		winGetPos(&x,&y,&w,&h,ui.notifyGui.hwnd)
 		drawOutline(ui.notifyGui,1,1,w-2,h-2,"454545","757575",1)
 		drawOutline(ui.notifyGui,2,2,w-4,h-4,"858585","454545",1)
@@ -296,7 +296,7 @@ WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
 	moveFP(*) {
 		if !ui.fullScreen {
 			winGetPos(&x,&y,&w,&h,ui.fishGui)
-			winMove(x+300,y+30,,,ui.game)
+			winMove(x+301,y+31,,,ui.game)
 			return 1
 		}
 	}

@@ -195,19 +195,14 @@ exitFunc(*) {
 }
 ui.lastMsg := ""
 log(msg) {
-	while ui.fishLogArr.length < 34 {
-		ui.fishLogArr.push("")
-		ui.fishLogText.delete()
-		ui.fishLogText.add(ui.fishLogArr)
-		ui.fishLogText.add([""])
-	}
 	if ui.lastMsg {
 		ui.fishStatusText.text := msg
 		;if ui.fishLogArr.length > 33 {
-			ui.fishLogArr.removeAt(1)
+			
 			ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
 			ui.fishLogText.delete()
 			ui.fishLogText.add(ui.fishLogArr)
+			ui.fishLogArr.removeAt(1)
 		;} else {
 		;	ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
 		;	ui.fishLogText.delete()
