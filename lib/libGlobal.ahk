@@ -193,17 +193,25 @@ cleanExit(*) {
 exitFunc(*) {
 	exitApp
 }
-
+ui.lastMsg := ""
 log(msg) {
-	if ui.fishLogArr.length > 33 {
-		ui.fishLogArr.removeAt(1)
-		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
+	while ui.fishLogArr.length < 34 {
+		ui.fishLogArr.push("")
 		ui.fishLogText.delete()
 		ui.fishLogText.add(ui.fishLogArr)
-	} else {
-		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") msg)
-		ui.fishLogText.delete()
-		ui.fishLogText.add(ui.fishLogArr)
+		ui.fishLogText.add([""])
+	}
+	if ui.lastMsg {
+		ui.fishStatusText.text := msg
+		;if ui.fishLogArr.length > 33 {
+			ui.fishLogArr.removeAt(1)
+			ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+			ui.fishLogText.delete()
+			ui.fishLogText.add(ui.fishLogArr)
+		;} else {
+		;	ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+		;	ui.fishLogText.delete()
+		;	ui.fishLogText.add(ui.fishLogArr)
 	}
 	try {
 		ui.fishLogStr := ""
@@ -212,6 +220,7 @@ log(msg) {
 			ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
 		}
 	}
+	ui.lastMsg := msg
 }
 
 killMe(*) {
@@ -247,7 +256,7 @@ createPbConsole(title) {
 	ui.pbConsoleData.setFont("s16")
 	drawOutlineNamed("pbConsoleOutside",ui.pbConsole,2,2,698,398,"355535","355535",2)
 	drawOutlineNamed("pbConsoleOutside2",ui.pbConsole,3,3,696,396,"457745","457745",1)
-	drawOutlineNamed("pbConsoleOutside3",ui.pbConsole,4,4,694,394,"353535","353535",2)
+	drawOutlineNamed("pbConsoleOutside3",ui.pbConsole,4,4,694,394,"" ui.bgColor[2],"" ui.bgColor[2],2)
 	ui.pbConsole.show("w700 h400 noActivate")
 	ui.pbConsoleBg.opt("-caption owner" ui.pbConsole.hwnd)
 }

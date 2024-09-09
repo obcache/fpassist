@@ -51,7 +51,7 @@ noFS(*) {
 }
 drawButton(x,y,w,h) {
 		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
-		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background111111")
+		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background" ui.bgColor[1])
 		ui.fishGui.addText("x" x+2 " y" y+2 " w" w-4 " h" h-4 " background" ui.bgColor[1])
 }
 
@@ -200,7 +200,7 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 		ui.notifyGui.Title 		:= "Loading.  Please Wait...."
 
 		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
-		ui.notifyGui.BackColor := "353535" ; Can be any RGB color (it will be made transparent below).
+		ui.notifyGui.BackColor := ui.bgColor[2] ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
 		;if a_isCompiled 
 		ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/fp_splash.png")
