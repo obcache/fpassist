@@ -191,12 +191,18 @@ cleanExit(*) {
 }
 
 exitFunc(*) {
+	ui.profileNameStr := ""
+	loop cfg.profileName.length {
+		ui.profileNameStr .= cfg.profileName[a_index] ","
+	}
+	iniwrite(rtrim(ui.profileNameStr,","),cfg.file,"Game","ProfileNames")
 	exitApp
 }
+
 ui.lastMsg := ""
 log(msg) {
 	if ui.lastMsg {
-		ui.fishStatusText.text := msg
+		ui.fishStatusText.text := (msg=="___________________________________________________________________") ? "Ready" : msg
 		;if ui.fishLogArr.length > 33 {
 			
 			ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)

@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.4.6"
+A_FileVersion := "1.2.4.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -20,6 +20,7 @@ ui.game := "ahk_exe " ui.gameExe
 cfg.twitchToggleValue := iniRead(cfg.file,"Game","TwitchToggle",true)
 cfg.waitToggleValue := iniRead(cfg.file,"Game","WaitToggle",true)
 cfg.profileSelected := iniRead(cfg.file,"Game","ProfileSelected",1)
+cfg.profileName := strSplit(iniRead(cfg.file,"Game","ProfileNames","Profile #1,Profile #2,Profile #3,Profile #4,Profile #5"),",")
 cfg.dragLevel 	:= strSplit(iniRead(cfg.file,"Game","DragLevel","5,6,7"),",")
 cfg.reelSpeed 	:= strSplit(iniRead(cfg.file,"Game","ReelSpeed","1,2,2"),",")
 cfg.castAdjust 	:= strSplit(iniRead(cfg.file,"Game","CastAdjust","1950,1975,2000"),",")
@@ -51,6 +52,7 @@ startGame()
 initGui()
 createGui()
 onExit(exitFunc)
+detectPrompts()
 ;checkAds()
 ;checkRewards()
 
@@ -69,6 +71,9 @@ initGui(*) {
 	ui.reelKey := "F7"
 	ui.exitKey := "F9"
 	ui.retrieveKey := "F8"
+	ui.startKeyGlobal := "!LButton"
+	ui.stopKeyGlobal := "!RButton"
+	ui.retrieveKeyGlobal := "!NumpadEnter"
 	ui.reelKeyGlobal := "!NumpadAdd"
 	ui.castKeyGlobal := "!Numpad0"
 	ui.retrieveKeyGlobal := "!NumpadEnter"
@@ -77,7 +82,9 @@ initGui(*) {
 	hotKey(ui.retrieveKeyGlobal,singleRetrieve)
 	hotIfWinActive(ui.game)
 		hotKey(ui.startKey,autoFishStart)
+		hotKey(ui.startKeyGlobal,autoFishStart)
 		hotKey(ui.stopKey,autoFishStop)
+		hotKey(ui.stopKeyGlobal,autoFishStop)
 		hotKey(ui.reloadKey,appReload)
 		hotKey(ui.castKey,singleCast)
 		hotKey(ui.reelKey,singleReel)
@@ -177,14 +184,14 @@ autoFishStart(*) {
 	;timerFadeIn()
 
 	while ui.autoFish == 1 {
-		checkAds()
-		checkRewards()
+		detectPrompts()
 		(sleep500(2,0)) ? exit : 0
 		if ui.autoFish && !reeledIn()
 			reelIn()
 		if ui.autoFish && reeledIn()
 			cast()
-		log("__________________________________________________")
+		analyzeCatch()
+		log("___________________________________________________________________")
 	}
 	log("AFK: Stopping")
 }
@@ -280,7 +287,7 @@ calibrate(*) {
 		click("wheelUp") 
 		sleep(50)
 	}
-log("__________________________________________________")
+log("___________________________________________________________________")
 
 }
 	
@@ -314,7 +321,7 @@ cast(isAFK:=true) {
 		send("{z}")
 		sleep(150)
 	
-	log("__________________________________________________")
+	log("___________________________________________________________________")
 
 
 	if isAFK && ui.autoFish && !reeledIn()
@@ -410,8 +417,11 @@ retrieve(isAFK:=true) {
 				
 		}
 	}
-	log("__________________________________________________")
-	if ui.reeledIn {
+	log("___________________________________________________________________")
+}
+
+analyzeCatch(*) {
+		if ui.reeledIn {
 		(sleep500(6)) ? 0 : exit
 		if fishCaught() {
 			sendIfWinActive("{space}",ui.game)
@@ -420,8 +430,7 @@ retrieve(isAFK:=true) {
 			(sleep500(2)) ? exit : 0
 		} else {	
 			log("No Fish Detected.")
-			log("__________________________________________________")
-
+			log("___________________________________________________________________")
 		}
 	}
 }
@@ -477,7 +486,7 @@ fishCaught(*) {
 		run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" formatTime(,"yyMMddhhmmss") ".png",,"hide")
 		sleep(1000)
 		log("Fish Caught!")
-		log("__________________________________________________")
+		log("___________________________________________________________________")
 
 		if ui.fishLogCount.text < 999
 			ui.fishLogCount.text += 1
@@ -493,42 +502,54 @@ fishCaught(*) {
 	}
 }
 
-checkRewards(*) {
-		log("Reward Screen: Checking")
-	;msgBox(round(pixelGetColor(75,180)))
-	if round(pixelGetColor(75,180)) == 8311586 {
-		log("Reward Screen: Detected")
-		log("Reward Screen: Claimed")
-		log("__________________________________________________")
-		MouseMove(210,525)
-		send("{LButton Down}")
-		sleep(350)
-		send("{LButton Up}")
-		sleep(500)
-	}
-	if round(pixelGetColor(75,50)) == 8311586 {
-		log("Reward Screen: Detected")
-		log("Reward Screen: Claimed")
-		log("__________________________________________________")
-		MouseMove(215,630)
-		send("{LButton Down}")
-		sleep(350)
-		send("{LButton Up}")
-		sleep(500)
-	}
-}
+detectPrompts(*) {
+	log("Prompts: Detecting Popups")
+	ui.popUpFound := false
+	while ui.popupFound == false && a_index < 10 {
+		if round(pixelGetColor(75,180)) == 8311586 {
+			log("Rewards: Reward Detected")
+			ui.popupFound := true
+			MouseMove(210,525)
+			send("{LButton Down}")
+			sleep(350)
+			send("{LButton Up}")
+			sleep(500)
+			log("Rewards: Reward Claimed")
+		}
 
-checkAds(*) {
-		log("Ad Screen: Checking")
-		AdScreenPixel := round(pixelGetColor(1379,78))
+		if round(pixelGetColor(75,50)) == 8311586 {
+			log("Rewards: Reward Detected")
+			ui.popupFound := true 
+			MouseMove(215,630)
+			send("{LButton Down}")
+			sleep(350)
+			send("{LButton Up}")
+			sleep(500)
+			log("Rewards: Reward Claimed")
+		}
+		
+		if round(pixelGetColor(365,80)) == 8311586 {
+			log("Trip: Trip Ended")
+			ui.popupFound := true
+			mouseMove(530,610)
+			send("{LButton Down}")
+			sleep(350)
+			send("{LButton Up}")
+			sleep(1000)
+			log("Trip: Adding Day Trip")
+			MouseMove(530,450)
+			send("{LButton Down}")
+			sleep(350)
+			send("{LButton Up}")
+			sleep(500)	
+		}
 		
 		if cfg.debug
 			log("Ad Screen Pixel: " AdScreenPixel)
-		
+		AdScreenPixel := round(pixelGetColor(1379,78))
 		if (AdScreenPixel >= 16000000) {
-			log("Ad Screen: Detected")
-			log("Ad Screen: Closed")
-			log("__________________________________________________")
+			log("Ads: Ad Detected")
+			ui.popupFound := true
 			mouseGetPos(&x,&y)
 			mouseMove(1379,78)
 			send("{LButton down}")
@@ -536,8 +557,13 @@ checkAds(*) {
 			send("{LButton up}")
 			sleep(500)
 			mouseMove(x,y)
-		}
+			log("Ads: Ad Closed")
+		} 
+	}
+	log("Prompts: All Clear")
+	log("___________________________________________________________________")
 }
+
 
 appReload(*) {
 	reload()
@@ -565,14 +591,14 @@ timerFadeOut(*) {
 	}
 }
 hotIfWinActive(ui.game)
-	!LButton:: {
+	!WheelUp:: {
 		send("{LShift down}")
 		sleep(200)
 		send("{1}")
 		sleep(200)
 		send("{LShift up}")
 	}
-	!RButton:: {
+	!WheelDown:: {
 		send("{LShift down}")
 		sleep(200)
 		send("{2}")
@@ -628,14 +654,23 @@ createGui() {
 	ui.castAdjustLabel2.setFont("s9 c" ui.fontColor[4])
 	ui.castAdjustText := ui.fishGui.addText("x+3 ys+15 left w70 h30 backgroundTrans c" ui.fontColor[3],cfg.castAdjust[cfg.profileSelected])
 	ui.castAdjustText.setFont("s21")
-	ui.profileBg := ui.fishGui.addText("x405 y758 w240 h50 background606060") 
-	ui.profileBg2 := ui.fishGui.addText("x407 y760 w236 h46 background202020") 
+	ui.profileBg := ui.fishGui.addText("x405 y758 w240 h50 background" ui.bgColor[5]) 
+	ui.profileBg2 := ui.fishGui.addText("x406 y759 w238 h48 background" ui.bgColor[1]) 
+	
+	ui.profileText := ui.fishGui.addText("x408 y781 w160 h26 c" ui.fontColor[3] " center background" ui.bgColor[1],cfg.profileName[cfg.profileSelected])
+	ui.profileEdit := ui.fishGui.addEdit("hidden x408 y781 w125 h25 wantReturn c" ui.fontColor[3] " background" ui.bgColor[1],cfg.profileName[cfg.profileSelected])
+	ui.profileEdit.setFont("s14")
+	ui.profileSaveButtonOutline := ui.fishGui.addText("hidden x530 y781 w27 h25 background" ui.fontColor[1])
+	ui.profileSaveButton := ui.fishGui.addPicture("hidden x532 y783 w23 h21 background" ui.bgColor[1],"./img/button_save.png")
+	ui.profileSaveButton.onEvent("click",saveProfileName)
 	ui.profileIcon := ui.fishGui.addPicture("section x405 y765 w240 h42 backgroundTrans","./img/rod.png")
-	cfg.profileSelected := iniRead(cfg.file,"Game","ProfileSelected",1)
-	ui.profileText := ui.fishGui.addText("x470 y781 w240 h25 c" ui.fontColor[3] " backgroundTrans","Profile #" cfg.profileSelected)
 	ui.profileText.setFont("s16","calibri")
 	ui.profileIcon.onEvent("click",changeProfile)
-	ui.profileText.onEvent("click",changeProfile)
+	;ui.profileText.onEvent("click",changeProfile)
+	ui.profileText.onEvent("doubleClick",editProfileName)
+	ui.profileEdit.onEvent("change",profileNameChange)
+	
+	ui.fishGui.onEvent("escape",cancelEditProfileName)
 	drawButton(1101,753,121,60)
 	ui.startButtonBg := ui.fishGui.addText("x1103 y755 w116 h56 background" ui.bgColor[1])
 	ui.startButton := ui.fishGui.addText("section x1101 center y770 w118 h60 cC9C9C9 backgroundTrans","Start")
@@ -708,7 +743,7 @@ ui.fishLogCountLabel.setFont("s10","Helvetica")
 	ui.fishLogFooterOutline2 := ui.fishGui.addText("x2 y722 w296 h28 background" ui.bgColor[1])
 	ui.fishLogFooterOutline3 := ui.fishGui.addText("x3 y723 w294 h26 background" ui.bgColor[2])
 	ui.fishLogFooter := ui.fishGui.addText("x3 y724 w294 h25 background" ui.bgColor[5]) ;61823A
-	ui.fishStatusText := ui.fishGui.addText("section x5 y723 w280 h25 center c" ui.fontColor[5] " backgroundTrans","Ready")
+	ui.fishStatusText := ui.fishGui.addText("section x5 y723 w290 h25 center c" ui.fontColor[5] " backgroundTrans","Ready")
 	ui.fishStatusText.setFont("s16 bold","Miriam Fixed")
 	ui.fishLogTimerOutline := ui.fishGui.addText("x1047 y710 w268 h40 background" ui.bgColor[3])
 	ui.fishLogTimerOutline2 := ui.fishGui.addText("x1048 y711 w266 h38 background" ui.bgColor[1])
@@ -746,6 +781,37 @@ ui.fishLogCountLabel.setFont("s10","Helvetica")
 	loadScreen(false)	
 }
 
+saveProfileName(*) {
+	cfg.profileName[cfg.profileSelected] := ui.profileEdit.text
+	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	ui.profileEdit.opt("hidden")
+	ui.profileText.opt("-hidden")
+	ui.profileSaveButton.opt("hidden")
+	ui.profileSaveButtonOutline.opt("hidden")
+}
+profileNameChange(*) {
+	if subStr(ui.profileEdit.text,-1,1) == "`n" || "`r"
+	cfg.profileName[cfg.profileSelected] := substr(ui.profileEdit.text,1,strLen(ui.profileEdit.text)-1)
+}
+
+cancelEditProfileName(*) {
+	ui.profileEdit.opt("hidden")
+	ui.profileEdit.text := ui.profileText.text
+	cfg.profileName[cfg.profileSelected] := ui.profileText.text 
+	ui.profileText.opt("-hidden")
+	ui.profileSaveButton.opt("hidden")
+	ui.profileSaveButtonOutline.opt("hidden")
+	
+}
+editProfileName(*) {
+	ui.profileText.opt("hidden")
+	ui.profileEdit.opt("-hidden")
+	ui.profileSaveButton.opt("-hidden")
+	ui.profileSaveButtonOutline.opt("-hidden")
+
+	ui.profileEdit.text := ""
+	ui.profileEdit.focus()
+}
 
 
 startButtonClicked(*) { 
@@ -754,7 +820,7 @@ startButtonClicked(*) {
 	}
 
 changeProfile(*) {
-switch cfg.profileSelected {
+switch cfg.profileSelected {	
 			case 1:
 				cfg.profileSelected := 2
 			case 2:
@@ -770,7 +836,7 @@ switch cfg.profileSelected {
 		ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
 		ui.castAdjust.value := cfg.castAdjust[cfg.profileSelected]
 		ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
-		ui.profileText.text := "Profile #" cfg.profileSelected
+		ui.profileText.text := cfg.profileName[cfg.profileSelected]
 		ui.profileIcon.focus()
 	}
 
