@@ -126,6 +126,8 @@ install() {
 			fileInstall("./Img/button_new.png",InstallDir "/img/button_new.png",1)
 			fileInstall("./Img/button_delete.png",InstallDir "/img/button_delete.png",1)
 			fileInstall("./Img/button_edit.png",InstallDir "/img/button_edit.png",1)
+			fileInstall("./img/button_arrowLeft.png",installDir "/img/button_arrowLeft.png",1)
+			fileInstall("./img/button_arrowRight.png",installDir "/img/button_arrowRight.png",1)
 			fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 			FileInstall("./update.exe",InstallDir "/update.exe",1)

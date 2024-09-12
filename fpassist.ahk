@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.4.9"
+A_FileVersion := "1.2.5.0"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
