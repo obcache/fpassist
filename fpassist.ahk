@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.5.0"
+A_FileVersion := "1.2.5.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -636,41 +636,26 @@ createGui() {
 	ui.fishStatus := ui.fishGui.addText("x2 y752 w1580 h61 cBBBBBB background" ui.bgColor[1])
 	drawButton(1,753,661,60)
 	ui.profilePos := map("x",398,"y",758,"w",260,"h",50)
-	ui.profileBg := ui.fishGui.addText("section x" ui.profilePos["x"] " y" ui.profilePos["y"] " w" ui.profilePos["w"] " h" ui.profilePos["h"] " background" ui.bgColor[3]) 
-	ui.profileBg2 := ui.fishGui.addText("x+-" ui.profilePos["w"]-1 " ys+1 w" ui.profilePos["w"]-2 " h" ui.profilePos["h"]-2 " background" ui.bgColor[1]) 
-	ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+2 " y" ui.profilePos["y"]+0 " w16 h20 background" ui.bgColor[1],"./img/button_new.png")
-	ui.profileDeleteButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+243 " y" ui.profilePos["y"]+1 " w16 h18 background" ui.bgColor[1],"./img/button_delete.png")
-	ui.profileSaveButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+240 " y" ui.profilePos["y"]+1 " w18 h22 background" ui.bgColor[1],"./img/button_save.png")
-	ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+243 " y" ui.profilePos["y"]+32 " w15 h17 background" ui.bgColor[1],"./img/button_edit.png")
-	ui.profileLArrow := ui.fishGui.addPicture("x" ui.profilePos["x"]+5 " y" ui.profilePos["y"]+13 " w25 h30 backgroundTrans","./img/button_arrowLeft.png")
-	ui.profileRArrow := ui.fishGui.addPicture("x"  (ui.profilePos["x"]+19)+(ui.profilePos["w"]-50) " y" ui.profilePos["y"]+13 " w25 h30 backgroundTrans","./img/button_arrowRight.png")
+	;ui.profileBg := ui.fishGui.addText("section x" ui.profilePos["x"] " y" ui.profilePos["y"] " w" ui.profilePos["w"] " h" ui.profilePos["h"] " background" ui.bgColor[3]) 
+	;ui.profileBg2 := ui.fishGui.addText("x+-" ui.profilePos["w"]-1 " ys+1 w" ui.profilePos["w"]-2 " h" ui.profilePos["h"]-2 " background" ui.bgColor[1]) 
+	ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+35 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_new.png")
+	ui.profileDeleteButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+75 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_delete.png")
+	ui.profileSaveButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+245 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_save.png")
+	ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+56 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_edit.png")
+	ui.profileLArrow := ui.fishGui.addPicture("x" ui.profilePos["x"]+5 " y" ui.profilePos["y"]+20 " w25 h30 backgroundTrans","./img/button_arrowLeft.png")
+	ui.profileRArrow := ui.fishGui.addPicture("x"  (ui.profilePos["x"]+25)+(ui.profilePos["w"]-50) " y" ui.profilePos["y"]+20 " w25 h30 backgroundTrans","./img/button_arrowRight.png")
 	ui.profileLArrow.onEvent("click",profileLArrowClicked)
 	ui.profileRArrow.onEvent("click",profileRArrowClicked)
-	profileLArrowClicked(*) {
-		if cfg.profileSelected > 1
-			cfg.profileSelected -= 1
-		else
-			cfg.profileSelected := cfg.profileName.Length
-		ui.profileText.text := cfg.profileName[cfg.profileSelected]
-		updateControls()
-	}
-	profileRArrowClicked(*) {
-		if cfg.profileSelected < cfg.profileName.length
-			cfg.profileSelected += 1
-		else
-			cfg.profileSelected := 1
-		ui.profileText.text := cfg.profileName[cfg.profileSelected]
-		updateControls()
-	}
+
 	;ui.profileSaveButtonOutline := ui.fishGui.addText("hidden x406 y781 w157 h25 background" ui.fontColor[1])
 	;ui.profileEdit := ui.fishGui.addEdit("hidden x408 y781 w125 h25 wantReturn c" ui.fontColor[3] " background" ui.bgColor[1],cfg.profileName[cfg.profileSelected])
 	;ui.profileEdit.setFont("s14")
-	ui.profileText := ui.fishGui.addText("x" ui.profilePos["x"]+40 " y" ui.profilePos["y"]+13 " w185 h32 c" ui.fontColor[3] " center backgroundTrans",cfg.profileName[cfg.profileSelected])
+	ui.profileText := ui.fishGui.addText("x" ui.profilePos["x"]+33 " y" ui.profilePos["y"]+19 " w200 h32 c" ui.fontColor[3] " center backgroundTrans",cfg.profileName[cfg.profileSelected])
 	ui.profileIcon := ui.fishGui.addPicture("hidden x410 y765 w230 h42 backgroundCC3355","./img/rod.png")
-	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+33 " y" ui.profilePos["y"]+13 " w1 h30 background" ui.bgColor[3])
-	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+33 " y" ui.profilePos["y"]+42 " w192 h1 background" ui.bgColor[3])
-	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+33 " y" ui.profilePos["y"]+13 " w192 h1 background" ui.bgColor[3])
-	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+225 " y" ui.profilePos["y"]+13 " w1 h30 background" ui.bgColor[3])
+	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+31 " y" ui.profilePos["y"]+20 " w1 h30 background" ui.bgColor[3])
+	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+31 " y" ui.profilePos["y"]+49 " w203 h1 background" ui.bgColor[3])
+	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+31 " y" ui.profilePos["y"]+20 " w203 h1 background" ui.bgColor[3])
+	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+233 " y" ui.profilePos["y"]+20 " w1 h30 background" ui.bgColor[3])
 	ui.profileText.setFont("s18","calibri")
 	;ui.profileIcon.onEvent("click",changeProfile)
 	;ui.profileIcon.onEvent("doubleClick",editProfileName)
@@ -813,26 +798,61 @@ createGui() {
 	loadScreen(false)	
 }
 
+profileLArrowClicked(*) {
+	if cfg.profileSelected > 1
+	cfg.profileSelected -= 1
+	else
+		cfg.profileSelected := cfg.profileName.Length
+	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	updateControls()
+}
+profileRArrowClicked(*) {
+	if cfg.profileSelected < cfg.profileName.length
+		cfg.profileSelected += 1
+	else
+		cfg.profileSelected := 1
+	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	updateControls()
+}
+
 deleteProfileName(*) {
 	if cfg.profileName.length > 1 {
+	try
 		cfg.profileName.removeAt(cfg.profileSelected)
+	try
 		cfg.castAdjust.removeAt(cfg.profileSelected)
+	try
 		cfg.twitchLevel.removeAt(cfg.profileSelected)
+	try
 		cfg.pauseLevel.removeAt(cfg.profileSelected)
+	try
 		cfg.dragLevel.removeAt(cfg.profileSelected)
+	try
 		cfg.reelSpeed.removeAt(cfg.profileSelected)
+	try
 		ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	try
 		ui.castAdjust.value := cfg.castAdjust[cfg.profileSelected]
+	try
 		ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
+	try
 		ui.twitchLevel.value := cfg.twitchLevel[cfg.profileSelected]
+	try
 		ui.pauseLevel.value := cfg.pauseLevel[cfg.profileSelected]
+	try
 		ui.dragLevel.value := cfg.dragLevel[cfg.profileSelected]
+	try
 		ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
+	} else {
+		notifyOSD("Can't Delete Only Profile",ui.profileText)
+		;msgBox("Can't Delete Only Profile")
 	}
 }
 
 newProfileName(*) {
-	cfg.profileName.push("New Profile")
+	cfg.profileName.push("Profile #" cfg.profileName.length+1)
+	cfg.profileSelected := cfg.profileName.Length
+	updateControls()
 	editProfileName()
 }
 saveProfileName(*) {
@@ -845,10 +865,7 @@ saveProfileName(*) {
 	ui.profileDeleteButton.opt("-hidden")
 	ui.editProfileGui.destroy()
 }
-profileNameChange(*) {
-	if subStr(ui.profileEdit.text,-1,1) == "`n" || "`r"
-	cfg.profileName[cfg.profileSelected] := substr(ui.profileEdit.text,1,strLen(ui.profileEdit.text)-1)
-}
+
 
 cancelEditProfileName(*) {
 	ui.profileEdit.opt("hidden")
@@ -862,7 +879,7 @@ cancelEditProfileName(*) {
 editProfileName(*) {
 	ui.editProfileGui := gui()
 	ui.editProfileGui.opt("-border -caption owner" ui.fishGui.hwnd)
-	ui.editProfileEdit := ui.editProfileGui.addEdit("x-1 y-1 w159 h31 background" ui.bgColor[3] " -multi -wantReturn -wantTab limit -wrap -theme c" ui.fontColor[1],cfg.profileName[cfg.profileSelected])
+	ui.editProfileEdit := ui.editProfileGui.addEdit("x-1 y-1 w205 h31 background" ui.bgColor[3] " -multi -wantReturn -wantTab limit -wrap -theme c" ui.fontColor[1],cfg.profileName[cfg.profileSelected])
 	ui.editProfileEdit.setFont("s16")
 	ui.profileText.opt("hidden")
 	ui.profileNewButton.opt("hidden")
@@ -870,7 +887,7 @@ editProfileName(*) {
 	ui.profileDeleteButton.opt("hidden")
 	ui.profileSaveButton.opt("-hidden")
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
-	ui.editProfileGui.show("x" ui.profilePos["x"]+40-6 " y" ui.profilePos["y"]+15 " w156 h28")
+	ui.editProfileGui.show("x" ui.profilePos["x"]+40-8 " y" ui.profilePos["y"]+22 " w202 h28")
 	ui.editProfileEdit.focus()
 }
 ;editProfileName()
@@ -881,18 +898,27 @@ startButtonClicked(*) {
 	}
 
 updateControls(*) {
-	try {
+	try 
 		ui.twitchLevel.value := cfg.twitchLevel[cfg.profileSelected]
+	try 
 		ui.pauseLevel.value := cfg.pauseLevel[cfg.profileSelected]
+	try 
 		ui.dragLevel.value := cfg.dragLevel[cfg.profileSelected]
+	try 
 		ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
+	try 
 		ui.castTime.value := cfg.castTime[cfg.profileSelected]
+	try 
 		ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
+	try 
 		ui.castAdjust.value := cfg.castAdjust[cfg.profileSelected]
+	try 
 		ui.castAdjustText.text := cfg.castAdjust[cfg.profileSelected]
+	try 
 		ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	try 
 		ui.profileIcon.focus()
-	}
+	
 }
 
 singleCast(*) {

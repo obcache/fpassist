@@ -22,8 +22,87 @@ initTrayMenu(*) {
 	A_TrayMenu.Default := "Show Window"
 }
 
+guiVis(guiName,isVisible:= true) {
+	if (isVisible) {
+		WinSetTransparent(255,guiName)
+		WinSetTransparent("Off",guiName)
+		WinSetTransColor("010203",guiName)
+	} else {
+		WinSetTransparent(0,guiName)
+
+	}
+	
+}
+
+notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := "Left",YN := "")
+{
+	if !InStr("LeftRightCenter",Alignment)
+		Alignment := "Left"
+		
+	Transparent := 250
+	try
+		ui.notifyGui.Destroy()
+	ui.notifyGui			:= Gui()
+	ui.notifyGui.Title 		:= "Notify"
+
+	ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow +Owner" ui.fishGui.hwnd)  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
+	ui.notifyGui.BackColor := ui.bgColor[2]  ; Can be any RGB color (it will be made transparent below).
+	ui.notifyGui.SetFont("s16")  ; Set a large font size (32-point).
+	ui.notifyGui.AddText("w262 h58 c" ui.fontColor[2] " " Alignment " BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
+	ui.notifyGui.AddText("xs hidden")
+	
+	WinSetTransparent(0,ui.notifyGui)
+	ui.notifyGui.Show("NoActivate Autosize")  ; NoActivate avoids deactivating the currently active window.
+	ui.notifyGui.GetPos(&x,&y,&w,&h)
+		
+	ui.profileText.getPos(&guiX,&guiY,&guiW,&guiH)
+	ui.notifyGui.Show("x" (GuiX+(GuiW/2)-(w/2)+20) " y" GuiY+(13-(h/2))+6  "w262 h58 NoActivate")
+	guiVis(ui.notifyGui,true)
+	drawOutlineNamed("notify1",ui.fishGui,1,1,w,h,ui.bgColor[1],ui.bgColor[2])
+	drawOutlineNamed("notify2",ui.fishGui,2,2,w-2,h-2,ui.bgColor[3],ui.bgColor[4])
+	
+	if (YN) {
+		ui.notifyGui.AddText("xs hidden")
+		ui.notifyYesButton := ui.notifyGui.AddPicture("ys x30 y30","./Img/button_yes.png")
+		ui.notifyYesButton.OnEvent("Click",notifyConfirm)
+		ui.notifyNoButton := ui.notifyGui.AddPicture("ys","/Img/button_no.png")
+		ui.notifyNoButton.OnEvent("Click",notifyCancel)
+		SetTimer(waitOSD,-%duration%)
+	} else {
+		ui.Transparent := 250
+		try {
+			WinSetTransparent(ui.Transparent,ui.notifyGui)
+			setTimer () => (sleep(duration),fadeOSD()),-100
+		}
+	}
+
+	waitOSD() {
+	
+		ui.notifyGui.destroy()
+		notifyOSD("Timed out waiting for response.`nPlease try your action again",-1000)
+	
+	}
 
 
+
+}
+
+
+fadeOSD() {
+	ui.transparent := 250
+	While ui.Transparent > 10 { 	
+	
+		try
+			WinSetTransparent(ui.Transparent,ui.notifyGui)
+		ui.Transparent -= 3
+		Sleep(1)
+	}
+	try
+		guiVis(ui.notifyGui,false)
+	
+	ui.Transparent := ""
+	
+}
 sendIfWinActive(msg,win := "A") {
 	(winActive(win))
 		? send(msg)
