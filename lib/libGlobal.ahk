@@ -348,7 +348,7 @@ createPbConsole(title) {
 	ui.pbConsoleTitle.setFont("s20","Verdana Bold")
 
 	drawOutlineNamed("pbConsoleTitle",ui.pbConsole,2,0,688,35,ui.bgColor[2],ui.bgColor[3],2)
-	ui.pbConsoleData := ui.pbConsole.addText("xs+0 w676 h280 backgroundTrans c" ui.fontColor[2],"")
+	ui.pbConsoleData := ui.pbConsole.addText("xs+6 w676 h280 backgroundTrans c" ui.fontColor[2],"")
 	ui.pbConsoleData.setFont("s16")
 	drawOutlineNamed("pbConsoleOutside",ui.pbConsole,1,0,689,298,ui.bgColor[3],ui.bgColor[3],2)
 	;drawOutlineNamed("pbConsoleOutside2",ui.pbConsole,2,2,690,298,ui.bgColor[2],ui.bgColor[1],1)
