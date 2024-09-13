@@ -58,8 +58,7 @@ notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := 
 	ui.profileText.getPos(&guiX,&guiY,&guiW,&guiH)
 	ui.notifyGui.Show("x" (GuiX+(GuiW/2)-(w/2)+20) " y" GuiY+(13-(h/2))+6  "w262 h58 NoActivate")
 	guiVis(ui.notifyGui,true)
-	drawOutlineNamed("notify1",ui.fishGui,1,1,w,h,ui.bgColor[1],ui.bgColor[2])
-	drawOutlineNamed("notify2",ui.fishGui,2,2,w-2,h-2,ui.bgColor[3],ui.bgColor[4])
+	drawOutlineNamed("notify2",ui.notifyGui,1,1,260,56,ui.bgColor[3],ui.bgColor[1])
 	
 	if (YN) {
 		ui.notifyGui.AddText("xs hidden")
@@ -204,9 +203,11 @@ install() {
 			fileInstall("./Img/button_save.png",InstallDir "/img/button_save.png",1)
 			fileInstall("./Img/button_new.png",InstallDir "/img/button_new.png",1)
 			fileInstall("./Img/button_delete.png",InstallDir "/img/button_delete.png",1)
+			fileInstall("./Img/button_cancel.png",InstallDir "/img/button_cancel.png",1)
 			fileInstall("./Img/button_edit.png",InstallDir "/img/button_edit.png",1)
 			fileInstall("./img/button_arrowLeft.png",installDir "/img/button_arrowLeft.png",1)
 			fileInstall("./img/button_arrowRight.png",installDir "/img/button_arrowRight.png",1)
+			
 			fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 			FileInstall("./update.exe",InstallDir "/update.exe",1)
@@ -281,6 +282,7 @@ exitFunc(*) {
 		ui.profileNameStr .= cfg.profileName[a_index] ","
 	}
 	iniwrite(rtrim(ui.profileNameStr,","),cfg.file,"Game","ProfileNames")
+	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
 	exitApp
 }
 

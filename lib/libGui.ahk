@@ -88,7 +88,7 @@ statPanel(*) {
 	ui.statDragLevel := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
 	
 	ui.statCastCountLabel := ui.fishGui.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Cast Count:")
-	ui.statCastCount := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.castCount)
+	ui.statCastCount := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], "000")
 	
 	ui.statAfkDurationLabel := ui.fishGui.addText("xs-333 y+0 right section w70 r1 backgroundTrans c" ui.fontColor[3],"AFK Duration: ")
 	ui.statAfkDuration := ui.fishGui.addText("x+0 ys w100 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
