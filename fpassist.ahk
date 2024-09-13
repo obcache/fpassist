@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.5.3"
+A_FileVersion := "1.2.5.8"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -28,7 +28,7 @@ cfg.zoomEnabled := strSplit(iniRead(cfg.file,"Game","ZoomEnabled","0,0,0"),",")
 cfg.debug 		:= iniRead(cfg.file,"System","Debug",false)
 
 ui.fishLogArr := array()
-ui.bgColor := ["111111","333333","666666","","AAAAAA","C9C9C9","D2D2D2"]
+ui.bgColor := ["111111","333333","666666","","858585","AAAAAA","C9C9C9"]
 ui.fontColor := ["D2D2D2","AAAAAA","999999","666666","333333","111111"]
 ui.trimColor := ["80aaff","DDCC33","44DDCC","11EE11","EE1111","1111EE"]
 
@@ -124,7 +124,7 @@ startGame(*) {
 		sleep(1000)
 		if w == a_screenWidth && h == a_screenHeight {
 			winActivate("ahk_exe fishingPlanet.exe")
-			send("{alt down}{enter}{alt up}")
+			sendIfWinActive("{alt down}{enter}{alt up}",ui.game,true)
 			sleep(500)
 			ui.loadingProgress.value += 2
 			winMove(0,0,1280,720,ui.game)
@@ -200,17 +200,17 @@ autoFishStart(*) {
 reelIn(isAFK:=true) {
 	
 		loop 5 {
-			send("{l}")
+			sendIfWinActive("{l}",ui.game,true)
 			sleep(150)
 		}
 		
 		while !reeledIn() {
 			if (isAFK && !ui.autoFish)
 				return 1
-			sendIfWinActive("{space down}",ui.game)
+			sendIfWinActive("{space down}",ui.game,true)
 			sleep(1000)
 		}
-		sendIfWinActive("{space up}",ui.game)
+		sendIfWinActive("{space up}",ui.game,true)
 		sleep(500)
 		log("Reel In")
 }
@@ -270,11 +270,11 @@ calibrate(*) {
 	log("Calibration: Drag")
 	loop 12 {
 		winActivate(ui.game)
-		send("{NumpadSub}")
+		sendIfWinActive("{NumpadSub}",ui.game,true)
 		sleep(50)
 	}
 	loop cfg.dragLevel[cfg.profileSelected] {
-		send("{NumpadAdd}")
+		sendIfWinActive("{NumpadAdd}",ui.game,true)
 		sleep(50)
 	}
 	
@@ -298,12 +298,12 @@ cast(isAFK:=true) {
 	calibrate()
 	
 	ui.isCasting := true
-	send("{backspace}")
+	sendIfWinActive("{backspace}",ui.game,true)
 	errorLevel := (!sleep500(3)) ? 1 : exit,0 
 	log("Cast: Drawing Back Rod")
-	sendIfWinActive("{space down}",ui.game)
+	sendIfWinActive("{space down}",ui.game,true)
 	sleep(cfg.castAdjust[cfg.profileSelected])
-	sendIfWinActive("{space up}",ui.game)
+	sendIfWinActive("{space up}",ui.game,true)
 	log("Cast: Releasing Cast")
 	ui.isCasting := false
 	if isAFK {
@@ -319,7 +319,7 @@ cast(isAFK:=true) {
 	}
 	
 	if (ui.zoomToggle.value)
-		send("{z}")
+		sendIfWinActive("{z}",ui.game,true)
 		sleep(150)
 	
 	log("___________________________________________________________________")
@@ -339,9 +339,9 @@ landFish(*) {
 		
 	fileAppend(lineHealth " :: " rodHealth " :: " reelHealth,"./logs/fplog.txt")
 	if lineHealth > maxStress || rodHealth > maxStress || reelHealth > maxStress {
-		send("{NumpadSub}")
+		sendIfWinActive("{NumpadSub}",ui.game,true)
 	} else {
-		send("{NumpadAdd}")
+		sendIfWinActive("{NumpadAdd}",ui.game,true)
 	}
 }
 
@@ -369,9 +369,9 @@ retrieve(isAFK:=true) {
 				
 					log("Retrieve: Twitch")
 					loop round(random(1,2)) {
-						send("{RButton Down}")
+						sendIfWinActive("{RButton Down}",ui.game,true)
 						sleep(150)
-						send("{RButton Up}")
+						sendIfWinActive("{RButton Up}",ui.game,true)
 						sleep(round(random(200,400)))
 					if (isAFK && !ui.autoFish) || reeledIn()
 					break
@@ -509,9 +509,9 @@ detectPrompts(*) {
 			log("Rewards: Reward Detected")
 			ui.popupFound := true
 			MouseMove(210,525)
-			send("{LButton Down}")
+			sendIfWinActive("{LButton Down}",ui.game,true)
 			sleep(350)
-			send("{LButton Up}")
+			sendIfWinActive("{LButton Up}",ui.game,true)
 			sleep(500)
 			log("Rewards: Reward Claimed")
 		}
@@ -520,9 +520,9 @@ detectPrompts(*) {
 			log("Rewards: Reward Detected")
 			ui.popupFound := true 
 			MouseMove(215,630)
-			send("{LButton Down}")
+			sendIfWinActive("{LButton Down}",ui.game,true)
 			sleep(350)
-			send("{LButton Up}")
+			sendIfWinActive("{LButton Up}",ui.game,true)
 			sleep(500)
 			log("Rewards: Reward Claimed")
 		}
@@ -531,15 +531,15 @@ detectPrompts(*) {
 			log("Trip: Trip Ended")
 			ui.popupFound := true
 			mouseMove(530,610)
-			send("{LButton Down}")
+			sendIfWinActive("{LButton Down}",ui.game,true)
 			sleep(350)
-			send("{LButton Up}")
+			sendIfWinActive("{LButton Up}",ui.game,true)
 			sleep(1000)
 			log("Trip: Adding Day Trip")
 			MouseMove(530,450)
-			send("{LButton Down}")
+			sendIfWinActive("{LButton Down}",ui.game,true)
 			sleep(350)
-			send("{LButton Up}")
+			sendIfWinActive("{LButton Up}",ui.game,true)
 			sleep(500)	
 		}
 		
@@ -551,9 +551,9 @@ detectPrompts(*) {
 			ui.popupFound := true
 			mouseGetPos(&x,&y)
 			mouseMove(1379,78)
-			send("{LButton down}")
+			sendIfWinActive("{LButton Down}",ui.game,true)
 			sleep(350)
-			send("{LButton up}")
+			sendIfWinActive("{LButton Up}",ui.game,true)
 			sleep(500)
 			mouseMove(x,y)
 			log("Ads: Ad Closed")
@@ -591,25 +591,25 @@ timerFadeOut(*) {
 }
 hotIfWinActive(ui.game)
 	!WheelUp:: {
-		send("{LShift down}")
+		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
-		send("{1}")
+		sendIfWinActive("{1}",ui.game,true)
 		sleep(200)
-		send("{LShift up}")
+		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 	!WheelDown:: {
-		send("{LShift down}")
+		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
-		send("{2}")
+		sendIfWinActive("{2}",ui.game,true)
 		sleep(200)
-		send("{LShift up}")
+		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 	!MButton:: {
-		send("{LShift down}")
+		sendIfWinActive("{LButton Down}",ui.game,true)
 		sleep(200)
-		send("{3}")
+		sendIfWinActive("{3}",ui.game,true)
 		sleep(200)
-		send("{LShift up}")
+		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 hotIf()
 
@@ -639,17 +639,18 @@ createGui() {
 	ui.fishStatus := ui.fishGui.addText("x2 y752 w1580 h61 cBBBBBB background" ui.bgColor[1])
 	drawButton(1,753,661,60)
 	ui.profilePos := map("x",398,"y",759,"w",260,"h",50)
-	ui.profileLabelOutline := ui.fishGui.addText("x" ui.profilePos["x"]+149 " y" ui.profilePos["y"]+28 " w85 h21 background" ui.bgColor[4])
+;	ui.profileLabelOutline := ui.fishGui.addText("x" ui.profilePos["x"]+48 " y" ui.profilePos["y"]+29 " w85 h21 background" ui.bgColor[5])
+;	ui.profileLabelOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+49 " y" ui.profilePos["y"]+28 " w83 h22 background" ui.bgColor[1])
 	;ui.profileBg := ui.fishGui.addText("section x" ui.profilePos["x"] " y" ui.profilePos["y"] " w" ui.profilePos["w"] " h" ui.profilePos["h"] " background" ui.bgColor[3]) 
 	;ui.profileBg2 := ui.fishGui.addText("x+-" ui.profilePos["w"]-1 " ys+1 w" ui.profilePos["w"]-2 " h" ui.profilePos["h"]-2 " background" ui.bgColor[1]) 
 	;ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+203 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_new.png")
-	ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+34 " y" ui.profilePos["y"]+33 " w16 h15 backgroundTrans","./img/button_new.png")
-	ui.profileDeleteButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+71 " y" ui.profilePos["y"]+33 " w16 h15 backgroundTrans","./img/button_delete.png")
-	ui.profileSaveCancelButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+34 " y" ui.profilePos["y"]+33 " w16 h15 backgroundTrans","./img/button_cancel.png")
+	ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+109 " y" ui.profilePos["y"]+34 " w16 h15 backgroundTrans","./img/button_new.png")
+	ui.profileDeleteButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+150 " y" ui.profilePos["y"]+34 " w16 h15 backgroundTrans","./img/button_delete.png")
+	ui.profileSaveCancelButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+34 " y" ui.profilePos["y"]+34 " w16 h15 backgroundTrans","./img/button_cancel.png")
 	ui.profileSaveCancelButton.onEvent("click",cancelEditProfileName)
-	ui.profileSaveButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+54 " y" ui.profilePos["y"]+33 " w16 h16 backgroundTrans","./img/button_save.png")
+	ui.profileSaveButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+54 " y" ui.profilePos["y"]+34 " w16 h16 backgroundTrans","./img/button_save.png")
 	;ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+224 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_edit.png")
-	ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+53 " y" ui.profilePos["y"]+33 " w16 h15 backgroundTrans","./img/button_edit.png")
+	ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+130 " y" ui.profilePos["y"]+34 " w16 h15 backgroundTrans","./img/button_edit.png")
 	ui.profileLArrow := ui.fishGui.addPicture("x" ui.profilePos["x"]+5 " y" ui.profilePos["y"]+0 " w25 h30 backgroundTrans","./img/button_arrowLeft.png")
 	ui.profileRArrow := ui.fishGui.addPicture("x" (ui.profilePos["x"]+25)+(ui.profilePos["w"]-50) " y" ui.profilePos["y"]+0 " w25 h30 backgroundTrans","./img/button_arrowRight.png")
 	ui.profileLArrow.onEvent("click",profileLArrowClicked)
@@ -668,8 +669,8 @@ createGui() {
 	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+31 " y" ui.profilePos["y"]+0 " w203 h1 background" ui.bgColor[3])
 	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+233 " y" ui.profilePos["y"]+0 " w1 h30 background" ui.bgColor[3])
 	ui.profileText.setFont("s18","calibri")
-	ui.profileLabel := ui.fishGui.addText("x" ui.profilePos["x"]+151 " y" ui.profilePos["y"]+30 " center w82 h18 background" ui.bgColor[2] " c" ui.fontColor[3],"Profile")
-	ui.profileLabel.setFont("s14","Courier New")
+;	ui.profileLabel := ui.fishGui.addText("x" ui.profilePos["x"]+150 " y" ui.profilePos["y"]+30 " center w83 h19 background" ui.bgColor[2] " c" ui.fontColor[3],"Profile")
+;	ui.profileLabel.setFont("s14","Courier New")
 	;ui.profileIcon.onEvent("click",changeProfile)
 	;ui.profileIcon.onEvent("doubleClick",editProfileName)
 	;ui.profileText.onEvent("doubleClick",editProfileName)

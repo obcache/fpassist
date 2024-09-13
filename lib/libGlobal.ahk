@@ -102,10 +102,16 @@ fadeOSD() {
 	ui.Transparent := ""
 	
 }
-sendIfWinActive(msg,win := "A") {
+sendIfWinActive(msg,win := "A",wait := false) {
 	(winActive(win))
 		? send(msg)
-		: exit
+		: waitForWin()
+		
+	waitForWin(*) {
+		while !(winActive(win))
+			sleep(500)
+	}
+	
 }
 
 install() {
@@ -325,28 +331,30 @@ arr2str(arrayName) {
 newGuid(*) {
 	return ComObjCreate("Scriptlet.TypeLib").GUID
 }
-
+;createPbConsole("poo")
 createPbConsole(title) {
 	transColor := "010203"
-	ui.pbConsoleBg := gui()
-	ui.pbConsoleBg.backColor := "304030"
-	ui.pbConsoleHandle := ui.pbConsoleBg.addPicture("w700 h400 background203020","")
-	ui.pbConsoleBg.show("w700 h400 noActivate")
+	; ui.pbConsoleBg := gui()
+	; ui.pbConsoleBg.backColor := "304030"
+	; ui.pbConsoleHandle := ui.pbConsoleBg.addPicture("w700 h400 background203020","")
+	; ui.pbConsoleBg.show("w700 h400 noActivate")
 	ui.pbConsole := gui()
-	ui.pbConsole.opt("-caption")
+	ui.pbConsole.opt("-caption -border toolWindow alwaysOnTop")
 	ui.pbConsole.backColor := transColor
 	ui.pbConsole.color := transColor
-	ui.pbConsoleTitle := ui.pbConsole.addText("x8 y4 w700 h35 section center background303530 c859585",title)
+	winSetTransColor(transColor,ui.pbConsole)
+	ui.pbConsoleDataBg := ui.pbConsole.addText("x0 y0 w690 h296 background" ui.bgColor[1])
+	ui.pbConsoleTitle := ui.pbConsole.addText("x2 y0 w685 h35 section center background" ui.bgColor[2] " c" ui.fontColor[2],title)
 	ui.pbConsoleTitle.setFont("s20","Verdana Bold")
 
-	drawOutlineNamed("pbConsoleTitle",ui.pbConsole,6,4,692,35,"253525","202520",2)
-	ui.pbConsoleData := ui.pbConsole.addText("xs+10 w680 h380 backgroundTrans cA5C5A5","")
+	drawOutlineNamed("pbConsoleTitle",ui.pbConsole,2,0,688,35,ui.bgColor[2],ui.bgColor[3],2)
+	ui.pbConsoleData := ui.pbConsole.addText("xs+0 w676 h280 backgroundTrans c" ui.fontColor[2],"")
 	ui.pbConsoleData.setFont("s16")
-	drawOutlineNamed("pbConsoleOutside",ui.pbConsole,2,2,698,398,"355535","355535",2)
-	drawOutlineNamed("pbConsoleOutside2",ui.pbConsole,3,3,696,396,"457745","457745",1)
-	drawOutlineNamed("pbConsoleOutside3",ui.pbConsole,4,4,694,394,"" ui.bgColor[2],"" ui.bgColor[2],2)
-	ui.pbConsole.show("w700 h400 noActivate")
-	ui.pbConsoleBg.opt("-caption owner" ui.pbConsole.hwnd)
+	drawOutlineNamed("pbConsoleOutside",ui.pbConsole,1,0,689,298,ui.bgColor[3],ui.bgColor[3],2)
+	;drawOutlineNamed("pbConsoleOutside2",ui.pbConsole,2,2,690,298,ui.bgColor[2],ui.bgColor[1],1)
+	;drawOutlineNamed("pbConsoleOutside3",ui.pbConsole,2,3,688,296,ui.bgColor[3],ui.bgColor[2],2)
+	ui.pbConsole.show("w694 h300 noActivate")
+	; ui.pbConsoleBg.opt("-caption owner" ui.pbConsole.hwnd)
 }
 
 hidePbConsole(*) {
