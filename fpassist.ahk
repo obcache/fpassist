@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.5.9"
+A_FileVersion := "1.2.6.0"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -30,7 +30,7 @@ cfg.debug 		:= iniRead(cfg.file,"System","Debug",false)
 ui.fishLogArr := array()
 ui.bgColor := ["111111","333333","666666","","858585","AAAAAA","C9C9C9"]
 ui.fontColor := ["D2D2D2","AAAAAA","999999","666666","333333","111111"]
-ui.trimColor := ["80aaff","DDCC33","44DDCC","11EE11","EE1111","1111EE"]
+ui.trimColor := ["0976f3","DDCC33","44DDCC","11EE11","EE1111","1111EE"]
 
 ui.loadingProgress := 5
 ui.reeledIn := true
