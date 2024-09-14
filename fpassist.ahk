@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.6.0"
+A_FileVersion := "1.2.6.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -294,9 +294,8 @@ log("___________________________________________________________________")
 	
 	
 cast(isAFK:=true) {
-	format("{:2di}",ui.statCastCount.text += 1)
+	format("{:3di}",ui.statCastCount.text += 1)
 	calibrate()
-	
 	ui.isCasting := true
 	sendIfWinActive("{backspace}",ui.game,true)
 	errorLevel := (!sleep500(3)) ? 1 : exit,0 
@@ -307,24 +306,19 @@ cast(isAFK:=true) {
 	log("Cast: Releasing Cast")
 	ui.isCasting := false
 	if isAFK {
-	log("Cast: Cast in Progress")
-	
-	loop cfg.castTime[cfg.profileSelected] {
-		(sleep500(2)) ? exit : 0
-	}
-	log("Cast: Lure Sinking")
-	loop cfg.sinkTime[cfg.profileSelected] {
-		(sleep500(2)) ? exit : 0
-	}
-	}
-	
+		log("Cast: Cast in Progress")
+		loop cfg.castTime[cfg.profileSelected] {
+			(sleep500(2)) ? exit : 0
+		}
+		log("Cast: Lure Sinking")
+		loop cfg.sinkTime[cfg.profileSelected] {
+			(sleep500(2)) ? exit : 0
+		}
+	}	
 	if (ui.zoomToggle.value)
 		sendIfWinActive("{z}",ui.game,true)
 		sleep(150)
-	
 	log("___________________________________________________________________")
-
-
 	if isAFK && ui.autoFish && !reeledIn()
 		retrieve()
 }          
@@ -336,7 +330,6 @@ landFish(*) {
 	(dirExist("./logs"))
 		? 0
 		: dirCreate("./logs")
-		
 	fileAppend(lineHealth " :: " rodHealth " :: " reelHealth,"./logs/fplog.txt")
 	if lineHealth > maxStress || rodHealth > maxStress || reelHealth > maxStress {
 		sendIfWinActive("{NumpadSub}",ui.game,true)
@@ -444,13 +437,22 @@ updateAfkTime(*) {
 }
 
 reeledIn(*) {
-		ui.checkReel1 := round(pixelGetColor(1026,635))
-		ui.checkReel2 := round(pixelGetColor(1047,635))
-		ui.checkReel3 := round(pixelGetColor(1026,656))
-		ui.checkReel4 := round(pixelGetColor(1047,656))
-		ui.checkReel5 := round(pixelGetColor(1036,644))
-		;msgBox(substr(ui.checkReel1 "`n" ui.checkReel2 "`n" ui.checkReel3 "`n" ui.checkReel4 "`n" ui.checkReel5)
-		;log(substr(ui.checkReel1,1,5) ":" subStr(ui.checkReel2,1,5) ":" subStr(ui.checkReel3,1,5) ":" subStr(ui.checkReel4,1,5) ";" subStr(ui.checkReel5,1,5))
+	ui.checkReel1 := round(pixelGetColor(1026,635))
+	ui.checkReel2 := round(pixelGetColor(1047,635))
+	ui.checkReel3 := round(pixelGetColor(1026,656))
+	ui.checkReel4 := round(pixelGetColor(1047,656))
+	ui.checkReel5 := round(pixelGetColor(1036,644))
+
+	if(ui.fullscreen) {
+		ui.checkReel1 := round(pixelGetColor(2963,1225))
+		ui.checkReel2 := round(pixelGetColor(2963,1301))
+		ui.checkReel3 := round(pixelGetColor(2944,1250))
+		ui.checkReel4 := round(pixelGetColor(2984,1250))
+		ui.checkReel5 := round(pixelGetColor(2944,1280))
+		ui.checkReel6 := round(pixelGetColor(2984,1280))
+	}
+	;msgBox(substr(ui.checkReel1 "`n" ui.checkReel2 "`n" ui.checkReel3 "`n" ui.checkReel4 "`n" ui.checkReel5)
+	;log(substr(ui.checkReel1,1,5) ":" subStr(ui.checkReel2,1,5) ":" subStr(ui.checkReel3,1,5) ":" subStr(ui.checkReel4,1,5) ";" subStr(ui.checkReel5,1,5))
 		if (ui.checkReel1 >= 12250871
 			&& ui.checkReel2 >= 12250871
 			&& ui.checkReel3 >= 12250871
