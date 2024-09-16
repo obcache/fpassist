@@ -77,7 +77,7 @@ statPanel(*) {
 	ui.statSessionStartTime := ui.fishGui.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
 	ui.statCastLengthLabel := ui.fishGui.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Cast Length:`t")
-	ui.statCastLength := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.castAdjust[cfg.profileSelected])
+	ui.statCastLength := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.castAdjust.value)
 	
 	ui.statFishCountLabel := ui.fishGui.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Fish Count:")
 	ui.statFishCount := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
@@ -86,7 +86,7 @@ statPanel(*) {
 	ui.statAfkStartTime := ui.fishGui.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
 	ui.statDragLevelLabel := ui.fishGui.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Drag Level:`t")
-	ui.statDragLevel := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
+	ui.statDragLevel := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.dragLevel.value)
 	
 	ui.statCastCountLabel := ui.fishGui.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Cast Count:")
 	ui.statCastCount := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], "000")
@@ -95,7 +95,7 @@ statPanel(*) {
 	ui.statAfkDuration := ui.fishGui.addText("x+0 ys w100 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
 	
 	ui.statReelSpeedLabel := ui.fishGui.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Reel Speed:`t")
-	ui.statReelSpeed := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
+	ui.statReelSpeed := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.reelSpeed.value)
 	
 	ui.viewLog := ui.fishGui.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
 	ui.viewLog.setFont("s9 underline")
