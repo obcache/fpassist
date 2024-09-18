@@ -167,6 +167,8 @@ statPanelFS(*) {
 startupProgress(*) {
 	try {
 		ui.loadingProgress.value += 1
+ 		ui.loadingProgress2.value += 1
+		
 		if ui.loadingProgress.value >= 100 {
 		
 			setTimer(startupProgress,0)
@@ -178,6 +180,7 @@ startupProgress(*) {
 startupProgress0(*) {
 	try {
 		ui.loadingProgress.value += 1
+		ui.loadingProgress2.value += 1
 		if ui.loadingProgress.value >= 20 {
 			setTimer(startupProgress0,0)
 		}
@@ -187,6 +190,7 @@ startupProgress0(*) {
 startupProgress2(*) {
 	try {
 		ui.loadingProgress.value += 2
+		ui.loadingProgress2.value += 2
 		if ui.loadingProgress.value >= 100 {
 		
 			setTimer(startupProgress2,0)
@@ -204,13 +208,20 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 		ui.notifyGui.BackColor := ui.bgColor[3] ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
 		;if a_isCompiled 
-		ui.notifyGui.addPicture("x0 y0 w1586 h780","./img/fp_splash.png")
+		ui.notifyGui.addPicture("x0 y0 w1582 h812","./img/fp_splash.png")
 		; else
 			; ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/fp_splash.png")
 		;ui.notifyGui.AddText("x" (1580/2)-100 " y" (810/2) " c252525 center BackgroundTrans","Please Wait")  ; XX & YY serve to 00auto-size the window.
 		;ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
-		ui.loadingProgress := ui.notifyGui.addProgress("smooth x3 y755 w1578 h60 c202020 background404040")
+		ui.loadingProgress := ui.notifyGui.addProgress("smooth x2 y757 w1580 h57 c202020 background404040")
 		ui.loadingProgress.value := 0
+		if winExist(ui.game) {
+			setTimer(startupProgress,32)
+		} else {
+			setTimer(startupProgress0,200)
+		}
+		ui.loadingProgress2 := ui.notifyGui.addProgress("smooth x2 y755 w1580 h2 c707070 background404040")
+		ui.loadingProgress2.value := 0
 		if winExist(ui.game) {
 			setTimer(startupProgress,32)
 		} else {
