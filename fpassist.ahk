@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.6.9"
+A_FileVersion := "1.2.7.0"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -559,7 +559,6 @@ retrieve(isAFK:=true) {
 	ui.retrieveButtonHotkey.setFont("c" ui.trimFontColor[1])
 	ui.retrieveButtonHotkey.redraw()
 
-
 	while !reeledIn() && (!isAFK || ui.autoFish) {
 		if ui.cancelOperation
 			return		
@@ -616,7 +615,8 @@ updateAfkTime(*) {
 	
 	ui.secondsElapsed += 1
 	ui.fishLogAfkTime.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
-	ui.statAfkDuration.text := ui.fishLogAfkTime.text
+	ui.statAfkDuration.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
+	
 	;ui.fishLogAfkTime2.text := format("{:02i}",secondsElapsed/3600) ":" format("{:02i}",secondsElapsed/60) ":" format("{:02i}",mod(secondsElapsed,60))
 }
 
@@ -796,7 +796,7 @@ createGui() {
 	ui.titleBarText := ui.fishGui.addText("x305 y6 w900 h24 cC7C7C7 backgroundTrans","Fishing Planet`t(fpassist v" a_fileVersion ")")
 	ui.titleBarText.setFont("s13","Arial Bold")
 	ui.titleBarFullscreenButton := ui.fishGui.addPicture("x1524 y2 w29 h29 center backgroundTrans","./img/button_fs.png")
-	ui.titleBarFullscreenButton.onEvent("click",goFS)
+	;ui.titleBarFullscreenButton.onEvent("click",goFS)
 	ui.titleBarExitButton := ui.fishGui.addPicture("x1554 y4 w25 h25 center backgroundTrans","./img/button_close.png")
 	ui.titleBarExitButton.onEvent("click",cleanExit)
 	ui.fishStatus := ui.fishGui.addText("x2 y752 w1580 h61 cBBBBBB background" ui.bgColor[1])
