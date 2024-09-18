@@ -284,16 +284,21 @@ cleanExit(*) {
 
 exitFunc(*) {
 	ui.profileNameStr := ""
+	ui.reelLevelStr := ""
 	loop cfg.profileName.length {
-		ui.profileNameStr .= cfg.profileName[a_index] ","
+		try
+			ui.profileNameStr .= cfg.profileName[a_index] ","
+		try
+			ui.reelLevelStr .= cfg.reelLevel[a_index] ","
 	}
 	iniwrite(rtrim(ui.profileNameStr,","),cfg.file,"Game","ProfileNames")
+	iniWrite(rtrim(ui.reelLevelStr,","),cfg.file,"Game","ReelLevel")
 	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
 	exitApp
 }
 
 ui.lastMsg := ""
-log(msg) {
+log(msg,msgHistory:=msg) {
 	if ui.lastMsg {
 		ui.fishStatusText.text := (msg=="___________________________________________________________________") ? "Ready" : msg
 		;if ui.fishLogArr.length > 33 {
@@ -314,7 +319,7 @@ log(msg) {
 			ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
 		}
 	}
-	ui.lastMsg := msg
+	ui.lastMsg := msgHistory
 }
 
 killMe(*) {

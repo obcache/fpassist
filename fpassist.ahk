@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.6.5"
+A_FileVersion := "1.2.6.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -21,17 +21,20 @@ cfg.twitchToggleValue := iniRead(cfg.file,"Game","TwitchToggle",true)
 cfg.waitToggleValue := iniRead(cfg.file,"Game","WaitToggle",true)
 cfg.profileSelected := iniRead(cfg.file,"Game","ProfileSelected",1)
 cfg.profileName := strSplit(iniRead(cfg.file,"Game","ProfileNames","Profile #1,Profile #2,Profile #3,Profile #4,Profile #5"),",")
-cfg.dragLevel 	:= strSplit(iniRead(cfg.file,"Game","DragLevel","5,6,7"),",")
-cfg.reelSpeed 	:= strSplit(iniRead(cfg.file,"Game","ReelSpeed","1,2,2"),",")
-cfg.castAdjust 	:= strSplit(iniRead(cfg.file,"Game","CastAdjust","1950,1975,2000"),",")
-cfg.zoomEnabled := strSplit(iniRead(cfg.file,"Game","ZoomEnabled","0,0,0"),",")
+cfg.dragLevel 	:= strSplit(iniRead(cfg.file,"Game","DragLevel","5,5,5,5,5"),",")
+cfg.reelSpeed 	:= strSplit(iniRead(cfg.file,"Game","ReelSpeed","1,1,1,1,1"),",")
+cfg.castAdjust 	:= strSplit(iniRead(cfg.file,"Game","CastAdjust","2000,2000,2000,2000,2000"),",")
+cfg.zoomEnabled := strSplit(iniRead(cfg.file,"Game","ZoomEnabled","0,0,0,0,0"),",")
+cfg.reelLevel 	:= strSplit(iniRead(cfg.file,"Game","SpeedLevel","10,10,10,10,10"),",")
 cfg.debug 		:= iniRead(cfg.file,"System","Debug",false)
 
 ui.fishLogArr := array()
 ui.sliderList := array()
+ui.cancelOperation := false
+ui.isAFK := false
 ui.bgColor := ["202020","333333","666666","","858585","999999","C9C9C9"]
-ui.fontColor := ["D2D2D2","AAAAAA","999999","666666","333333","111111"]
-ui.trimColor := ["0976f3","DDCC33","44DDCC","11EE11","EE1111","111111"]
+ui.fontColor := ["D2D2D2","AAAAAA","999999","666666","353535","151515"]
+ui.trimColor := ["1c8508","7a2814","44DDCC","11EE11","EE1111","303030"]
 
 ui.loadingProgress := 5
 ui.reeledIn := true
@@ -53,46 +56,49 @@ if a_isCompiled && !inStr(cfg.installDir,a_scriptDir) {
 startGame()
 initGui()
 createGui()
+
+detectPrompts(0)
 onExit(exitFunc)
-detectPrompts()
-;checkAds()
-;checkRewards()
 
 initGui(*) {
 	ui.sessionStartTime := A_Now
 	ui.autoFish := false
 	ui.fullscreen := false
-	ui.fishCount := 0
+	ui.fishCount := 000
 	ui.reeledIn := false
 	ui.isCasting := false
 	ui.autoclickerActive := false
+
 	ui.startKey := "F3"
+	ui.startKey2 := "q"
 	ui.stopKey := "F4"
-	ui.reloadKey := "F5"
-	ui.castKey := "F6"
+	ui.cancelKey := "c"
+	ui.reloadKey := "F9"
+	ui.castKey := "F5"
+	ui.castKey2 := "f"
 	ui.reelKey := "F7"
-	ui.reelKey2 := "x"
-	ui.exitKey := "F9"
-	ui.retrieveKey := "F8"
-	ui.startKeyGlobal := "!LButton"
-	ui.stopKeyGlobal := "!RButton"
-	ui.retrieveKeyGlobal := "!NumpadEnter"
-	ui.reelKeyGlobal := "!NumpadAdd"
-	ui.castKeyGlobal := "!Numpad0"
-	ui.retrieveKeyGlobal := "!NumpadEnter"
-	hotKey(ui.reelKeyGlobal,singleReel)
-	hotKey(ui.castKeyGlobal,singleCast)
-	hotKey(ui.retrieveKeyGlobal,singleRetrieve)
+	ui.reelKey2 := "r"
+	ui.exitKey := "F10"
+	ui.retrieveKey := "F6"
+	ui.retrieveKey2 := "v"
+	ui.flashlight := "+F"
+
+	ui.startKeyMouse := "!LButton"
+	ui.stopKeyMouse := "!RButton"
 	hotIfWinActive(ui.game)
 		hotkey(ui.reelKey2,singleReel)
 		hotKey(ui.startKey,autoFishStart)
-		hotKey(ui.startKeyGlobal,autoFishStart)
-		hotKey(ui.stopKey,autoFishStop)
-		hotKey(ui.stopKeyGlobal,autoFishStop)
+		hotKey(ui.startKey2,autoFishStart)
+		hotKey(ui.startKeyMouse,autoFishStart)
+		hotKey(ui.stopKeyMouse,autoFishStop)
 		hotKey(ui.reloadKey,appReload)
 		hotKey(ui.castKey,singleCast)
+		hotKey(ui.castKey2,singleCast)
 		hotKey(ui.reelKey,singleReel)
+		hotKey(ui.reelKey2,singleReel)
 		hotKey(ui.retrieveKey,singleRetrieve)
+		hotKey(ui.retrieveKey2,singleRetrieve)
+		hotkey(ui.cancelKey,cancelOperation)
 		hotKey(ui.exitKey,cleanExit)
 	hotif()
 	ui.castCount := 0
@@ -127,7 +133,7 @@ startGame(*) {
 		sleep(1000)
 		if w == a_screenWidth && h == a_screenHeight {
 			winActivate("ahk_exe fishingPlanet.exe")
-			sendIfWinActive("{alt down}{enter}{alt up}",ui.game,true)
+			sendNice("{alt down}{enter}{alt up}")
 			sleep(500)
 			ui.loadingProgress.value += 2
 			winMove(0,0,1280,720,ui.game)
@@ -141,14 +147,22 @@ startGame(*) {
 	}
 }
 
+m(msg := "") {
+	static dbugMsg := 0
+	dbugMsg += 1
+	msgBox(dbugMsg ". " msg)
+}
+
 autoFishStop(*) {
 	ui.autoFish := 0
-	setTimer(updateAfkTime,0)
+	ui.isAFK := false
 	ui.fishLogAfkTime.text := "00:00:00"
-	ui.startButton.opt("-hidden")
-	ui.startButtonHotkey.opt("-hidden")
-	ui.stopButton.opt("hidden")
-	ui.stopButtonHotkey.opt("hidden")
+	;setTimer(updateAfkTime,0)
+	; ui.startButton.opt("-hidden")
+	; ui.startButtonHotkey.opt("-hidden")
+	; ui.stopButton.opt("hidden")
+	; ui.stopButtonHotkey.opt("hidden")
+
 	ui.fishLogAfkTime.opt("+hidden")
 	ui.fishLogAfkTimeLabel.opt("+hidden")
 	ui.fishLogAfkTimeLabel2.opt("+hidden")
@@ -161,14 +175,29 @@ autoFishStop(*) {
 	send("{lshift up}")
 	send("{lbutton up}")
 	send("{rbutton up}")
-	ui.startButtonBg.opt("background" ui.bgColor[1])
+
+	ui.startButtonBg.opt("background273d62")
 	ui.startButtonBg.redraw()
 	ui.castButtonBg.opt("background" ui.bgColor[1])
 	ui.castButtonBg.redraw() 
-	ui.retrieveButtonBg.opt("background " ui.bgColor[1])
+	ui.retrieveButtonBg.opt("background " ui.bgColor[3])
 	ui.retrieveButtonBg.redraw()
 	ui.castButtonBg.opt("background" ui.bgColor[1])
 	ui.castButtonBg.redraw() 
+	ui.cancelButtonBg.opt("background5c0303")
+	ui.cancelButtonBg.redraw()
+	ui.cancelButton.setFont("c" ui.fontColor[1])
+	ui.cancelButtonHotkey.setFont("c" ui.fontColor[1])
+	ui.startbutton.setFont("c" ui.fontColor[1])
+	ui.startbuttonHotkey.setFont("c" ui.fontColor[1])
+	ui.retrieveButton.setFont("c" ui.fontColor[1])
+	ui.retrieveButtonHotKey.setFont("c" ui.fontColor[1])
+	ui.reelButton.setFont("c" ui.fontColor[1])
+	ui.reelButtonHotkey.setFont("c" ui.fontColor[1])
+	ui.castButton.setFont("c" ui.fontColor[1])
+	ui.castButtonHotkey.setFont("c" ui.fontColor[1])
+	
+	ui.cancelOperation := false
 	ui.reeling := false
 	ui.casting := false
 	ui.retrieving := false
@@ -182,15 +211,15 @@ autoFishStop(*) {
 
 autoFishStart(*) {
 	ui.autoFish := 1
-	isAFK:=true
-	ui.statCastCount.text += 1
+	ui.isAFK:=true
+	ui.statCastCount.text := format("{:02d}",ui.statCastCount.text + 1)
 	ui.secondsElapsed := 0
 	ui.statAfkStartTime.text := formatTime(,"yyyyMMdd HH:mm:ss")
 	setTimer(updateAfkTime,1000)
-	ui.startButton.opt("hidden")
-	ui.startButtonHotkey.opt("hidden")
-	ui.stopButton.opt("-hidden")
-	ui.stopButtonHotkey.opt("-hidden")
+	; ui.startButton.opt("hidden")
+	; ui.startButtonHotkey.opt("hidden")
+	; ui.stopButton.opt("-hidden")
+	; ui.stopButtonHotkey.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
@@ -198,50 +227,132 @@ autoFishStart(*) {
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
 	ui.startButtonBg.opt("background" ui.trimColor[1])
-	ui.startButtonBg.redraw()	
-	ui.fishLogAfkTime.opt("-hidden")
+	ui.startButtonBg.redraw()
+	ui.startButton.setFont("c" ui.fontColor[5])
+	ui.startButton.redraw()
+	ui.startButtonHotkey.setFont("c" ui.fontColor[5])
+	ui.startButtonHotkey.redraw()
+	ui.cancelButtonBg.opt("background" ui.trimColor[2])
+	ui.cancelButtonBg.redraw()
+	
 	send("{space up}")
 	send("{lshift up}")
 	send("{lbutton up}")
 	send("{rbutton up}")
-	ui.castButtonBg.opt("background" ui.bgColor[1])
-	ui.castButtonBg.redraw() 
 	ui.reeling := false
 	ui.casting := false
 	ui.retrieving := false
-
-	log("AFK: Starting AutoFish")
+	;setTimer(detectPrompts,15000)
+	log("AFK: Starting","AFK: Started")
 	
-	while ui.autoFish == 1 {
+	while ui.autoFish == 1 && !ui.cancelOperation {
 		detectPrompts(1)
 		(sleep500(2,0)) ? exit : 0
-		if !reeledIn()
+		if !reeledIn() && !ui.cancelOperation
 			reelIn(1)
-		if reeledIn()
+		if reeledIn() && !ui.cancelOperation
 			cast(1)
-		analyzeCatch()
-		log("___________________________________________________________________")
+		if !reeledIn() && !ui.cancelOperation
+			retrieve()
+		
+		if !ui.cancelOperation
+			analyzeCatch()
 	}
-	log("AFK: Stopping")
+	log("AFK: Stopping","AFK: Stopped")
+	log("___________________________________________________________________")
 }
 
-reelIn(isAFK:=true) {
+
+isHooked(*) {
+	if pixelGetColor(1090,510) == 0x419AAC {
+		log("Line: HOOK SET!")
+		ui.isHooked := 1
+	} else {
+		ui.isHooked := 0
+	}
+	
+	return ui.isHooked
+}
+
+checkPixel(x,y,color,dataType := "decimal") {
+	loadColor := round(pixelGetColor(x,y))
+	if (loadColor < round(color)+10000) && (loadColor > round(color)-10000) {
+		errorLevel := 1
+		log("Line: BITE DETECTED!")
+	} else
+		errorLevel := 0
+	;if ui.debug
+	;log("Pixel: " x "x" y)
+	;log("Color: " loadColor)
+	;log("Range: " round(color)-200000 "-" round(color)+200000)
+	return errorLevel
+}		
+		
+
+fishCaught(*) {
+	fishCaughtPixel := round(pixelGetColor(450,575))
+	if cfg.debug
+		log("Analyzing Catch: " fishCaughtPixel)
+	else
+		log("Analyzing: Catch","Analyzed: Catch")
+	if checkWhite := checkPixel(450,575,round("0xFFFFFF")) || checkGrey := checkPixel(450,575,round("0x797A7E")) {
+		if !(DirExist("./fishPics"))
+			DirCreate("./fishPics")
+		run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" formatTime(,"yyMMddhhmmss") ".png",,"hide")
+		sleep(1000)
+		log("Fish Caught!")
+
+		if ui.fishLogCount.text < 999
+			ui.fishLogCount.text := format("{:03i}",ui.fishLogCount.text + 1)
+			try
+				ui.bigFishCaught.text := ui.fishLogCount.text
+			try
+				ui.statFishCount.text := ui.fishLogCount.text
+			try
+				ui.FishCaughtFS.text := ui.fishLogCount.text
+		return 1
+	} else {
+		;msgbox(checkWhite "`n" checkGrey)
+		return 0
+	}
+}
+
+
+reelIn(isAFK*) {
 		ui.reelButtonBg.opt("background" ui.trimColor[1])
 		ui.reelButtonBg.redraw()
-		log("Reel: Starting Reel")
+		ui.reelButton.setFont("c" ui.fontColor[5])
+		ui.reelButton.redraw()
+		ui.reelButtonHotkey.setFont("c" ui.fontColor[5])
+		ui.reelButtonHotkey.redraw()
+		ui.cancelButtonBg.opt("background" ui.trimColor[2])
+		ui.cancelButtonBg.redraw()
+		log("Reel: Starting","Reel: Started")
+		log("___________________________________________________________________")
+
 		loop 5 {
+			if ui.cancelOperation
+				break
 			sendNice("{l}")
 			sleep(150)
 		}
 		
-		while !reeledIn() {
+		while !reeledIn() && !ui.cancelOperation {
+			; if checkPixel(1090,270,"0xb21e1c") {
+				; sendNice("{NumpadDel}")
+			; } else {
+				;send("{NumpadAdd}")
+			; }
 			sendNice("{space down}")
 			sleep(1000)
-			sendNice("{space}")
+			sendNice("{space up}")
 		}
 		sendNice("{space up}")
 		sleep(500)
-		log("Reel: Finished")
+		if ui.cancelOperation
+			return
+		analyzeCatch()
+		log("Reel: Finishing","Reel: Finished")
 		ui.reelButtonBg.opt("background" ui.bgColor[1])
 		ui.reelButtonBg.redraw()
 
@@ -278,27 +389,14 @@ checkFocus(*) {
 
 sleep500(loopCount := 1,stopOnReel := false) {
 	errorLevel := 0
-	loop loopCount {
-		if ui.autoFish {
-			if stopOnReel {
-				if !reeledIn() {
-					sleep(500)
-					errorLevel := 1
-				} else {
-					errorLevel := 0
-				}
-			} else {
-				sleep(500)
-				errorLevel := 1
-			} 
-		} else {
-			errorLevel := 0
-		}
-	}
+	while a_index <= loopCount && !isHooked() && !ui.cancelOperation && !reeledIn() {
+		sleep(500)
+		errorLevel := 1
+	}	
 	return errorLevel
 }
 
-sendNice(payload,gameWin:=ui.game,isAfk:=true) {
+sendNice(payload,gameWin:=ui.game) {
 	sendIfWInActive(payload,gameWin:=ui.game,true)
 }
 
@@ -307,11 +405,11 @@ calibrate(*) {
 	loop 13{
 		winActivate(ui.game)
 		sendNice("{NumpadSub}")
-		sleep(100)
+		sleep(50)
 	}
 	loop cfg.dragLevel[cfg.profileSelected] {
 		sendNice("{NumpadAdd}")
-		sleep(100)
+		sleep(50)
 	}
 	
 	log("Calibration: Reel Speed")
@@ -329,28 +427,34 @@ log("___________________________________________________________________")
 }
 	
 	
-cast(isAFK:=true) {
-	format("{:3di}",ui.statCastCount.text += 1)
+cast(*) {
 	ui.castButtonBg.opt("background" ui.trimColor[1])
 	ui.castButtonBg.redraw()
+	ui.castButton.setFont("c" ui.fontColor[5])
+	ui.castButton.redraw()
+	ui.castButtonHotkey.setFont("c" ui.fontColor[5])
+	ui.cancelButtonBg.opt("background" ui.trimColor[2])
+	ui.cancelButtonBg.redraw()
+	
+	format("{:3di}",ui.statCastCount.text += 1)
 	calibrate()
 	ui.isCasting := true
 	sendIfWinActive("{backspace}",ui.game,true)
-	errorLevel := (!sleep500(3)) ? 1 : exit,0 
+	errorLevel := sleep500(3)
 	log("Cast: Drawing Back Rod")
 	sendIfWinActive("{space down}",ui.game,true)
 	sleep(cfg.castAdjust[cfg.profileSelected])
 	sendIfWinActive("{space up}",ui.game,true)
 	log("Cast: Releasing Cast")
 	ui.isCasting := false
-	if isAFK {
+	if ui.isAFK {
 		log("Wait: Lure In-Flight")
 		loop cfg.castTime[cfg.profileSelected] {
-			(sleep500(2)) ? exit : 0
+			sleep500(2)
 		}
 		log("Wait: Lure Sinking")
 		loop cfg.sinkTime[cfg.profileSelected] {
-			(sleep500(2)) ? exit : 0
+			sleep500(2)
 		}
 	}	
 	if (ui.zoomToggle.value)
@@ -359,8 +463,6 @@ cast(isAFK:=true) {
 	log("___________________________________________________________________")
 	ui.castButtonBg.opt("background" ui.bgColor[1])
 	ui.castButtonBg.redraw()
-	if (ui.autoFish || !isAFK) && !reeledIn()
-		retrieve()
 }          
 
 landFish(*) {
@@ -383,88 +485,74 @@ mechanic := object()
 mechanic.last := ""
 mechanic.repeats := 0
 retrieve(isAFK:=true) {
+	if ui.cancelOperation
+		return
 	ui.retrieveButtonBg.opt("background" ui.trimColor[1])
 	ui.retrieveButtonBg.redraw()
+	ui.retrieveButton.setFont("c" ui.fontColor[5])
+	ui.retrieveButton.redraw()
+	ui.retrieveButtonHotkey.setFont("c" ui.fontColor[5])
+	ui.retrieveButtonHotkey.redraw()
+	ui.cancelButtonBg.opt("background" ui.trimColor[2])
+	ui.cancelButtonBg.redraw()
+
 	while !reeledIn() && (!isAFK || ui.autoFish) {
-		jigMechanic := 7	
-		if a_index < 90 && !(isHooked()) {
-			jigMechanic := round(random(1,12))
+		if ui.cancelOperation
+			return		
+		if isHooked() {
+			reelIn()
+			return
 		}
-		switch jigMechanic {
-			case 1,2,3: ;twitch
-				ui.retrieveButtonBg.opt("background" ui.trimColor[1])
-				ui.retrieveButtonBg.redraw()
-				if ((jigMechanic < cfg.twitchLevel[cfg.profileSelected] + 0) 
-				&& (mechanic.last == "twitch" && mechanic.repeats < 3)) 
-				|| (mechanic.last != "twitch") {
-					if mechanic.last == "twitch"  { 
-						mechanic.repeats += 1
-					} else {
-						mechanic.last := "twitch"
-						mechanic.repeats := 1
-					}			
+		jigMechanicNumber := round(random(1,20))
+		jigMechanic := "reelLevel"
+		switch jigMechanicNumber {
+			case 1,2,3,4,5:
+				jigMechanic := "twitchLevel"
 				log("Retrieve: Twitch")
-				loop round(random(1,2)) {
-					sendIfWinActive("{RButton Down}",ui.game,true)
-					sleep(150)
-					sendIfWinActive("{RButton Up}",ui.game,true)
-					sleep(round(random(200,400)))
-					if (isAFK && !ui.autoFish) || reeledIn()
-						break
-				}
+				sendNice("{space down}")
+				sendNice("{RButton Down}")
+				sleep(round(random(100,200)))
+				sendNice("{RButton Up}")
+				sendNice("{space up}")
+			case 6,7,8,9,10:
+				jigMechanic := "pauseLevel"
+				jigMechanicNumber -= 5
+				log("Retrieve: Pause")
+				sendNice("{space}")
+				sleep(1000)
+				sleep(round(random(99-999)))
+			case 11,12,13,14,15,16,17,18,19,20:
+				jigMechanic := "reelLevel"
+				jigMechanicNumber -= 10
+				log("Retrieve: Reel")
+				sendNice("{space down}")
+				sleep(1500)
+				sendNice("{space up}")
 			}
 			
-			case 4,5,6: ;pause
-				if ((jigMechanic < cfg.pauseLevel[cfg.profileSelected] + 3) 
-				&& (mechanic.last == "pause" && mechanic.repeats < 3)) 
-				|| (mechanic.last != "pause") {
-					if mechanic.last == "pause"  { 
-						mechanic.repeats += 1
-					} else {
-						mechanic.last := "pause"
-						mechanic.repeats := 1
-					}		
-				
-					log("Retrieve: Pause")
-					sleep(1000)
-					if (isAFK && !ui.autoFish) || reeledIn()
-						break
-				}
-				sleep(round(random(1,999)))
-				
-			case 7,8,9,10,11,12: ;reel
-				if (mechanic.last == "reel" && mechanic.repeats < 3) 
-				|| (mechanic.last != "reel") {
-					if !ui.reeledIn
-						sendIfWinActive("{space down}",ui.game,true)		
-					if mechanic.last == "reel"  { 
-						mechanic.repeats += 1
-					} else {
-						mechanic.last := "reel"
-						mechanic.repeats := 1
-					}			
-					log("Retrieve: Reel")
-					sleep500(8,1)
-					sendIfWinActive("{space up}",ui.game,true)
-					if (isAFK && !ui.autoFish) || reeledIn()
-						break
-				}
-					
+		if (jigMechanicNumber < cfg.%jigMechanic%[cfg.profileSelected]) 
+		&& (mechanic.last != jigMechanic || mechanic.repeats < 3) {
+			if (mechanic.last == jigMechanic)
+				mechanic.repeats += 1
+			else
+				mechanic.repeats := 1
+			mechanic.last := jigMechanic	
+			sleep(1000)
 		}
 	}
 	log("___________________________________________________________________")
-	;ui.retrieveButtonBg.opt("background" ui.bgColor[1])
-	;ui.retrieveButtonBg.redraw()
+	ui.retrieveButtonBg.opt("background" ui.bgColor[1])
+	ui.retrieveButtonBg.redraw()
 }
 
-analyzeCatch(*) {
-		if ui.reeledIn {
-		(sleep500(6)) ? exit : 0
+analyzeCatch(*) { 
+	if reeledIn() {
+		sleep500(6)
 		if fishCaught() {
-			sendIfWinActive("{space}",ui.game)
-			(sleep500(4)) ? exit : 0
-			sendIfWinActive("{backspace}",ui.game)
-			(sleep500(2)) ? exit : 0
+			sendNice("{space}")
+			sleep500(6)
+			sendNice("{backspace}")
+			sleep500(2)
 		} else {	
 			log("No Fish Detected.")
 		}
@@ -508,81 +596,57 @@ reeledIn(*) {
 		return ui.reeledIn
 	
 }
+	; if checkPixel(1160,530,"0x262F36")	;rod load lvl1
+	; if checkPixel(1230,530,"0x292134")	;reel load lvl1
+	; 1160,530 262F36
+	; 1230,530 292134
+	; 1090,520
+	; 1090,510	419aac
+	; 1090,500
+	; 1160,520	2434
+	; 1160,510
+	; 1160,500
+	; 1230,520
+	; 1230,510
+	; 1230,500
 
-isHooked(*) {
-	hookedPixel := round(pixelGetColor(1220,230)) 
-	if (hookedPixel > (round(0x3BCC3C) - 10000) && hookedPixel < (round(0x3BCC3C) + 10000)) {
-		log("HOOKED!")
-		ui.isHooked := 1
-	} else
-		ui.isHooked := 0
-	return ui.isHooked
-}
 
-fishCaught(*) {
-	fishCaughtPixel := round(pixelGetColor(450,575))
-	if cfg.debug
-		log("Analyzing Catch: " fishCaughtPixel)
-	else
-		log("Analyzing Catch")
-	if (fishCaughtPixel >= 16000000) {
-		if !(DirExist("./fishPics"))
-			DirCreate("./fishPics")
-		run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" formatTime(,"yyMMddhhmmss") ".png",,"hide")
-		sleep(1000)
-		log("Fish Caught!")
-
-		if ui.fishLogCount.text < 999
-			ui.fishLogCount.text := format("{:03i}",ui.fishLogCount.text + 1)
-			try
-				ui.bigFishCaught.text := ui.fishLogCount.text
-			try
-				ui.statFishCount.text := ui.fishLogCount.text
-			try
-				ui.FishCaughtFS.text := ui.fishLogCount.text
-		return 1
-	} else {
-		return 0
-	}
-}
-
-setTimer () => (log("Prompts: Timer Started"),setTimer(detectPrompts,20000)),-10000
 detectPrompts(silent := false) {
-	(silent) ? 0 : log("Prompts: Detecting Popups")
-	ui.popUpFound := false
+	((silent) && (ui.isAFK)) ? 0 : log("Prompts: Detecting Popups")
+	ui.popupFound := false
 	while ui.popupFound == false && a_index < 10 {
 		if round(pixelGetColor(75,180)) == 8311586 {
-			(silent) ? log("Rewards: Reward Detected") : 0
+			((silent) && (ui.isAFK)) ? log("Rewards: Reward Detected") : 0
 			ui.popupFound := true
 			MouseMove(210,525)
 			sendNice("{LButton Down}")
 			sleep(350)
 			sendNice("{LButton Up}")
 			sleep(500)
-			(silent) ? log("Rewards: Reward Claimed") : 0
+			((silent) && (ui.isAFK)) ? log("Rewards: Reward Claimed") : 0
 		}
 	}
 
 	if round(pixelGetColor(75,50)) == 8311586 {
-		(silent) ? log("Rewards: Reward Detected") : 0
-		ui.popupFound := true 
+		((silent) && (ui.isAFK)) ? log("Rewards: Reward Detected") : 0
+		ui.popupFound := true
 		MouseMove(215,630)
 		sendIfWinActive("{LButton Down}",ui.game,true)
 		sleep(350)
 		sendIfWinActive("{LButton Up}",ui.game,true)
 		sleep(500)
-		(silent) ? log("Rewards: Reward Claimed") : 0
+		((silent) && (ui.isAFK)) ? log("Rewards: Reward Claimed") : 0
 	}
 	
 	if round(pixelGetColor(365,80)) == 8311586 {
-		(silent) ? log("Trip: Trip Ended") : 0
+		((silent) && (ui.isAFK)) ? log("Trip: Trip Ended") : 0
 		ui.popupFound := true
 		mouseMove(530,610)
 		sendIfWinActive("{LButton Down}",ui.game,true)
 		sleep(350)
 		sendIfWinActive("{LButton Up}",ui.game,true)
 		sleep(1000)
-		(silent) ? log("Trip: Adding Day Trip") : 0
+		((silent) && (ui.isAFK)) ? log("Trip: Adding Day Trip") : 0
 		MouseMove(530,450)
 		sendIfWinActive("{LButton Down}",ui.game,true)
 		sleep(350)
@@ -590,23 +654,21 @@ detectPrompts(silent := false) {
 		sleep(500)	
 	}
 	
-	if cfg.debug
-		log("Ad Screen Pixel: " AdScreenPixel)
-	AdScreenPixel := round(pixelGetColor(1379,78))
-	if (AdScreenPixel >= 16000000) {
-		(silent) ? log("Ads: Ad Detected") : 0
+	if checkPixel(545,600,"0xFAF2EE") && checkPixel(1088,57,"0xFFFFFF") {
+		((silent) && (ui.isAFK)) ? log("Ads: Ad Detected") : 0
 		ui.popupFound := true
 		mouseGetPos(&x,&y)
-		mouseMove(1379,78)
-		sendIfWinActive("{LButton Down}",ui.game,true)
-		sleep(350)
-		sendIfWinActive("{LButton Up}",ui.game,true)
+		mouseMove(1088,57)
+		sendNice("{LButton Down}")
+		sleep(300)
+		sendNice("{LButton Up}")
 		sleep(500)
 		mouseMove(x,y)
 		(silent) ? log("Ads: Ad Closed") : 0
-	} 
-	(silent) ? log("Prompts: All Clear") : 0
-	(silent) ? log("___________________________________________________________________") : 0
+	}
+			
+	;((silent) && (ui.isAFK)) ? log("Prompts: All Clear") : 0
+	((silent) && (ui.isAFK)) ? log("___________________________________________________________________") : 0
 }
 
 
@@ -628,7 +690,7 @@ timerFadeIn(*) {
 	mousemove(x,y)
 	;mouseGetPos(&x,&y)
 	msgBox(pixelGetColor(x,y))
-	} */
+} */
 timerFadeOut(*) {
 	while tmp.h < 40 {
 		ui.timerAnim.move(,,,tmp.h+=1)
@@ -686,8 +748,8 @@ createGui() {
 	ui.fishStatus := ui.fishGui.addText("x2 y752 w1580 h61 cBBBBBB background" ui.bgColor[1])
 	drawButton(1,753,661,60)
 	ui.profilePos := map("x",398,"y",759,"w",260,"h",50)
-	ui.profileBg := ui.fishGui.addText("x" ui.profilePos["x"] " y" ui.profilePos["y"]-1 " w" ui.profilePos["w"] " h" ui.profilePos["h"] " background" ui.bgColor[3])
-	ui.profileBg2 := ui.fishGui.addText("x" ui.profilePos["x"]+1 " y" ui.profilePos["y"]+0 " w" ui.profilePos["w"]-2 " h" ui.profilePos["h"]-2 " background" ui.trimColor[6])
+	ui.profileBg := ui.fishGui.addText("x" ui.profilePos["x"]+2 " y" ui.profilePos["y"]-4 " w" ui.profilePos["w"] " h" ui.profilePos["h"]+8 " background" ui.bgColor[3])
+	ui.profileBg2 := ui.fishGui.addText("x" ui.profilePos["x"]+3 " y" ui.profilePos["y"]-4 " w" ui.profilePos["w"] " h" ui.profilePos["h"]+7 " background" ui.trimColor[6])
 
 ;	ui.profileLabelOutline := ui.fishGui.addText("x" ui.profilePos["x"]+48 " y" ui.profilePos["y"]+29 " w85 h21 background" ui.bgColor[5])
 ;	ui.profileLabelOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+49 " y" ui.profilePos["y"]+28 " w83 h22 background" ui.bgColor[1])
@@ -695,15 +757,15 @@ createGui() {
 	;ui.profileBg2 := ui.fishGui.addText("x+-" ui.profilePos["w"]-1 " ys+1 w" ui.profilePos["w"]-2 " h" ui.profilePos["h"]-2 " background" ui.bgColor[1]) 
 	;ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+203 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_new.png")
 	
-	ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+29 " w16 h16 backgroundTrans","./img/button_new.png")
-	ui.profileDeleteButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+69 " y" ui.profilePos["y"]+29 " w16 h16 backgroundTrans","./img/button_delete.png")
-	ui.profileSaveCancelButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+29 " w16 h16 backgroundTrans","./img/button_cancel.png")
+	ui.profileNewButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+29 " y" ui.profilePos["y"]+31 " w16 h16 backgroundTrans","./img/button_new.png")
+	ui.profileDeleteButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+70 " y" ui.profilePos["y"]+31 " w16 h16 backgroundTrans","./img/button_delete.png")
+	ui.profileSaveCancelButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+29 " y" ui.profilePos["y"]+31 " w16 h16 backgroundTrans","./img/button_cancel.png")
 	ui.profileSaveCancelButton.onEvent("click",cancelEditProfileName)
-	ui.profileSaveButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+50 " y" ui.profilePos["y"]+29 " w16 h17 backgroundTrans","./img/button_save.png")
+	ui.profileSaveButton := ui.fishGui.addPicture("hidden x" ui.profilePos["x"]+51 " y" ui.profilePos["y"]+31 " w16 h17 backgroundTrans","./img/button_save.png")
 	;ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+224 " y" ui.profilePos["y"]+0 " w16 h16 backgroundTrans","./img/button_edit.png")
-	ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+50 " y" ui.profilePos["y"]+29 " w15 h16 backgroundTrans","./img/button_edit.png")
-	ui.profileLArrow := ui.fishGui.addPicture("x" ui.profilePos["x"]+3 " y" ui.profilePos["y"]+3 " w20 h22 backgroundTrans","./img/button_arrowLeft.png")
-	ui.profileRArrow := ui.fishGui.addPicture("x" (ui.profilePos["x"]+26)+(ui.profilePos["w"]-50) " y" ui.profilePos["y"]+3 " w20 h22 backgroundTrans","./img/button_arrowRight.png")
+	ui.profileEditButton := ui.fishGui.addPicture("x" ui.profilePos["x"]+51 " y" ui.profilePos["y"]+31 " w15 h16 backgroundTrans","./img/button_edit.png")
+	ui.profileLArrow := ui.fishGui.addPicture("x" ui.profilePos["x"]+5 " y" ui.profilePos["y"]+3 " w20 h22 backgroundTrans","./img/button_arrowLeft.png")
+	ui.profileRArrow := ui.fishGui.addPicture("x" (ui.profilePos["x"]+30)+(ui.profilePos["w"]-50) " y" ui.profilePos["y"]+3 " w20 h22 backgroundTrans","./img/button_arrowRight.png")
 	ui.profileLArrow.onEvent("click",profileLArrowClicked)
 	ui.profileRArrow.onEvent("click",profileRArrowClicked)
 	;ui.profileLabel := ui.fishGui.addText("x" ui.profilePos["x"]+138 " y" ui.profilePos["y"]+28 " w95 h18 background" ui.bgColor[2] " c" ui.fontColor[4],"Profile")
@@ -712,16 +774,16 @@ createGui() {
 	;ui.profileSaveButtonOutline := ui.fishGui.addText("hidden x406 y781 w157 h25 background" ui.fontColor[1])
 	;ui.profileEdit := ui.fishGui.addEdit("hidden x408 y781 w125 h25 wantReturn c" ui.fontColor[3] " background" ui.bgColor[1],cfg.profileName[cfg.profileSelected])
 	;ui.profileEdit.setFont("s14")
-	ui.profileText := ui.fishGui.addText("x" ui.profilePos["x"]+26 " y" ui.profilePos["y"]+4 " w207 h20 c" ui.fontColor[3] " center background" ui.bgColor[1])
+	ui.profileText := ui.fishGui.addText("x" ui.profilePos["x"]+30 " y" ui.profilePos["y"]+4 " w207 h20 c" ui.fontColor[3] " center background" ui.bgColor[1])
 	ui.profileText.text := cfg.profileName[cfg.profileSelected]
-	ui.profileIcon := ui.fishGui.addPicture("hidden x410 y765 w230 h42 backgroundCC3355","./img/rod.png")
-	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+25 " y" ui.profilePos["y"]+3 " w1 h21 background" ui.bgColor[3])
-	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+25 " y" ui.profilePos["y"]+24 " w209 h1 background" ui.bgColor[3])
-	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+25 " y" ui.profilePos["y"]+3 " w209 h1 background" ui.bgColor[3])
-	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+233 " y" ui.profilePos["y"]+3 " w1 h21 background" ui.bgColor[3])
+	;ui.profileIcon := ui.fishGui.addPicture("hidden x410 y765 w230 h42 backgroundCC3355","./img/rod.png")
+	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+3 " w1 h22 background" ui.bgColor[3])
+	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+24 " w209 h1 background" ui.bgColor[3])
+	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+3 " w209 h1 background" ui.bgColor[3])
+	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+236 " y" ui.profilePos["y"]+3 " w1 h22 background" ui.bgColor[3])
 	ui.profileText.setFont("s12","calibri")
 	ui.profileNumStr := "Profile[" cfg.profileSelected "/" cfg.profileName.length "]"
-	ui.profileNum := ui.fishGui.addText("x" ui.profilePos["x"]+75 " y" ui.profilePos["y"]+27 " right w160 h20 backgroundTrans",ui.profileNumStr)
+	ui.profileNum := ui.fishGui.addText("x" ui.profilePos["x"]+65 " y" ui.profilePos["y"]+29 " right w160 h20 backgroundTrans",ui.profileNumStr)
 	ui.profileNum.setFont("s13 c" ui.fontColor[2],"courier new")
 ;	ui.profileLabel := ui.fishGui.addText("x" ui.profilePos["x"]+150 " y" ui.profilePos["y"]+30 " center w83 h19 background" ui.bgColor[2] " c" ui.fontColor[3],"Profile")
 ;	ui.profileLabel.setFont("s14","Courier New")
@@ -773,59 +835,69 @@ createGui() {
 	ui.zoomToggleLabel.setFont("s9")
 	
 	drawButton(1101,753,121,60)
-	ui.startButtonBg := ui.fishGui.addText("x1103 y755 w116 h56 background" ui.bgColor[1])
-	ui.startButton := ui.fishGui.addText("section x1101 center y770 w118 h60 cC9C9C9 backgroundTrans","Start")
+	ui.startButtonBg := ui.fishGui.addText("x1103 y755 w117 h56 background0a260a")
+	ui.startButton := ui.fishGui.addText("section x1101 center y768 w120 h60 c" ui.fontColor[2] " backgroundTrans","AFK")
 	ui.startButton.setFont("s22","Helvetica")
-	ui.startButtonHotkey := ui.fishGui.addText("x+-113 center ys-15 w20 h20 cC9C9C9 backgroundTrans","F3")
-	ui.startButtonHotkey.setFont("s12","Helvetica")	
+	ui.startButtonHotkey := ui.fishGui.addText("x+-117 center ys-13 w20 h20 c" ui.fontColor[2] " backgroundTrans","[ Q ]")
+	ui.startButtonHotkey.setFont("s9","Sans Serif")	
 	ui.startButton.onEvent("click",startButtonClicked)
-	ui.stopButton := ui.fishGui.addText("hidden section x1101 center y770 w118 h60 cC9C9C9 backgroundTrans","Stop")
+	ui.stopButton := ui.fishGui.addText("hidden section x1101 center y768 w120 h60 c" ui.fontColor[2] " backgroundTrans","Stop")
 	ui.stopButton.setFont("s22","Helvetica")
-	ui.stopButtonHotkey := ui.fishGui.addText("hidden x+-113 center ys-15 w20 h20 cC9C9C9 backgroundTrans","F4")
-	ui.stopButtonHotkey.setFont("s12","Helvetica")	
+	ui.stopButtonHotkey := ui.fishGui.addText("hidden x+-113 center ys-1 w20 h20 c" ui.fontColor[2] " backgroundTrans","[ F4 ]")
+	ui.stopButtonHotkey.setFont("s9","Sans Serif")	
 	ui.stopButton.onEvent("click",autoFishStop)
-	
-	drawButton(1224,753,100,29)
-	ui.castButtonBg := ui.fishGui.addText("x1226 y755 w96 h25 background" ui.bgColor[1])
-	ui.castButton := ui.fishGui.addText("section x1230 center y756 w91 h26 cC9C9C9 backgroundTrans","Cast")
+
+	drawButton(1224,753,125,29)
+	ui.castButtonBg := ui.fishGui.addText("x1226 y755 w121 h25 background" ui.bgColor[1])
+	ui.castButton := ui.fishGui.addText("section x1230 center y756 w116 h26 cC9C9C9 backgroundTrans","Cast")
 	ui.castButton.setFont("s16","Helvetica")
-	ui.castButtonHotkey := ui.fishGui.addText("x+-95 center ys-1 w20 h20 cC9C9C9 backgroundTrans","F6")
-	ui.castButtonHotkey.setFont("s10","Helvetica")	
+		ui.castButtonHotkey := ui.fishGui.addText("x+-120 center ys-1 w20 h20 c" ui.fontColor[2] " backgroundTrans","[ F ]")
+	ui.castButtonHotkey.setFont("s9","Sans Serif")	
 	ui.castButton.onEvent("click",singleCast)
 	ui.castButtonBg.onEvent("click",singleCast)
 	
-	drawButton(1224,784,100,29)
-	ui.reelButtonBg := ui.fishGui.addText("x1226 y786 w96 h25 background" ui.bgColor[1])
-	ui.reelButton := ui.fishGui.addText("section x1230 center y786 w91 h26 cC9C9C9 backgroundTrans","Reel")
-	ui.reelButton.setFont("s16","Helvetica")
-	ui.reelButtonHotkey := ui.fishGui.addText("x+-95 center ys-1 w20 h20 cC9C9C9 backgroundTrans","F7")
-	ui.reelButtonHotkey.setFont("s10","Helvetica")	
-	ui.reelButton.onEvent("click",singleReel)
-	ui.reelButtonBg.onEvent("click",singleReel)
-	
-	drawButton(1326,753,115,29)
-	ui.retrieveButtonBg := ui.fishGui.addText("x1328 y755 w111 h25 background" ui.bgColor[1])
-	ui.retrieveButton := ui.fishGui.addText("section x1332 center y756 w106 h26 cC9C9C9 backgroundTrans"," Retrieve")
+	drawButton(1224,784,125,29)
+	ui.retrieveButtonBg := ui.fishGui.addText("x1226 y786 w121 h25 background" ui.bgColor[1])
+	ui.retrieveButton := ui.fishGui.addText("section x1228 center y787 w125 h26 cC9C9C9 backgroundTrans","Retrieve")
 	ui.retrieveButton.setFont("s16","Helvetica")
-	ui.retrieveButtonHotkey := ui.fishGui.addText("x+-110 center ys-1 w20 h20 cC9C9C9 backgroundTrans","F8")
-	ui.retrieveButtonHotkey.setFont("s10","Helvetica")	
-	ui.retrieveButtonBg.onEvent("click",singleRetrieve)
-	ui.retrieveButton.onEvent("click",singleRetrieve)
+	ui.retrieveButtonHotkey := ui.fishGui.addText("x+-126 center ys-1 w20 h20 c" ui.fontColor[2] " backgroundTrans","[ V ]")
+	ui.retrieveButtonHotkey.setFont("s9","Sans Serif")	
+	ui.retrieveButton.onEvent("click",singleretrieve)
+	ui.retrieveButtonBg.onEvent("click",singleretrieve)
 	
-	drawButton(1326,784,115,29)
-	ui.reloadButtonBg := ui.fishGui.addText("x1328 y786 w111 h25 background" ui.bgColor[1]) 
-	ui.reloadButton := ui.fishGui.addText("section x1332 center y787 w106 h26 cC9C9C9 backgroundTrans"," Reload")
-	ui.reloadButton.setFont("s16","Helvetica")
-	ui.reloadButtonHotkey := ui.fishGui.addText("x+-110 center ys-1 w20 h20 cC9C9C9 backgroundTrans","F5")
-	ui.reloadButtonHotkey.setFont("s10","Helvetica")
-	ui.reloadButtonBg.onEvent("click",appReload)
+	drawButton(1351,753,115,29)
+	ui.reelButtonBg := ui.fishGui.addText("x1353 y755 w111 h25 background" ui.bgColor[1])
+	ui.reelButton := ui.fishGui.addText("section x1357 center y756 w106 h26 cC9C9C9 backgroundTrans","Reel")
+	ui.reelButton.setFont("s16","Helvetica")
+	ui.reelButtonHotkey := ui.fishGui.addText("x+-109 center ys-1 w20 h20 c" ui.fontColor[2] " backgroundTrans","[ R ]")
+	ui.reelButtonHotkey.setFont("s9","Sans Serif")	
+	ui.reelButtonBg.onEvent("click",singlereel)
+	ui.reelButton.onEvent("click",singlereel)
+	
+	drawButton(1351,784,115,29)
+	ui.cancelButtonBg := ui.fishGui.addText("x1353 y786 w111 h25 background270202") 
+	ui.cancelButton := ui.fishGui.addText("section x1357 center y787 w106 h26 cC9C9C9 backgroundTrans","Cancel")
+	ui.cancelButton.setFont("s16","Helvetica")
+	ui.cancelButtonHotkey := ui.fishGui.addText("x+-109 center ys-1 w20 h20 c" ui.fontColor[2] " backgroundTrans","[ C ]")
+	ui.cancelButtonHotkey.setFont("s9","Sans Serif")
+	ui.cancelButtonBg.onEvent("click",cancelOperation)
+	ui.cancelButton.onEvent("click",cancelOperation)
+	
+	drawButton(1468,753,113,19)
+	ui.reloadButtonBg := ui.fishGui.addText("x1471 y755 w106 h15 background" ui.bgColor[1])
+	ui.reloadButton := ui.fishGui.addText("section x1473 center y755 w104 h19 cC9C9C9 backgroundTrans","Reload")
+	ui.reloadButton.setFont("s10","Helvetica")	
+	ui.reloadButtonHotkey := ui.fishGui.addText("x+-109 center ys-1 w30 h13 cC9C9C9 backgroundTrans","[ F9 ]")
+	ui.reloadButtonHotkey.setFont("s9","Sans Serif")	
 	ui.reloadButton.onEvent("click",appReload)
-	drawButton(1443,753,138,60)
-	ui.exitButtonBg := ui.fishGui.addText("x1444 y755 w136 h54 background" ui.bgColor[1])
-	ui.exitButton := ui.fishGui.addText("section x1441 center y770 w136 h58 cC9C9C9 backgroundTrans","Exit")
-	ui.exitButton.setFont("s22","Helvetica")	
-	ui.exitButtonHotkey := ui.fishGui.addText("x+-130 center ys-15 w20 h20 cC9C9C9 backgroundTrans","F9")
-	ui.exitButtonHotkey.setFont("s12","Helvetica")	
+	ui.reloadButtonBg.onEvent("click",appReload)
+
+	drawButton(1468,774,113,39)
+	ui.exitButtonBg := ui.fishGui.addText("x1471 y776 w106 h35 background" ui.bgColor[1])
+	ui.exitButton := ui.fishGui.addText("section x1473 center y778 w104 h39 cC9C9C9 backgroundTrans","Exit")
+	ui.exitButton.setFont("s20","Helvetica")	
+	ui.exitButtonHotkey := ui.fishGui.addText("x+-107 center ys-2 w30 h30 cC9C9C9 backgroundTrans","[ F10 ]")
+	ui.exitButtonHotkey.setFont("s9","Sans Serif")	
 	ui.exitButton.onEvent("click",cleanExit)
 	ui.exitButtonBg.onEvent("click",cleanExit)
 
@@ -879,7 +951,7 @@ createGui() {
 		exitApp
 	}
 	sleep(500)
-	ui.profileIcon.focus()
+	;ui.profileIcon.focus()
 	statPanel()
 	while ui.fishLogArr.length < 33 {
 		ui.fishLogArr.push("")
@@ -888,11 +960,19 @@ createGui() {
 		ui.fishLogText.add([""])
 	}
 	ui.fishGui.show("x" x-300 " y" y+-30 " w1582 h814 noActivate")
+	ui.fishLogAfkTime.text := "00:00:00"
 	loadScreen(false)	
+	
+	winActivate(ui.game)
+	mouseMove(200,200,0)
+	sleep(150)
+	send("{LButton Down}")
+	sleep(150)
+	send("{LButton Up}")
 }
 
 saveSliderValues(*) {
-	for this_slider in ui.sliderList {
+for this_slider in ui.sliderList {
 		if cfg.%this_slider%.length < cfg.profileSelected
 			cfg.%this_slider%[cfg.profileSelected] := ui.%this_slider%.value
 		else
@@ -1028,6 +1108,7 @@ cancelEditProfileName(*) {
 
 startButtonClicked(*) { 
 		winActivate("ahk_exe fishingPlanet.exe")
+		ui.cancelOperation := false
 		autoFishStart()
 	}
 
@@ -1061,61 +1142,68 @@ updateControls(*) {
 	
 }
 
-ui.casting := false
+
+cancelOperation(*) {
+		ui.cancelOperation := true
+		ui.cancelButtonBg.opt("background" ui.trimColor[2])
+		ui.cancelButtonBg.redraw()
+		
+		ui.reelButtonBg.opt("background" ui.bgColor[1])
+		ui.reelButtonBg.redraw()
+		ui.reelButton.setFont("c" ui.fontColor[2])
+		ui.reelButton.redraw()
+		ui.reelButtonHotkey.setFont("c" ui.fontColor[2])
+		ui.reelButtonHotkey.redraw()
+		ui.castButtonBg.opt("background" ui.bgColor[1])
+		ui.castButtonBg.redraw()
+		ui.castButton.setFont("c" ui.fontColor[2])
+		ui.castButton.redraw()
+		ui.castButtonHotkey.setFont("c" ui.fontColor[2])
+		ui.castButtonHotkey.redraw()
+		ui.retrieveButtonBg.opt("background" ui.bgColor[1])
+		ui.retrieveButtonBg.redraw()
+		ui.retrieveButton.setFont("c" ui.fontColor[2])
+		ui.retrieveButton.redraw()
+		ui.retrieveButtonHotkey.setFont("c" ui.fontColor[2])
+		ui.retrieveButtonHotkey.redraw()
+		ui.startButtonBg.opt("background273d62")
+		ui.startButtonBg.redraw()
+		ui.startButton.setFont("c" ui.fontColor[2])
+		ui.startButton.redraw()
+		ui.startButtonHotkey.setFont("c" ui.fontColor[2])
+		ui.startButtonHotkey.redraw()
+		autoFishStop()
+		
+		send("{space up}")
+		send("{lshift up}")
+		send("{lbutton up}")
+		send("{rbutton up}")
+		
+		ui.cancelButtonBg.opt("background5c0303")
+		ui.cancelButtonBg.redraw()
+	}
+
+cancelReset(*) {
+	ui.cancelOperation := false
+	ui.cancelButtonBg.opt("background5c0303")
+	ui.retrieveButtonBg.opt("background" ui.bgColor[1])
+	ui.reelButtonBg.opt("background" ui.bgColor[1])
+	ui.castButtonBg.opt("background" ui.bgColor[1])
+}
+
 singleCast(*) {
-	(ui.casting := !ui.casting)
-		? ( 
-			ui.retrieveButtonBg.opt("background " ui.bgColor[1]),
-			ui.retrieveButtonBg.redraw(),
-			ui.reelButtonBg.opt("background" ui.bgColor[1]),
-			ui.reelButtonBg.redraw(),
-			cast(0) )
-		: ( send("{space up}"),
-			send("{lshift up}"),
-			send("{lbutton up}"),
-			send("{rbutton up}"),
-			ui.castButtonBg.opt("background" ui.bgColor[1]),
-			ui.castButtonBg.redraw(),
-			ui.reelButtonBg.opt("background" ui.bgColor[1]),
-			ui.reelButtonBg.redraw(),
-			ui.castButtonBg.opt("background" ui.bgColor[1]),
-			ui.castButtonBg.redraw() )
+	cancelReset()
+	cast(0)
 }
 
-ui.reeling := false
 singleReel(*) {
-	(ui.reeling := !ui.reeling)
-		? ( autoFishStop(),
-			ui.retrieveButtonBg.opt("background" ui.bgColor[1]),
-			ui.retrieveButtonBg.redraw(),
-			ui.castButtonBg.opt("background" ui.bgColor[1]),
-			ui.castButtonBg.redraw(),
-			reelIn(0) )
-		: ( send("{space up}"),
-			send("{lshift up}"),
-			send("{lbutton up}"),
-			send("{rbutton up}"),
-			ui.reelButtonBg.opt("background" ui.bgColor[1]),
-			ui.reelButtonBg.redraw() )
-
+	cancelReset()
+	reelIn(0)
 }
-	
 
-
-ui.retrieving := false
 singleRetrieve(*) {
-	(ui.retrieving := !ui.retrieving)
-		? ( ui.reelButtonBg.opt("background" ui.bgColor[1]),
-			ui.reelButtonBg.redraw(),
-			ui.castButtonBg.opt("background" ui.bgColor[1]),
-			ui.castButtonBg.redraw(),
-			retrieve(0) )
-		: ( send("{space up}"),
-			send("{lshift up}"),
-			send("{lbutton up}"),
-			send("{rbutton up}"),
-			ui.retrieveButtonBg.opt("background" ui.bgColor[1]),
-			ui.retrieveButtonBg.redraw() )
+	cancelReset()
+	retrieve(0)
 }
 
 slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20,range := 0-10,tickInterval := 1,default := 1,align := "center",label := "",orient := "",labelAlign := "r") {
@@ -1126,7 +1214,6 @@ slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20
 		cfg.%name%.push(cfg.%name%[cfg.%name%.length])
 	}
 	ui.%name%.value := cfg.%name%[cfg.profileSelected]
-	
 	ui.%name%.onEvent("change",sliderChange)
 	
 	if (label)
