@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.7.1"
+A_FileVersion := "1.2.7.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -931,7 +931,7 @@ createGui() {
 	ui.castButtonBg := ui.fishGui.addText("x1226 y755 w121 h25 background" ui.bgColor[1])
 	ui.castButton := ui.fishGui.addText("section x1230 center y756 w116 h26 c" ui.fontColor[2] " backgroundTrans","&Cast")
 	ui.castButton.setFont("s14","Trebuchet MS")
-		ui.castButtonHotkey := ui.fishGui.addText("x+-120 ys-4 w40 h20 c" ui.fontColor[2] " backgroundTrans","[C]")
+		ui.castButtonHotkey := ui.fishGui.addText("x+-119 ys-4 w40 h20 c" ui.fontColor[2] " backgroundTrans","[C]")
 	ui.castButtonHotkey.setFont("s10 bold","Palatino Linotype")	
 	ui.castButton.onEvent("click",singleCast)
 	ui.castButtonBg.onEvent("click",singleCast)
