@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.7.5"
+A_FileVersion := "1.2.7.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -878,7 +878,7 @@ createGui() {
 	ui.bigFishCaughtLabel.setFont("s24")
 	ui.bigFishCaughtLabel2 := ui.fishGui.addtext("hidden right x1055 y696 w100 h40 backgroundTrans c" ui.fontColor[1],"Count")
 	ui.bigFishCaughtLabel2.setFont("s28")
-	ui.disabledPanel := ui.fishGui.addPicture("hidden x800 y850 w250 h60","./img/disabledPanel.png")
+	;ui.disabledPanel := ui.fishGui.addPicture("hidden x800 y850 w250 h60","./img/disabledPanel.png")
 
 
 	if winExist(ui.game) {
