@@ -213,6 +213,8 @@ install() {
 			fileInstall("./Img/button_edit.png",InstallDir "/img/button_edit.png",1)
 			fileInstall("./img/button_arrowLeft.png",installDir "/img/button_arrowLeft.png",1)
 			fileInstall("./img/button_arrowRight.png",installDir "/img/button_arrowRight.png",1)
+			fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
+			fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
 			
 			fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
@@ -297,8 +299,13 @@ exitFunc(*) {
 	exitApp
 }
 
+debug(msg) {
+	log(msg,debug:=true,msgHistory:=msg)
+}
 ui.lastMsg := ""
-log(msg,msgHistory:=msg) {
+log(msg,debug:=false,msgHistory:=msg) {
+	if debug && !cfg.debug
+		return
 	if ui.lastMsg {
 		ui.fishStatusText.text := (msg=="___________________________________________________________________") ? "Ready" : msg
 		;if ui.fishLogArr.length > 33 {
