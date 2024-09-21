@@ -298,19 +298,14 @@ WM_LBUTTONDOWN_callback(this_control*) {
 }
 
 WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
-	try {
-		(hwnd == ui.fishGui.hwnd)
-			? moveFP()
-			: 0
-	}	catch {
-		return 0
-	}
-	moveFP(*) {
-		if !ui.fullScreen {
+		try
 			winGetPos(&x,&y,&w,&h,ui.fishGui)
+		try
 			winMove(x+301,y+31,,,ui.game)
-			return 1
-		}
-	}
+		try
+			winMove(x+1101,y+753,,,ui.disabledGui) 
+		try
+			winMove(x+427,y+762,,,ui.editProfileGui)		
+	
 }
 
