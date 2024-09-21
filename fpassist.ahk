@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.7.6"
+A_FileVersion := "1.2.7.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -55,6 +55,7 @@ if a_isCompiled && !inStr(cfg.installDir,a_scriptDir) {
 startGame()
 initGui()
 createGui()
+detectPrompts()
 onExit(exitFunc)
 initGui(*) {
 	ui.sessionStartTime := A_Now
@@ -610,45 +611,59 @@ detectPrompts(logWork := false) {
 			sleep(500)
 			log("Rewards: Reward Claimed")
 		}
+	
+		if round(pixelGetColor(75,50)) == greenCheckColor {
+			debug("Rewards: Reward Detected")
+			ui.popupFound := true
+			MouseMove(215,630)
+			sendIfWinActive("{LButton Down}",ui.game,true)
+			sleep(350)
+			sendIfWinActive("{LButton Up}",ui.game,true)
+			sleep(500)
+			log("Rewards: Reward Claimed")
+		}
+		
+		if round(pixelGetColor(350,100)) == greenCheckColor {
+			log("Trip: Trip Ended")
+			ui.popupFound := true
+			mouseMove(530,610)
+			sendIfWinActive("{LButton Down}",ui.game,true)
+			sleep(350)
+			sendIfWinActive("{LButton Up}",ui.game,true)
+			sleep(1000)
+			log("Trip: Adding Day Trip")
+			MouseMove(530,450)
+			sendIfWinActive("{LButton Down}",ui.game,true)
+			sleep(350)
+			sendIfWinActive("{LButton Up}",ui.game,true)
+			sleep(500)	
+		}
+		
+		if pixelGetColor(295,95) == "0x7ED322" {
+			log("Detected: Rank Up!")
+			ui.popupFound := true
+			mouseMove(450,610)
+			sendIfWinActive("{LButton Down}",ui.game,true)
+			sleep(350)
+			sendIfWinActive("{LButton Up}",ui.game,true)
+			sleep(1000)
+
+		}
+		
+		if checkPixel(545,600,"0xFAF2EE") && checkPixel(1088,57,"0xFFFFFF") {
+			log("Ads: Ad Detected")
+			ui.popupFound := true
+			mouseGetPos(&x,&y)
+			mouseMove(1088,57)
+			sendNice("{LButton Down}")
+			sleep(300)
+			sendNice("{LButton Up}")
+			sleep(500)
+			mouseMove(x,y)
+			log("Ads: Ad Closed")
+		}		
+		;debug("___________________________________________________________________")
 	}
-	if round(pixelGetColor(75,50)) == greenCheckColor {
-		debug("Rewards: Reward Detected")
-		ui.popupFound := true
-		MouseMove(215,630)
-		sendIfWinActive("{LButton Down}",ui.game,true)
-		sleep(350)
-		sendIfWinActive("{LButton Up}",ui.game,true)
-		sleep(500)
-		log("Rewards: Reward Claimed")
-	}
-	if round(pixelGetColor(350,100)) == greenCheckColor {
-		log("Trip: Trip Ended")
-		ui.popupFound := true
-		mouseMove(530,610)
-		sendIfWinActive("{LButton Down}",ui.game,true)
-		sleep(350)
-		sendIfWinActive("{LButton Up}",ui.game,true)
-		sleep(1000)
-		log("Trip: Adding Day Trip")
-		MouseMove(530,450)
-		sendIfWinActive("{LButton Down}",ui.game,true)
-		sleep(350)
-		sendIfWinActive("{LButton Up}",ui.game,true)
-		sleep(500)	
-	}
-	if checkPixel(545,600,"0xFAF2EE") && checkPixel(1088,57,"0xFFFFFF") {
-		log("Ads: Ad Detected")
-		ui.popupFound := true
-		mouseGetPos(&x,&y)
-		mouseMove(1088,57)
-		sendNice("{LButton Down}")
-		sleep(300)
-		sendNice("{LButton Up}")
-		sleep(500)
-		mouseMove(x,y)
-		log("Ads: Ad Closed")
-	}		
-	;debug("___________________________________________________________________")
 }
 appReload(*) {
 	reload()
