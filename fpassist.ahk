@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.7.8"
+A_FileVersion := "1.2.7.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -458,7 +458,9 @@ cast(*) {
 	errorLevel := sleep500(3)
 	debug("Cast: Drawing Back Rod")
 	sendNice("{space down}")
-	sleep(cfg.castAdjust[cfg.profileSelected])
+	(cfg.profileSelected <= cfg.castAdjust.length)  
+		? sleep(cfg.castAdjust[cfg.profileSelected])
+		: sleep(cfg.castAdjust[cfg.castAdjust.length])
 	sendNice("{space up}")
 	debug("Cast: Releasing Cast")
 	ui.casting := false
@@ -542,6 +544,9 @@ retrieve(isAFK:=true) {
 				sleep(1500)
 				sendNice("{space up}")
 			}			
+		
+		if cfg.profileSelected <= cfg.%jigMechanic%.length
+				
 		if (jigMechanicNumber < cfg.%jigMechanic%[cfg.profileSelected]) 
 		&& (mechanic.last != jigMechanic || mechanic.repeats < 3) {
 			if (mechanic.last == jigMechanic)
@@ -785,8 +790,23 @@ createGui() {
 		}
 		iniWrite(rtrim(zoomEnabledStr,","),cfg.file,"Game","ZoomEnabled")
 	}
-	ui.zoomToggleLabel := ui.fishGui.addText("x189 y798 w30 center h15 backgroundTrans c" ui.fontColor[4],"Zoom")
-	ui.zoomToggleLabel.setFont("s9")
+	ui.zoomToggleLabel := ui.fishGui.addText("x169 y798 w30 center h15 backgroundTrans c" ui.fontColor[4],"Zoom")
+	ui.zoomToggleLabel.setFont("s9")	
+	
+	ui.floatToggle := ui.fishGui.addCheckBox("x202 y780 w30 center h20 c" ui.fontColor[4])
+	ui.floatToggle.onEvent("click",toggledFloat)
+	toggledFloat(*) {
+		while cfg.floatEnabled.length < cfg.profileSelected
+			cfg.floatEnabled.push(false)
+		cfg.floatEnabled[cfg.profileSelected] := ui.floatToggle.value
+		floatEnabledStr := ""
+		loop cfg.floatEnabled.length {
+			floatEnabledStr .= cfg.floatEnabled[a_index] ","
+		}
+		iniWrite(rtrim(floatEnabledStr,","),cfg.file,"Game","FloatEnabled")
+	}
+	ui.floatToggleLabel := ui.fishGui.addText("x189 y798 w30 center h15 backgroundTrans c" ui.fontColor[4],"Float`nBottom")
+	ui.floatToggleLabel.setFont("s9")
 	drawButton(1101,753,121,60)
 	ui.startButtonBg := ui.fishGui.addText("x1103 y755 w117 h56 background" ui.trimDarkColor[1])
 	ui.startButton := ui.fishGui.addText("section x1101 center y754 w120 h60 c" ui.trimDarkFontColor[1] " backgroundTrans","A&FK")
