@@ -77,7 +77,7 @@ statPanel(*) {
 	ui.statSessionStartTime := ui.fishGui.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
 	ui.statCastLengthLabel := ui.fishGui.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Cast Length:`t")
-	ui.statCastLength := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.castAdjust.value)
+	ui.statCastLength := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.castLength.value)
 	
 	ui.statFishCountLabel := ui.fishGui.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Fish Count:")
 	ui.statFishCount := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
@@ -130,7 +130,7 @@ statPanelFS(*) {
 	ui.statSessionStartTimeFS := ui.fishGuiFS.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
 	ui.statCastLengthLabelFS := ui.fishGuiFS.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Cast Length:`t")
-	ui.statCastLengthFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.castAdjust[cfg.profileSelected])
+	ui.statCastLengthFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.castLength[cfg.profileSelected])
 	
 	ui.statFishCountLabelFS := ui.fishGuiFS.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Fish Count:")
 	ui.statFishCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)

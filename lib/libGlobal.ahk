@@ -215,7 +215,12 @@ install() {
 			fileInstall("./img/button_arrowRight.png",installDir "/img/button_arrowRight.png",1)
 			fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
 			fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
-			
+			fileInstall("./img/progress_bg.png",cfg.installDir "/img/progress_bg.png",1)
+			fileInstall("./img/play_ani_1.png",cfg.installDir "/img/play_ani_1.png",1)
+			fileInstall("./img/play_ani_2.png",cfg.installDir "/img/play_ani_2.png",1)
+			fileInstall("./img/play_ani_3.png",cfg.installDir "/img/play_ani_3.png",1)
+			fileInstall("./img/play_ani_0.png",cfg.installDir "/img/play_ani_0.png",1)
+			fileInstall("./img/progress_play.png",cfg.installDir "/img/progress_play.png",1)
 			fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 			FileInstall("./update.exe",InstallDir "/update.exe",1)
@@ -274,6 +279,10 @@ onExit(exitFunc)
 
 cleanExit(*) {
 	if winExist(ui.game) {
+		ui.exitButtonBg.opt("background" ui.trimColor[2])
+		ui.exitButtonBg.redraw()
+		ui.exitButton.opt("c" ui.trimFontColor[2])
+		ui.exitButtonHotkey.opt("c" ui.trimFontColor[2])
 		winActivate(ui.game)
 		WinSetStyle("+0xC00000",ui.game)
 		while winExist(ui.game)
@@ -286,25 +295,59 @@ cleanExit(*) {
 
 exitFunc(*) {
 	ui.profileNameStr := ""
-	ui.reelLevelStr := ""
+	ui.castLengthStr := ""
+	ui.reelFreqStr := ""
+	ui.reelSpeedStr := ""
+	ui.dragLevelStr := ""
+	ui.twitchFreqStr := ""
+	ui.stopFreqStr := ""
+	ui.zoomEnabledStr := ""
+	ui.floatEnabledStr := ""
+	ui.bgModeStr := ""
+	
 	loop cfg.profileName.length {
 		try
 			ui.profileNameStr .= cfg.profileName[a_index] ","
 		try
-			ui.reelLevelStr .= cfg.reelLevel[a_index] ","
+			ui.castLengthStr .= cfg.castLength[a_index] ","
+		try
+			ui.reelSpeedStr .= cfg.reelSpeed[a_index] ","
+		try
+			ui.dragLevelStr .= cfg.dragLevel[a_index] ","
+		try
+			ui.reelFreqStr .= cfg.reelFreq[a_index] ","
+		try
+			ui.twitchFreqStr .= cfg.twitchFreq[a_index] ","
+		try
+			ui.stopFreqStr .= cfg.stopFreq[a_index] ","
+		try
+			ui.floatEnabledStr .= cfg.floatEnabled[a_index] ","
+		try
+			ui.zoomEnabledStr .= cfg.zoomEnabled[a_index] ","
+		try
+			ui.bgModeStr .= cfg.bgMode[a_index] ","
 	}
+	
 	iniwrite(rtrim(ui.profileNameStr,","),cfg.file,"Game","ProfileNames")
-	iniWrite(rtrim(ui.reelLevelStr,","),cfg.file,"Game","ReelLevel")
+	iniWrite(rtrim(ui.castLengthStr,","),cfg.file,"Game","CastLength")
+	iniWrite(rtrim(ui.reelFreqStr,","),cfg.file,"Game","ReelFreq")
+	iniWrite(rtrim(ui.reelSpeedStr,","),cfg.file,"Game","ReelSpeed")
+	iniWrite(rtrim(ui.dragLevelStr,","),cfg.file,"Game","DragLevel")
+	iniWrite(rtrim(ui.twitchFreqStr,","),cfg.file,"Game","TwitchFreq")
+	iniWrite(rtrim(ui.stopFreqStr,","),cfg.file,"Game","stopFreq")
+	iniWrite(rtrim(ui.zoomEnabledStr,","),cfg.file,"Game","ZoomEnabled")
+	iniWrite(rtrim(ui.floatEnabledStr,","),cfg.file,"Game","FloatEnabled")
+	iniWrite(rtrim(ui.bgModeStr,","),cfg.file,"Game","BgMode")
 	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
 	exitApp
 }
 
-debug(msg) {
-	log(msg,debug:=true,msgHistory:=msg)
+debug(msg,debug) {
+	log(msg,debug:=1,msgHistory:=msg)
 }
 ui.lastMsg := ""
-log(msg,debug:=false,msgHistory:=msg) {
-	if debug && !cfg.debug
+log(msg,debug:=0,msgHistory:=msg) {
+	if debug > cfg.debug
 		return
 	if ui.lastMsg {
 		ui.fishStatusText.text := (msg=="___________________________________________________________________") ? "Ready" : msg

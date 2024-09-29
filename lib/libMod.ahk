@@ -16,17 +16,17 @@ slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20
 	cfg.%name% := strSplit(iniRead(cfg.file,"Game",name,"1,1,1,1,1"),",")
 	ui.%name% := gui.addSlider("section v" name " x" x " y" y " w" w " h" h " tickInterval" tickInterval " " orient " range" range " " align " toolTip")
 	while cfg.profileSelected > cfg.%name%.length {
-		cfg.%name%.push(cfg.%name%[cfg.%name%.length])
+		cfg.%name%.push(ui.%name%.value)
 	}
 	ui.%name%.value := cfg.%name%[cfg.profileSelected]
 	ui.%name%.onEvent("change",sliderChange)
 	if (label)
 	switch substr(labelAlign,1,1) {
 		case "r":
-			ui.%name%Label := gui.addText("x+0 ys+5 backgroundTrans c" ui.fontColor[4],label)
+			ui.%name%Label := gui.addText("x+-4 ys+6 backgroundTrans c" ui.fontColor[4],label)
 			ui.%name%Label.setFont("s9")
 		case "b":
-			ui.%name%Label := gui.addText("xs+2 y+-7 backgroundTrans c" ui.fontColor[4],label)
+			ui.%name%Label := gui.addText("xs+3 y+-7 backgroundTrans c" ui.fontColor[4],label)
 			ui.%name%Label.setFont("s9")
 	}
 }
