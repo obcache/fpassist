@@ -9,46 +9,46 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 	Return
 }
 
-; goFS(*) {
-	; fishGuiFSx := a_screenWidth-900
-	; fishGuiFSy := a_screenHeight-30-200
-	; ui.fishGuiBg := gui()
-	; ui.fishGuiBg.opt("-caption -border toolwindow alwaysOnTop")
-	; ui.fishGuiBg.backColor := 656565
-	; ui.fishGuiBg.addText("x0 y0 w500 h500 background656565")
-	; winSetTransparent(150,ui.fishGuiBg)
-	; ui.fishGuiBg.show("x" fishGuiFSx " y" fishGuiFSy " w500 h200 noactivate")
+ goFS(*) {
+	fishGuiFSx := a_screenWidth-900
+	fishGuiFSy := a_screenHeight-30-200
+	ui.fishGuiBg := gui()
+	ui.fishGuiBg.opt("-caption -border toolwindow alwaysOnTop")
+	ui.fishGuiBg.backColor := 656565
+	ui.fishGuiBg.addText("x0 y0 w500 h500 background656565")
+	winSetTransparent(150,ui.fishGuiBg)
+	ui.fishGuiBg.show("x" fishGuiFSx " y" fishGuiFSy " w500 h200 noactivate")
 	
-	; ui.fullscreen := true
-	; ui.fishGui.hide()
-	; ui.fishGuiFS := gui()
+	ui.fullscreen := true
+	ui.fishGui.hidwaae()
+	ui.fishGuiFS := gui()
 
 
-	; ui.fishGuiFS.opt("-caption -border +toolWindow alwaysOnTop")
-	; ui.fishGuiFS.backColor := "010203"
-	; winSetTransColor("010203",ui.fishGuiFS.hwnd)
-	; ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
-	; ui.noFSbutton.onEvent("click",noFS)
-	; ui.FishCaughtFS := ui.fishGuiFS.addText("x" fishGuiFSx+130 " y" fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.fontColor[1],format("{:03i}","0"))
-	; ui.FishCaughtFS.setFont("s94")
-	; ui.FishCaughtLabelFS := ui.fishGuiFS.addText("right x" fishGuiFSx-98 " y" fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.fontColor[1],"Fish")
-	; ui.FishCaughtLabelFS.setFont("s54","Calibri")
-	; ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("right x" fishGuiFSx-90 " y" fishGuiFSy+20+40 " w200 h90 backgroundTrans c" ui.fontColor[1],"Count")
-	; ui.FishCaughtLabel2FS.setFont("s60","Calibri")
-	; ui.fishLogFS := ui.fishGuiFS.addText("x10 y350 w360 h850 backgroundTrans c" ui.fontColor[1],"")
-	; ui.fishLogFS.setFont("s16")
-	; ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
-	; winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)
+	ui.fishGuiFS.opt("-caption -border +toolWindow alwaysOnTop")
+	ui.fishGuiFS.backColor := "010203"
+	winSetTransColor("010203",ui.fishGuiFS.hwnd)
+	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
+	ui.noFSbutton.onEvent("click",noFS)
+	ui.FishCaughtFS := ui.fishGuiFS.addText("x" fishGuiFSx+130 " y" fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.fontColor[1],format("{:03i}","0"))
+	ui.FishCaughtFS.setFont("s94")
+	ui.FishCaughtLabelFS := ui.fishGuiFS.addText("right x" fishGuiFSx-98 " y" fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.fontColor[1],"Fish")
+	ui.FishCaughtLabelFS.setFont("s54","Calibri")
+	ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("right x" fishGuiFSx-90 " y" fishGuiFSy+20+40 " w200 h90 backgroundTrans c" ui.fontColor[1],"Count")
+	ui.FishCaughtLabel2FS.setFont("s60","Calibri")
+	ui.fishLogFS := ui.fishGuiFS.addText("x10 y350 w360 h850 backgroundTrans c" ui.fontColor[1],"")
+	ui.fishLogFS.setFont("s16")
+	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
+	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)
 	
 
-; }
+}
 
 noFS(*) {
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
 	winMove(x+300,y+30,1280,720,ui.game)
 	ui.fishGui.show()
 
-	ui.fishGuiFS.hide()
+	;ui.fishGuiFS.hide()
 }
 drawButton(x,y,w,h) {
 		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
@@ -67,37 +67,39 @@ statPanel(*) {
 	h := ui.statCoord["h"]
 
 
-
+	ui.fishGui.setFont("s10")
 	ui.statPanelBg := ui.fishGui.addText("x" ui.statCoord["x"] " y" ui.statCoord["y"] " w" ui.statCoord["w"] " h" ui.statCoord["h"] " background" ui.bgColor[3])
 	ui.statPanelOutline := ui.fishGui.addText("x" ui.statCoord["x"]+1 " y" ui.statCoord["y"]+1 " w" ui.statCoord["w"]-2 " h" ui.statCoord["h"]-2 " background111111")
 	ui.statPanelOutline2 := ui.fishGui.addText("x" ui.statCoord["x"]+2 " y" ui.statCoord["y"]+2 " w" ui.statCoord["w"]-4 " h" ui.statCoord["h"]-4 " background" ui.bgColor[1])
 	;msgBox(ui.statCoord["w"])
 	
-	ui.statSessionStartTimeLabel := ui.fishGui.addText("x" 7+x " y" 5+y " right section w70 r1 backgroundTrans c" ui.fontColor[3],"Session Start: ")
-	ui.statSessionStartTime := ui.fishGui.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
+	x-=20
+	y-=3
+	ui.statSessionStartTimeLabel := ui.fishGui.addText("x" 7+x " y" 5+y " right section w80 r1 backgroundTrans c" ui.fontColor[2],"Session: ")
+	ui.statSessionStartTime := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
-	ui.statCastLengthLabel := ui.fishGui.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Cast Length:`t")
-	ui.statCastLength := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.castLength.value)
+	ui.statCastLengthLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast: ")
+	ui.statCastLength := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.castLength.value)
 	
-	ui.statFishCountLabel := ui.fishGui.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Fish Count:")
-	ui.statFishCount := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
+	ui.statFishCountLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Fish Count: ")
+	ui.statFishCount := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2], ui.fishLogCount.text)
 	
-	ui.statAfkStartTimeLabel := ui.fishGui.addText("xs-333 y+0 right section w70 r1 backgroundTrans c" ui.fontColor[3],"AFK Start: ")
-	ui.statAfkStartTime := ui.fishGui.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
+	ui.statAfkStartTimeLabel := ui.fishGui.addText("xs-320 y+0 right section w80 r1 backgroundTrans c" ui.fontColor[2],"Start: ")
+	ui.statAfkStartTime := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
-	ui.statDragLevelLabel := ui.fishGui.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Drag Level:`t")
-	ui.statDragLevel := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.dragLevel.value)
+	ui.statDragLevelLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Drag: ")
+	ui.statDragLevel := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.dragLevel.value)
 	
-	ui.statCastCountLabel := ui.fishGui.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Cast Count:")
-	ui.statCastCount := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], "000")
+	ui.statCastCountLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast Count: ")
+	ui.statCastCount := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2], "000")
 	
-	ui.statAfkDurationLabel := ui.fishGui.addText("xs-333 y+0 right section w70 r1 backgroundTrans c" ui.fontColor[3],"AFK Duration: ")
-	ui.statAfkDuration := ui.fishGui.addText("x+0 ys w100 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
+	ui.statAfkDurationLabel := ui.fishGui.addText("xs-320 y+0 right section w80 r1 backgroundTrans c" ui.fontColor[2],"Duration: ")
+	ui.statAfkDuration := ui.fishGui.addText("x+0 ys w80 r1 background" ui.bgColor[1] " c" ui.fontColor[2],"")
 	
-	ui.statReelSpeedLabel := ui.fishGui.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Reel Speed:`t")
-	ui.statReelSpeed := ui.fishGui.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],ui.reelSpeed.value)
+	ui.statReelSpeedLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Speed: ")
+	ui.statReelSpeed := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.reelSpeed.value)
 	
-	ui.viewLog := ui.fishGui.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
+	ui.viewLog := ui.fishGui.addText("x+0 ys right section w55 r1 backgroundTrans c" ui.fontColor[2],"View Log")
 	ui.viewLog.setFont("s9 underline")
 	ui.viewLog.onEvent("click",viewLog)
 	
@@ -109,58 +111,58 @@ statPanel(*) {
 	
 }
 
-statPanelFS(*) {
-	ui.sessionStartTimeFS := a_now
-	ui.afkStartTimeFS := a_now
+; statPanelFS(*) {
+	; ui.sessionStartTimeFS := a_now
+	; ui.afkStartTimeFS := a_now
 	
-	ui.statCoordFS := map("x",664,"y",753,"w",435,"h",60)
-	x := ui.statCoord["x"] + 8
-	y := ui.statCoord["y"] + 4
-	w := ui.statCoord["w"]
-	h := ui.statCoord["h"]
+	; ui.statCoordFS := map("x",664,"y",753,"w",435,"h",60)
+	; x := ui.statCoord["x"] + 8
+	; y := ui.statCoord["y"] + 4
+	; w := ui.statCoord["w"]
+	; h := ui.statCoord["h"]
 
 
 
-	ui.statPanelBgFS := ui.fishGuiFS.addText("x" ui.statCoordFS["x"] " y" ui.statCoordFS["y"] " w" ui.statCoordfS["w"] " h" ui.statCoordFS["h"] " background" ui.bgColor[3])
-	ui.statPanelOutlineFS := ui.fishGuiFS.addText("x" ui.statCoordfS["x"]+1 " y" ui.statCoordFS["y"]+1 " w" ui.statCoordfS["w"]-2 " h" ui.statCoordFS["h"]-2 " background111111")
-	ui.statPanelOutline2FS := ui.fishGuiFS.addText("x" ui.statCoordFS["x"]+2 " y" ui.statCoordFS["y"]+2 " w" ui.statCoordFS["w"]-4 " h" ui.statCoordfS["h"]-4 " background" ui.bgColor[1])
+	; ui.statPanelBgFS := ui.fishGuiFS.addText("x" ui.statCoordFS["x"] " y" ui.statCoordFS["y"] " w" ui.statCoordfS["w"] " h" ui.statCoordFS["h"] " background" ui.bgColor[3])
+	; ui.statPanelOutlineFS := ui.fishGuiFS.addText("x" ui.statCoordfS["x"]+1 " y" ui.statCoordFS["y"]+1 " w" ui.statCoordfS["w"]-2 " h" ui.statCoordFS["h"]-2 " background111111")
+	; ui.statPanelOutline2FS := ui.fishGuiFS.addText("x" ui.statCoordFS["x"]+2 " y" ui.statCoordFS["y"]+2 " w" ui.statCoordFS["w"]-4 " h" ui.statCoordfS["h"]-4 " background" ui.bgColor[1])
 	;msgBox(ui.statCoord["w"])
 	
-	ui.statSessionStartTimeLabelFS := ui.fishGuiFS.addText("x" 7+x " y" 5+y " right section w70 r1 backgroundTrans c" ui.fontColor[3],"Session Start: ")
-	ui.statSessionStartTimeFS := ui.fishGuiFS.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
+	; ui.statSessionStartTimeLabelFS := ui.fishGuiFS.addText("x" 7+x " y" 5+y " right section w100 r1 backgroundTrans c" ui.fontColor[3],"Session: ")
+	; ui.statSessionStartTimeFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
-	ui.statCastLengthLabelFS := ui.fishGuiFS.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Cast Length:`t")
-	ui.statCastLengthFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.castLength[cfg.profileSelected])
+	; ui.statCastLengthLabelFS := ui.fishGuiFS.addText("x+30 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Cast: ")
+	; ui.statCastLengthFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.castLength[cfg.profileSelected])
 	
-	ui.statFishCountLabelFS := ui.fishGuiFS.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Fish Count:")
-	ui.statFishCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
+	; ui.statFishCountLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Fish Count: ")
+	; ui.statFishCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
 	
-	ui.statAfkStartTimeLabelFS := ui.fishGuiFS.addText("xs-333 y+0 right section w70 r1 backgroundTrans c" ui.fontColor[3],"AFK Start: ")
-	ui.statAfkStartTimeFS := ui.fishGuiFS.addText("x+0 ys w100 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
+	; ui.statAfkStartTimeLabelFS := ui.fishGuiFS.addText("xs-333 y+0 right section w100 r1 backgroundTrans c" ui.fontColor[3],"AutoFish: ")
+	; ui.statAfkStartTimeFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
 	
-	ui.statDragLevelLabelFS := ui.fishGuiFS.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Drag Level:`t")
-	ui.statDragLevelFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
+	; ui.statDragLevelLabelFS := ui.fishGuiFS.addText("x+30 ys right section w63 r1 backgroundTrans c" ui.fontColor[3],"Drag: ")
+	; ui.statDragLevelFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
 	
-	ui.statCastCountLabelfS := ui.fishGuiFS.addText("x+10 ys section w55 r1 backgroundTrans c" ui.fontColor[3],"Cast Count:")
-	ui.statCastCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.castCount)
+	; ui.statCastCountLabelfS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"Cast Count: ")
+	; ui.statCastCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.castCount)
 	
-	ui.statAfkDurationLabelfS := ui.fishGuiFS.addText("xs-333 y+0 right section w70 r1 backgroundTrans c" ui.fontColor[3],"AFK Duration: ")
-	ui.statAfkDurationFS := ui.fishGuiFS.addText("x+0 ys w100 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
+	; ui.statAfkDurationLabelfS := ui.fishGuiFS.addText("xs-333 y+0 right section w100 r1 backgroundTrans c" ui.fontColor[3],"AFK Duration: ")
+	; ui.statAfkDurationFS := ui.fishGuiFS.addText("x+0 ys w60 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
 	
-	ui.statReelSpeedLabelFS := ui.fishGuiFS.addText("x+30 ys section w63 r1 backgroundTrans c" ui.fontColor[3],"Reel Speed:`t")
-	ui.statReelSpeedFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
+	; ui.statReelSpeedLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Speed: ")
+	; ui.statReelSpeedFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
 	
-	ui.viewLogFS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
-	ui.viewLogFS.setFont("s9 underline")
-	ui.viewLogFS.onEvent("click",viewLog)
+	; ui.viewLogFS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
+	; ui.viewLogFS.setFont("s9 underline")
+	; ui.viewLogFS.onEvent("click",viewLog)
 	
-	viewLog(*) {
-		run("notepad.exe " a_scriptDir "/logs/current_log.txt")
-	}
+	; viewLog(*) {
+		; run("notepad.exe " a_scriptDir "/logs/current_log.txt")
+	; }
 	
 
 	
-}
+; }
 
 
 

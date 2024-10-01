@@ -325,7 +325,7 @@ exitFunc(*) {
 		try
 			ui.zoomEnabledStr .= cfg.zoomEnabled[a_index] ","
 		try
-			ui.bgModeStr .= cfg.bgMode[a_index] ","
+			ui.bgModeStr .= cfg.bgModeEnabled[a_index] ","
 	}
 	
 	iniwrite(rtrim(ui.profileNameStr,","),cfg.file,"Game","ProfileNames")
@@ -339,6 +339,7 @@ exitFunc(*) {
 	iniWrite(rtrim(ui.floatEnabledStr,","),cfg.file,"Game","FloatEnabled")
 	iniWrite(rtrim(ui.bgModeStr,","),cfg.file,"Game","BgMode")
 	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
+	iniWrite(cfg.rodCount,cfg.file,"Game","RodCount")
 	exitApp
 }
 
