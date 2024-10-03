@@ -38,12 +38,8 @@ sliderChange(this_slider,*) {
 		cfg.%name%.push(this_slider.value)
 	else
 	cfg.%name%[cfg.profileSelected] := this_slider.value
-	loop cfg.%name%.length {
-		ui.tmp%name%Str .= cfg.%name%[a_index] ","
-	}
-		iniWrite(rtrim(ui.tmp%name%Str,","),cfg.file,"Game",name)
 	ui.%name%Label.redraw()
-	ui.profileIcon.focus()
+	ui.fpBg.focus()
 }
 
 saveSliderValues(*) {

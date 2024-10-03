@@ -13,24 +13,84 @@ ui.gameExe := "fishingPlanet.exe"
 ui.game := "ahk_exe " ui.gameExe
 
 cfg.buttons := ["startButton","castButton","retrieveButton","reelButton","cancelButton","reloadButton","exitButton"]
+profileSettings := ["profileName","castLength","castTime","sinkTime","reelSpeed","dragLevel","twitchFreq","stopFreq","reelFreq","zoomEnabled","floatEnabled","bgModeEnabled"]
+cfg.profile := array()
+
+
+for setting in profileSettings {
+	defaultValue := 0
+	
+	switch setting {
+		case "profileName":
+			defaultValue := "Profile #1"
+		case "castLength":
+			defaultValue := "1900"
+		case "reelFreq":
+			defaultValue := "10"
+	}
+		
+	cfg.%setting% := strSplit(iniRead(cfg.file,"Game",setting,defaultValue),",")
+
+}
 
 cfg.twitchToggleValue := iniRead(cfg.file,"Game","TwitchToggle",true)
 cfg.waitToggleValue := iniRead(cfg.file,"Game","WaitToggle",true)
 cfg.profileSelected := iniRead(cfg.file,"Game","ProfileSelected",1)
-cfg.profileName 	:= strSplit(iniRead(cfg.file,"Game","ProfileNames","Profile #1"),",")
-cfg.dragLevel 		:= strSplit(iniRead(cfg.file,"Game","DragLevel","5"),",")
-cfg.reelSpeed 		:= strSplit(iniRead(cfg.file,"Game","ReelSpeed","1"),",")
-cfg.castLength 		:= strSplit(iniRead(cfg.file,"Game","CastLength","2000"),",")
-cfg.reelFreq 		:= strSplit(iniRead(cfg.file,"Game","ReelFreq","10"),",")
-cfg.twitchFreq 		:= strSplit(iniRead(cfg.file,"Game","twitchFreq","3"),",")
-cfg.stopFreq 		:= strSplit(iniRead(cfg.file,"Game","twitchFreq","3"),",")
-cfg.zoomEnabled 	:= strSplit(iniRead(cfg.file,"Game","ZoomEnabled","0"),",")
-cfg.floatEnabled 	:= strSplit(iniRead(cfg.file,"Game","FloatEnabled","0"),",")
-cfg.bgModeEnabled 	:= strSplit(iniRead(cfg.file,"Game","bgMode","0"),",")
+; cfg.profileName 	:= strSplit(iniRead(cfg.file,"Game","ProfileNames","Profile #1"),",")
+; cfg.dragLevel 		:= strSplit(iniRead(cfg.file,"Game","DragLevel","5"),",")
+; cfg.reelSpeed 		:= strSplit(iniRead(cfg.file,"Game","ReelSpeed","1"),",")
+; cfg.castLength 		:= strSplit(iniRead(cfg.file,"Game","CastLength","2000"),",")
+; cfg.castTime		:= strSplit(iniRead(cfg.file,"Game","CastTime","1"),",")
+; cfg.sinkTime		:= strSplit(iniRead(cfg.file,"Game","SinkTime","1"),",")
+; cfg.reelFreq 		:= strSplit(iniRead(cfg.file,"Game","ReelFreq","10"),",")
+; cfg.twitchFreq 		:= strSplit(iniRead(cfg.file,"Game","TwitchFreq","3"),",")
+; cfg.stopFreq 		:= strSplit(iniRead(cfg.file,"Game","StopFreq","3"),",")
+; cfg.ReelFreq		:= strSplit(iniRead(cfg.file,"Game","ReelFreq","10"),",")
+; cfg.zoomEnabled 	:= strSplit(iniRead(cfg.file,"Game","ZoomEnabled","0"),",")
+; cfg.floatEnabled 	:= strSplit(iniRead(cfg.file,"Game","FloatEnabled","0"),",")
+; cfg.bgModeEnabled 	:= strSplit(iniRead(cfg.file,"Game","bgModeEnabled","0"),",")
 cfg.debug 			:= iniRead(cfg.file,"System","Debug",false)
 cfg.rodCount 		:= iniRead(cfg.file,"Game","RodCount",6)
 cfg.currentRod 		:= iniRead(cfg.file,"Game","CurrentRod",1)
 
+; class profileDef {
+	; static new(profileNum,profileName,castLength,reelSpeed,dragLevel,castTime,sinkTime,twitchFreq,stopFreq,reelFreq,zoomEnabled,floatEnabled,bgModeEnabled) 
+	; {	
+		; this.profileNum		:= profileNum
+		; this.profileName 	:= profileName
+		; this.castLength 	:= castLength
+		; this.reelSpeed		:= reelSpeed
+		; this.dragLevel		:= dragLevel
+		; this.castTime 		:= castTime
+		; this.sinkTime		:= sinkTime
+		; this.twitchFreq 	:= twitchFreq
+		; this.stopFreq		:= stopFreq
+		; this.ReelFreq		:= ReelFreq
+		; this.zoomEnabled 	:= zoomEnabled
+		; this.floatEnabled 	:= floatEnabled
+		; this.bgModeEnabled	:= bgModeEnabled
+		; return this
+	; }	
+; }
+;test:=profileDef.new(1,"test",2000,1,1,0,0,1,1,0,0,0)
+;msgBox(test.profileName)
+
+; for name in cfg.profileName {
+	; profileNum := a_index
+	; tmpProfile := profileDef.new(1,"test",2000,1,1,0,0,1,1,0,0,0)
+	;; tmpProfile := profileDef.new(profileNum,name,cfg.castLength[a_index],
+	;	; cfg.reelSpeed[a_index],cfg.dragLevel[a_index],cfg.waitToggleValue[a_index],
+	;	; cfg.sinkTime[a_index],cfg.twitchToggleValue[a_index],cfg.stopFreq[a_index],
+	;	; cfg.zoomEnabled[a_index],cfg.floatEnabled[a_index],cfg.bgModeEnabled[a_index])
+	; cfg.profile.push(tmpProfile)
+; }
+
+; displayStr := ""
+; loop cfg.profile.length {
+	; displayStr .= cfg.profile[a_index].reelSpeed "`n"
+; }
+
+;msgBox(displayStr)
 ui.fishLogArr := array()
 ui.sliderList := array()
 ui.cancelOperation := false
@@ -211,6 +271,7 @@ autoFishStart(*) {
 	ui.secondsElapsed := 0
 	ui.statAfkStartTime.text := formatTime(,"yyyyMMdd HH:mm:ss")
 	panelMode("afk")
+	checkKeepnet()
 	setTimer(updateAfkTime,1000)
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
@@ -236,9 +297,9 @@ autoFishStart(*) {
 		if reeledIn() && !ui.cancelOperation
 			cast(1)
 		if !reeledIn() && !ui.cancelOperation {
-			switch ui.floatToggle.value {
+			switch ui.floatEnabled.value {
 				case true:
-					while !ui.cancelOperation && ui.floatToggle.value && !reeledIn() && !isHooked() 
+					while !ui.cancelOperation && ui.floatEnabled.value && !reeledIn() && !isHooked() 
 						sleep(500)
 				case false:
 					retrieve()
@@ -247,7 +308,6 @@ autoFishStart(*) {
 		
 		if !ui.cancelOperation
 			analyzeCatch()
-		setTimer(landFish,0)
 	}
 	log("AFK: Stopping",1,"AFK: Stopped")
 	log("___________________________________________________________________",2)
@@ -260,7 +320,6 @@ isHooked(*) {
 	} else {
 		ui.isHooked := 0
 	}
-	setTimer(landFish,1000)
 	return ui.isHooked
 }
 checkPixel(x,y,targetColor) {
@@ -298,7 +357,7 @@ analyzeCatch(logWork:=true) {
 	; }
 ; }
 ; 1090,350
-fishCaught(logWork:=true) {
+		fishCaught(logWork:=true) {
 	fishCaughtPixel := round(pixelGetColor(450,575))
 	log("Analyzing: Catch",1,"Analyzed: Catch")
 	if checkWhite := checkPixel(450,575,"0xFFFFFF") || checkGrey := checkPixel(450,575,"0x797A7E") {
@@ -446,27 +505,27 @@ calibrate(*) {
 	log("Calibration: Starting",1,"Calibration: Started")
 	debug("Calibration: Drag",1)
 	loop 13 {
-		winActivate(ui.game)
-		sendNice("{NumpadSub}")
+		winWait("ahk_exe fishingplanet.exe")
+		sendNice("{-}")
 		sleep(50)
 	}
 	ui.currDrag := 0
 	loop cfg.dragLevel[cfg.profileSelected] {
-		sendNice("{NumpadAdd}")
-		ui.currDrag += 1
-		sleep(50)
+		sendNice("{+}")
+		sleep(100)
 	}
 	if ui.cancelOperation
 		return
 	debug("Calibration: Reel Speed",1)
 	loop 6 {
-		winActivate(ui.game)
+		winWait("ahk_exe fishingPlanet.exe")
+		;winActivate(ui.game)
 		sendNice("{click wheelDown}")
-		sleep(100)
+		sleep(50)
 	}	 
 	loop cfg.reelSpeed[cfg.profileSelected] {
 		sendNice("{click wheelUp}") 
-		sleep(100)
+		sleep(50)
 	}
 	if ui.cancelOperation
 		return
@@ -590,7 +649,7 @@ cast(isAFK:=true,*) {
 	loop cfg.sinkTime[cfg.profileSelected] {
 		sleep500(2)
 	}		
-	if (ui.zoomToggle.value)
+	if (ui.zoomEnabled.value)
 		sendNice("{z}")
 		sleep(150)
 	log("___________________________________________________________________",2)
@@ -599,27 +658,68 @@ cast(isAFK:=true,*) {
 }          
 
 landFish(*) {
-	maxStress := "0xB01D18"
-	lineStress := round(pixelGetColor(1090,270))
-	rodStress := round(pixelGetColor(1150,270))
-	reelStress := round(pixelGetColor(1220,270))
-	(dirExist("./logs"))
-		? 0
-		: dirCreate("./logs")
-	fileAppend(formatTime(,"yyyyMMddhhmmss") " :: " lineStress " :: " rodStress " :: " reelStress "`n","./logs/fplog.txt")
-	if lineStress == maxStress || rodStress == maxStress || reelStress == maxStress {
-		sendNice("{NumpadSub}")
-		ui.currDrag -= 1
-	} else {
-		if ui.currDrag < cfg.dragLevel[cfg.profileSelected]-2 {
-			ui.currDrag += 1
-		}
+	log("Landing: Reeling In",1)
+	while !reeledIn {
+		send("{LButton Down}")
+		send("{RButton Down}")
+		sleep(random(1000,2000))
+		send("{RButton Up}")
+		sleep(random(1000,2000))
 	}
+	analyzeCatch()
+	checkKeepnet()
+	
+	
+	;maxStress := "0xB01D18"
+
+	; lineStress := round(pixelGetColor(1090,270))
+	; rodStress := round(pixelGetColor(1150,270))
+	; reelStress := round(pixelGetColor(1220,270))
+	; (dirExist("./logs"))
+		; ? 0
+		; : dirCreate("./logs")
+	; fileAppend(formatTime(,"yyyyMMddhhmmss") " :: " lineStress " :: " rodStress " :: " reelStress "`n","./logs/fplog.txt")
+	; if lineStress == maxStress || rodStress == maxStress || reelStress == maxStress {
+		; sendNice("{NumpadSub}")
+		; ui.currDrag -= 1
+	; } else {
+		; if ui.currDrag < cfg.dragLevel[cfg.profileSelected]-2 {
+			; ui.currDrag += 1
+		; }
+	; }
 }
 
 
 
-
+checkKeepnet(*) {
+	thisColor := pixelGetColor(59,120)
+	if round(thisColor) >= round(0xFFC300)-5000
+	&& round(thisColor) <= round(0xFFC300)+5000 {
+		log("Keepnet: Full",0)
+		send("{t down}")
+		sleep(500)
+		send("{t up}")
+		sleep(1000)
+		mouseMove(620,590)
+		send("{LButton Down}")
+		sleep(500)
+		send("{LButton Up}")
+		mouseMove(530,610)
+		sendIfWinActive("{LButton Down}",ui.game,true)
+		sleep(350)
+		sendIfWinActive("{LButton Up}",ui.game,true)
+		sleep(1000)
+		log("Trip: Adding Day Trip",1)
+		MouseMove(530,450)
+		sendIfWinActive("{LButton Down}",ui.game,true)
+		sleep(350)
+		sendIfWinActive("{LButton Up}",ui.game,true)
+		sleep(500)	
+		log("Trip: Extended",0)
+	} else {
+		log("Keepnet: Empty",2)
+	}
+}
 
 mechanic := object()
 retrieve(isAFK:=true) {
@@ -636,7 +736,7 @@ retrieve(isAFK:=true) {
 		if ui.cancelOperation
 			return		
 		if isHooked() {
-			reelIn()
+			landFish()
 			return
 		}
 		
@@ -669,11 +769,14 @@ retrieve(isAFK:=true) {
 			if mechanic.number > 21
 				mechanic.current := "stopFreq"
 			currMechanic := mechanic.current
-			
 			switch mechanic.number {
 				case 1,2,3,4,5,6,7,8,9,10:
 					if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
 					&& (mechanic.last != mechanic.current || mechanic.repeats < 3) {
+						if isHooked() {
+							landFish()
+							return
+						}
 						log("Retrieve: Twitch",1)
 				 		sendNice("{space down}")
 						sendNice("{RButton Down}")
@@ -685,15 +788,22 @@ retrieve(isAFK:=true) {
 					mechanic.number -= 20
 					if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
 					&& (mechanic.last != mechanic.current || mechanic.repeats < 3) {
-						log("Retrieve: Pause",1)
+					if isHooked() {
+						landFish()
+						return
+					}
+					log("Retrieve: Pause",1)
 						sendNice("{space up}")
 						sleep(1000)
 						sleep(round(random(99-999)))
 					}
 				case 11,12,13,14,15,16,17,18,19,20:
 					mechanic.number -= 10
-					if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
-					&& (mechanic.last != mechanic.current || mechanic.repeats < 3) {
+					if (mechanic.last != mechanic.current || mechanic.repeats < 3) {
+						if isHooked() {
+							landFish()
+							return
+						}	
 						log("Retrieve: Reel",1)
 						sendNice("{space down}")
 						sleep(1500)
@@ -879,7 +989,7 @@ while tmp.h < 40 {
 		ui.timerAnim.move(,,,tmp.h+=1)
 		sleep(1)
 	}
-}
+} 
 
 hotIfWinActive(ui.game)
 	!WheelUp:: {
@@ -916,7 +1026,7 @@ hotIfWinActive(ui.game)
 			cfg.currentRod := cfg.rodCount
 		send("{cfg.currentRod}")
 	}
-	
+
 hotIf()
 
 createGui() {
@@ -991,31 +1101,45 @@ createGui() {
 	slider("twitchFreq",,295,768,50,15,"0-10",1,1,"center","Twitch")
 	slider("stopFreq",,295,786,50,15,"0-10",1,1,"center","Stop && Go")
 	slider("castTime",,240,755,20,50,"2-6",1,1,"center","Cast","vertical","b")
-	slider("sinkTime",,267,755,20,50,"1-10 ",1,1,"center","Sink","vertical","b")
+	slider("sinkTime",,267,755,20,50,"1-10",1,1,"center","Sink","vertical","b")
 	
+	slider("reelFreq",,0,0,0,0,"0-10",1,10,"center","Reel")
+	ui.reelFreq.value := 10
+	ui.reelFreq.opt("hidden")
+	ui.zoomEnabled := ui.fishGui.addCheckBox("x189 y791 w15 center h15")
+	ui.zoomEnabled.onEvent("click",toggledZoom)
+	ui.zoomEnabledLabel := ui.fishGui.addText("x204 y792 w30 h15 backgroundTrans c" ui.fontColor[4],"Zoom")
+	ui.zoomEnabledLabel.setFont("s8")	
 	
-	ui.zoomToggle := ui.fishGui.addCheckBox("x189 y791 w15 center h15")
-	ui.zoomToggle.onEvent("click",toggledZoom)
-	ui.zoomToggleLabel := ui.fishGui.addText("x204 y792 w30 h15 backgroundTrans c" ui.fontColor[4],"Zoom")
-	ui.zoomToggleLabel.setFont("s8")	
-	
-	ui.floatToggle := ui.fishGui.addCheckBox("x189 y777 w15 center h15")
-	ui.floatToggle.onEvent("click",toggledFloat)
-	ui.floatToggleLabel := ui.fishGui.addText("x204 y778 w30 h15 backgroundTrans c" ui.fontColor[4],"Float")
-	ui.floatToggleLabel.setFont("s8")
+	ui.floatEnabled := ui.fishGui.addCheckBox("x189 y777 w15 center h15")
+	ui.floatEnabled.onEvent("click",toggledFloat)
+	ui.floatEnabledLabel := ui.fishGui.addText("x204 y778 w30 h15 backgroundTrans c" ui.fontColor[4],"Float")
+	ui.floatEnabledLabel.setFont("s8")
 
+	ui.bgModeEnabled := ui.fishGui.addCheckBox("x381 y757 w12 h12 right")
+	ui.bgModeEnabledLabel := ui.fishGui.addText("x328 y758 w50 h12 right backgroundTrans c" ui.fontColor[4],"Bg Mode")
+	ui.bgModeEnabled.onEvent("click",bgModeChanged)
+	ui.bgModeEnabledLabel.setFont("s6","Small Fonts")
+	
 	toggledFloat(*) {
 		while cfg.floatEnabled.length < cfg.profileSelected
 			cfg.floatEnabled.push(false)
-		cfg.floatEnabled[cfg.profileSelected] := ui.floatToggle.value
+		cfg.floatEnabled[cfg.profileSelected] := ui.floatEnabled.value
 		floatEnabledStr := ""
 	}
 
 	toggledZoom(*) {
 		while cfg.zoomEnabled.length < cfg.profileSelected
 			cfg.zoomEnabled.push(false)
-		cfg.zoomEnabled[cfg.profileSelected] := ui.zoomToggle.value
+		cfg.zoomEnabled[cfg.profileSelected] := ui.zoomEnabled.value
 	}
+	
+	bgModeChanged(*) {
+		while cfg.profileSelected > cfg.bgModeEnabled.Length
+			cfg.bgModeEnabled.push(ui.bgModeEnabled.value)
+		cfg.bgModeEnabled[cfg.profileSelected] := ui.bgModeEnabled.value
+	}
+
 
 
 	
@@ -1060,7 +1184,7 @@ createGui() {
 	ui.retrieveButtonBg := ui.fishGui.addText("x1333 y755 w120 h25 background" ui.trimDarkColor[1])
 	ui.retrieveButton := ui.fishGui.addText("section x1342 center y755 w113 h26 c" ui.trimDarkFontColor[1] " backgroundTrans","Retrie&ve")
 	ui.retrieveButton.setFont("s14 bold","Trebuchet MS")
-	ui.retrieveButtonHotkey := ui.fishGui.addText("x+-123 ys-4 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[V]")
+	ui.retrieveButtonHotkey := ui.fishGui.addText("x+-122 ys-4 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[V]")
 	ui.retrieveButtonHotkey.setFont("s10 bold","Palatino Linotype")	
 	ui.retrieveButtonBg.onEvent("click",singleretrieve)
 	ui.retrieveButton.onEvent("click",singleretrieve)
@@ -1149,16 +1273,7 @@ createGui() {
 		ui.fishLogText.add(ui.fishLogArr)
 		ui.fishLogText.add([""])
 	}
-	ui.bgModeToggle := ui.fishGui.addCheckBox("x381 y757 w12 h12 right checked" cfg.bgModeEnabled[cfg.profileSelected],"")
-	ui.bgModeToggleLabel := ui.fishGui.addText("x328 y758 w50 h12 right backgroundTrans c" ui.fontColor[4],"Bg Mode")
-	ui.bgModeToggle.onEvent("click",bgModeChanged)
-	ui.bgModeToggleLabel.setFont("s6","Small Fonts")
 
-	bgModeChanged(*) {
-		while cfg.profileSelected > cfg.bgModeEnabled.Length
-			cfg.bgModeEnabled.push(ui.bgModeToggle.value)
-		cfg.bgModeEnabled[cfg.profileSelected] := ui.bgModeToggle.value
-	}
 	
 	ui.fishGui.show("x" x-300 " y" y+-30 " w1582 h814 noActivate")
 	ui.fishLogAfkTime.text := "00:00:00"
@@ -1180,6 +1295,10 @@ profileLArrowClicked(*) {
 
 	while cfg.profileName.length > cfg.castLength.length
 		cfg.castLength.push(ui.castLength.value)
+	while cfg.profileName.length > cfg.castTime.length
+		cfg.castTime.push(ui.castTime.value)
+	while cfg.profileName.length > cfg.sinkTime.length
+		cfg.sinkTime.push(ui.sinkTime.value)
 	while cfg.profileName.length > cfg.twitchFreq.length
 		cfg.twitchFreq.push(ui.twitchFreq.value)
 	while cfg.profileName.length > cfg.stopFreq.length
@@ -1189,9 +1308,11 @@ profileLArrowClicked(*) {
 	while cfg.profileName.length > cfg.reelSpeed.length
 		cfg.reelSpeed.push(ui.reelSpeed.value)
 	while cfg.profileName.length > cfg.zoomEnabled.length
-		cfg.zoomEnabled.push(ui.zoomToggle.value)
+		cfg.zoomEnabled.push(ui.zoomEnabled.value)
+	while cfg.profileName.length > cfg.floatEnabled.length
+		cfg.floatEnabled.push(ui.floatEnabled.value)
 	while cfg.profileName.length > cfg.bgModeEnabled.Length
-		cfg.bgModeEnabled.push(ui.bgModeToggle.value)
+		cfg.bgModeEnabled.push(ui.bgModeEnabled.value)
 }
 
 ui.enabled := true
@@ -1232,9 +1353,9 @@ profileRArrowClicked(*) {
 	while cfg.profileName.length > cfg.reelSpeed.length
 		cfg.reelSpeed.push(ui.reelSpeed.value)
 	while cfg.profileName.length > cfg.zoomEnabled.length
-		cfg.zoomEnabled.push(ui.zoomToggle.value)
+		cfg.zoomEnabled.push(ui.zoomEnabled.value)
 	while cfg.profileName.length > cfg.bgModeEnabled.Length
-		cfg.bgModeEnabled.push(ui.bgModeToggle.value)
+		cfg.bgModeEnabled.push(ui.bgModeEnabled.value)
 }	
 
 deleteProfileName(*) {
@@ -1263,6 +1384,10 @@ deleteProfileName(*) {
 			ui.castLength.value := cfg.castLength[cfg.profileSelected]
 		try
 			ui.castLengthText.text := cfg.castLength[cfg.profileSelected]
+		try	
+			ui.castTime.value := cfg.castTime[cfg.profileSelected]
+		try
+			ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
 		try
 			ui.twitchFreq.value := cfg.twitchFreq[cfg.profileSelected]
 		try
@@ -1272,9 +1397,9 @@ deleteProfileName(*) {
 		try
 			ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
 		try
-			ui.zoomToggle.value := cfg.zoomEnabled[cfg.profileSelected]
+			ui.zoomEnabled.value := cfg.zoomEnabled[cfg.profileSelected]
 		try
-			ui.bgModeToggle.value := cfg.bgModeEnabled[cfg.profileSelected]
+			ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
 		} else {
 		notifyOSD("Can't Delete Only Profile",ui.profileText)
 		;msgBox("Can't Delete Only Profile")
@@ -1348,15 +1473,15 @@ updateControls(*) {
 	try 
 		ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
 	try
-		ui.zoomToggle.value := cfg.zoomEnabled[cfg.profileSelected]
+		ui.zoomEnabled.value := cfg.zoomEnabled[cfg.profileSelected]
 	try
-		ui.floatToggle.value := cfg.floatEnabled[cfg.profileSelected]
+		ui.floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
 	try
 		ui.castLength.value := cfg.castLength[cfg.profileSelected]
 	try 
 		ui.castLengthText.text := cfg.castLength[cfg.profileSelected]
 	try
-		ui.bgModeToggle.value := cfg.bgModeEnabled[cfg.profileSelected]
+		ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
 	try 
 		ui.profileText.text := cfg.profileName[cfg.profileSelected]
 	ui.profileNum.text := "Profile[" cfg.profileSelected "/" cfg.profileName.length "]"

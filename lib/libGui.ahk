@@ -20,7 +20,7 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 	ui.fishGuiBg.show("x" fishGuiFSx " y" fishGuiFSy " w500 h200 noactivate")
 	
 	ui.fullscreen := true
-	ui.fishGui.hidwaae()
+	ui.fishGui.hide()
 	ui.fishGuiFS := gui()
 
 
