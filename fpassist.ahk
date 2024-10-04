@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.9.3"
+A_FileVersion := "1.2.9.4"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -14,8 +14,9 @@ ui.game := "ahk_exe " ui.gameExe
 
 cfg.buttons := ["startButton","castButton","retrieveButton","reelButton","cancelButton","reloadButton","exitButton"]
 profileSettings := ["profileName","castLength","castTime","sinkTime","reelSpeed","dragLevel","twitchFreq","stopFreq","reelFreq","zoomEnabled","floatEnabled","bgModeEnabled"]
+profileDefaults := ["NewProfile","1900","1","1","1","1","1","1","1","0","0","0"]
 cfg.profile := array()
-
+cfg.emptyKeepnet := false
 
 for setting in profileSettings {
 	defaultValue := 0
@@ -26,11 +27,9 @@ for setting in profileSettings {
 		case "castLength":
 			defaultValue := "1900"
 		case "reelFreq":
-			defaultValue := "10"
-	}
-		
-	cfg.%setting% := strSplit(iniRead(cfg.file,"Game",setting,defaultValue),",")
-
+			defaultValue := "10"	
+	 }
+	 cfg.%setting% := strSplit(iniRead(cfg.file,"Game",setting,defaultValue),",")
 }
 
 cfg.twitchToggleValue := iniRead(cfg.file,"Game","TwitchToggle",true)
@@ -173,10 +172,14 @@ initGui(*) {
 		hotkey(ui.cancelKey,cancelOperation)
 		hotKey(ui.exitKey,cleanExit)
 		hotKey("+Esc",stopBgMode)
+		hotKey("F11",toggleFS)
 	hotif()
 	ui.castCount := 000
 }
-
+ui.isFS := false
+toggleFS(*) {
+	(ui.isFS := !ui.isFS) ? goFS() : noFS()
+}
 stopBgMode(*) {
 	autoFishStop()
 	winActivate(ui.game)
@@ -1088,7 +1091,7 @@ createGui() {
 	ui.profileRArrow.onEvent("click",profileRArrowClicked)
 	ui.profileText := ui.fishGui.addText("x" ui.profilePos["x"]+30 " y" ui.profilePos["y"]+4 " w207 h20 c" ui.fontColor[3] " center background" ui.bgColor[1])
 	ui.profileText.text := cfg.profileName[cfg.profileSelected]
-	ui.profileIcon := ui.fishGui.addPicture("hidden x410 y765 w230 h42 backgroundCC3355","./img/rod.png")
+	ui.profileIcon := ui.fishGui.addPicture("hidden x410 y765 w230 h42 backgroundCC3355","")
 	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+3 " w1 h22 background" ui.bgColor[3])
 	ui.profileTextOutline2 := ui.fishGui.addText("x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+24 " w209 h1 background" ui.bgColor[3])
 	ui.profileTextOutline1 := ui.fishGui.addText("x" ui.profilePos["x"]+28 " y" ui.profilePos["y"]+3 " w209 h1 background" ui.bgColor[3])
@@ -1311,28 +1314,11 @@ profileLArrowClicked(*) {
 		cfg.profileSelected := cfg.profileName.Length
 	
 	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	for setting in profileSettings {
+		while cfg.%setting%.length < cfg.profileName.length
+			cfg.%setting%.push(profileDefaults[a_index])
+	}
 	updateControls()
-
-	while cfg.profileName.length > cfg.castLength.length
-		cfg.castLength.push(ui.castLength.value)
-	while cfg.profileName.length > cfg.castTime.length
-		cfg.castTime.push(ui.castTime.value)
-	while cfg.profileName.length > cfg.sinkTime.length
-		cfg.sinkTime.push(ui.sinkTime.value)
-	while cfg.profileName.length > cfg.twitchFreq.length
-		cfg.twitchFreq.push(ui.twitchFreq.value)
-	while cfg.profileName.length > cfg.stopFreq.length
-		cfg.stopFreq.push(ui.stopFreq.value)
-	while cfg.profileName.length > cfg.dragLevel.length
-		cfg.dragLevel.push(ui.dragLevel.value)
-	while cfg.profileName.length > cfg.reelSpeed.length
-		cfg.reelSpeed.push(ui.reelSpeed.value)
-	while cfg.profileName.length > cfg.zoomEnabled.length
-		cfg.zoomEnabled.push(ui.zoomEnabled.value)
-	while cfg.profileName.length > cfg.floatEnabled.length
-		cfg.floatEnabled.push(ui.floatEnabled.value)
-	while cfg.profileName.length > cfg.bgModeEnabled.Length
-		cfg.bgModeEnabled.push(ui.bgModeEnabled.value)
 }
 
 ui.enabled := true
@@ -1360,22 +1346,11 @@ profileRArrowClicked(*) {
 	else
 		cfg.profileSelected := 1
 	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	for setting in profileSettings {
+		while cfg.%setting%.length < cfg.profileName.length
+			cfg.%setting%.push(profileDefaults[a_index])
+	}
 	updateControls()
-
-	while cfg.profileName.length > cfg.castLength.length
-		cfg.castLength.push(ui.castLength.value)
-	while cfg.profileName.length > cfg.twitchFreq.length
-		cfg.twitchFreq.push(ui.twitchFreq.value)
-	while cfg.profileName.length > cfg.stopFreq.length
-		cfg.stopFreq.push(ui.stopFreq.value)
-	while cfg.profileName.length > cfg.dragLevel.length
-		cfg.dragLevel.push(ui.dragLevel.value)
-	while cfg.profileName.length > cfg.reelSpeed.length
-		cfg.reelSpeed.push(ui.reelSpeed.value)
-	while cfg.profileName.length > cfg.zoomEnabled.length
-		cfg.zoomEnabled.push(ui.zoomEnabled.value)
-	while cfg.profileName.length > cfg.bgModeEnabled.Length
-		cfg.bgModeEnabled.push(ui.bgModeEnabled.value)
 }	
 
 deleteProfileName(*) {
@@ -1395,7 +1370,7 @@ deleteProfileName(*) {
 		try
 			cfg.zoomEnabled.removeAt(cfg.profileSelected)
 
-		if cfg.profileSelected == cfg.profileName.length {
+		if cfg.profileSelected > cfg.profileName.length {
 			cfg.profileSelected := 1
 		}
 		try
@@ -1443,8 +1418,10 @@ editProfileName(*) {
 	ui.editProfileEdit.focus()
 }
 newProfileName(*) {
-	cfg.profileName.push("Profile #" cfg.profileName.length+1)
-	cfg.profileSelected := cfg.profileName.Length
+	for setting in profileSettings {
+		cfg.%setting%.insertAt(cfg.profileSelected,profileDefaults[a_index])
+	}
+	cfg.profileName[cfg.profileSelected] := "Profile #" cfg.profileName.length
 	updateControls()
 	editProfileName()
 }
@@ -1545,7 +1522,9 @@ singleCast(*) {
 singleReel(*) {
 	ui.cancelOperation := false
 	cancelReset()
+	;autoFishStop()
 	reelIn(0)
+	
 }
 singleRetrieve(*) {
 	ui.cancelOperation := false
