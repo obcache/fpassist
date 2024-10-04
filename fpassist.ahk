@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.8.3"
+A_FileVersion := "1.2.9.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -234,6 +234,8 @@ m(msg := "") {
 
 
 autoFishStop(*) {
+	setTimer(landFish,0)
+	log("AFK: Stopping",1,"AFK: Stopped")
 	ui.reeling 		:= false
 	ui.casting 		:= false
 	ui.retrieving 	:= false
@@ -254,7 +256,6 @@ autoFishStop(*) {
 	ui.bigFishCaught.opt("+hidden")
 	ui.bigFishCaughtLabel.opt("+hidden")
 	ui.bigFishCaughtLabel2.opt("+hidden")	
-	;lightsOff()
 	panelMode("off")
 	if !fileExist(a_scriptDir "/logs/current_log.txt")
 		fileAppend('"Session Start","AFK Start","AFK Duration","Fish Caught","Cast Count","Cast Length","Drag Level","Reel Speed"`n', a_scriptDir "/logs/current_log.txt")
@@ -262,7 +263,9 @@ autoFishStop(*) {
 }
 
 autoFishStart(*) {
+	log("Ready")
 	log("AFK: Starting",1,"AFK: Started")
+	log("Ready")
 	ui.cancelOperation := false
 	ui.autoFish := true
 	ui.reeledIn := false
@@ -306,22 +309,25 @@ autoFishStart(*) {
 			}
 		}
 		
-		if !ui.cancelOperation
-			analyzeCatch()
+		analyzeCatch()
+		send("{LButton Up}{RButton Up}{space up}")
 	}
 	log("AFK: Stopping",1,"AFK: Stopped")
-	log("___________________________________________________________________",2)
+	log("Ready",1)
 }
 
 isHooked(*) {
 	if (checkPixel(1090,510,"0x1EA9C3")) || (checkPixel(1090,510,"0x419AAC")) {
 		log("HOOKED!")
-		ui.isHooked := 1
+		ui.isHooked := 1	
+		setTimer(landFish,-100)
+		reelIn()
 	} else {
 		ui.isHooked := 0
 	}
 	return ui.isHooked
 }
+
 checkPixel(x,y,targetColor) {
 	screenColor := round(pixelGetColor(x,y))
 	if (targetColor >= screenColor-10000) && (targetColor <= screenColor+10000)
@@ -329,14 +335,15 @@ checkPixel(x,y,targetColor) {
 	else
 		errorLevel := 0
 	return errorLevel
-}		
+}	
+
 analyzeCatch(logWork:=true) { 
 	sleep(1500)
 	if fishCaught(logWork) {
 		sendNice("{space}")
-		sleep500(6)
+		sleep(3000)
 		sendNice("{backspace}")
-		sleep500(2)
+		sleep(2000)
 	} else {	
 		;debug("No Fish Detected.")
 	}
@@ -357,7 +364,7 @@ analyzeCatch(logWork:=true) {
 	; }
 ; }
 ; 1090,350
-		fishCaught(logWork:=true) {
+fishCaught(logWork:=true) {
 	fishCaughtPixel := round(pixelGetColor(450,575))
 	log("Analyzing: Catch",1,"Analyzed: Catch")
 	if checkWhite := checkPixel(450,575,"0xFFFFFF") || checkGrey := checkPixel(450,575,"0x797A7E") {
@@ -369,9 +376,11 @@ analyzeCatch(logWork:=true) {
 		ui.fishLogAfkTime.opt("hidden")
 		ui.fishLogAfkTimeLabel.opt("hidden")
 		ui.fishLogAfkTimeLabel2.opt("hidden")
-		run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" formatTime(,"yyMMddhhmmss") ".png",,"hide")
-		sleep(1000)
 		log("Fish Caught!",0)
+		picTimestamp := formatTime(,"yyyyMMddhhmmss")
+		run("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" picTimestamp ".png",,"hide")
+		sleep500(2)
+		log("Screenshot: " a_scriptDir "/fishPics/" picTimestamp ".png",1)
 		ui.bigFishCaught.opt("-hidden")
 		ui.bigFishCaughtLabel.opt("-hidden")
 		ui.bigFishCaughtLabel2.opt("-hidden")
@@ -388,7 +397,7 @@ analyzeCatch(logWork:=true) {
 				ui.FishCaughtFS.text := format("{:03i}",ui.fishLogCount.text)
 		return 1
 	} else {
-		debug("No Fish Detected.",2)
+		log("No Fish Detected.",2)
 		return 0
 	}
 }
@@ -418,9 +427,8 @@ panelMode(mode) {
 
 reelIn(isAFK:=true,*) {
 	ui.autoFish := isAFK
+	modeHeader("Reel")
 	panelMode("reel")
-	log("Reel: Starting",1,"Reel: ")
-	log("___________________________________________________________________",2)
 	loop 5 {
 		sendNice("{l}")
 		sleep(150)
@@ -435,6 +443,7 @@ reelIn(isAFK:=true,*) {
 	}
 	sendNice("{space up}")
 	sleep(500)
+	setTimer(landFish,0)
 	analyzeCatch()
 	log("Reel: Finished",2)
 	if ui.cancelOperation
@@ -487,23 +496,23 @@ sendNice(payload,gameWin:=ui.game) {
 	loop {
 		if winActive(gameWin) {
 			if beenPaused
-				debug("Resume: Game Active",1)
+				log("Game: Resuming",1,"Game: Resumed")
 			send(payload)
 			return 1
 		} else {
 			beenPaused := true
-			debug("Pause: Game Not Active",1)
-			sleep(1000)
+			log("Game: Pausing",1,"Game: Paused")
+			sleep500(2)
 		}
 		sendIfWinActive(payload,gameWin:=ui.game,true)
 	}
 }
 
 calibrate(*) {
+	modeHeader("Calibrate")
 	if ui.cancelOperation
 		return
-	log("Calibration: Starting",1,"Calibration: Started")
-	debug("Calibration: Drag",1)
+	log("Calibrate: Drag",1)
 	loop 13 {
 		winWait("ahk_exe fishingplanet.exe")
 		sendNice("{-}")
@@ -516,10 +525,9 @@ calibrate(*) {
 	}
 	if ui.cancelOperation
 		return
-	debug("Calibration: Reel Speed",1)
+	log("Calibrate: Reel Speed",1)
 	loop 6 {
 		winWait("ahk_exe fishingPlanet.exe")
-		;winActivate(ui.game)
 		sendNice("{click wheelDown}")
 		sleep(50)
 	}	 
@@ -529,7 +537,8 @@ calibrate(*) {
 	}
 	if ui.cancelOperation
 		return
-	log("___________________________________________________________________",2)
+	
+	log("Ready",1)
 }
 
 cancelButtonOn(*) {
@@ -628,7 +637,7 @@ retrieveButtonOff(*) {
 
 cast(isAFK:=true,*) {
 	ui.autoFish := isAFK
-	Log("Cast: Starting",1,"Cast: Started")
+	modeHeader("Cast")
 	panelMode("cast")
 	ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
 	sendIfWinActive("{backspace}",ui.game,true)
@@ -643,7 +652,7 @@ cast(isAFK:=true,*) {
 	setTimer(calibrate,-100)
 	log("Wait: Lure In-Flight",1)
 	loop cfg.castTime[cfg.profileSelected] {
-			sleep500(2)
+		sleep500(2)
 	}
 	log("Wait: Lure Sinking",1)
 	loop cfg.sinkTime[cfg.profileSelected] {
@@ -652,26 +661,24 @@ cast(isAFK:=true,*) {
 	if (ui.zoomEnabled.value)
 		sendNice("{z}")
 		sleep(150)
-	log("___________________________________________________________________",2)
 	if !ui.autoFish
 		panelMode("Off")
 }          
 
 landFish(*) {
-	log("Landing: Reeling In",1)
-	while !reeledIn {
-		send("{LButton Down}")
-		send("{RButton Down}")
-		sleep(random(1000,2000))
-		send("{RButton Up}")
-		sleep(random(1000,2000))
+	modeHeader("Land")
+	while !reeledIn() {
+		sendNice("{LButton Down}")
+		sendNice("{RButton Down}")
+		sleep(random(1000,4000))
+		sendNice("{RButton Up}")
+		sleep(random(500,1500))
 	}
+	sendNice("{LButton Up}")
 	analyzeCatch()
 	checkKeepnet()
-	
-	
+}	
 	;maxStress := "0xB01D18"
-
 	; lineStress := round(pixelGetColor(1090,270))
 	; rodStress := round(pixelGetColor(1150,270))
 	; reelStress := round(pixelGetColor(1220,270))
@@ -687,7 +694,7 @@ landFish(*) {
 			; ui.currDrag += 1
 		; }
 	; }
-}
+;}
 
 
 
@@ -697,32 +704,34 @@ checkKeepnet(*) {
 	&& round(thisColor) <= round(0xFFC300)+5000 {
 		log("Keepnet: Full",0)
 		send("{t down}")
-		sleep(500)
+		sleep500(1)
 		send("{t up}")
-		sleep(1000)
+		sleep500(2)
 		mouseMove(620,590)
 		send("{LButton Down}")
-		sleep(500)
+		sleep500(1)
 		send("{LButton Up}")
 		mouseMove(530,610)
 		sendIfWinActive("{LButton Down}",ui.game,true)
 		sleep(350)
 		sendIfWinActive("{LButton Up}",ui.game,true)
-		sleep(1000)
+		sleep500(2)
 		log("Trip: Adding Day Trip",1)
 		MouseMove(530,450)
 		sendIfWinActive("{LButton Down}",ui.game,true)
 		sleep(350)
 		sendIfWinActive("{LButton Up}",ui.game,true)
-		sleep(500)	
+		sleep500(1)	
 		log("Trip: Extended",0)
 	} else {
-		log("Keepnet: Empty",2)
+		log("Keepnet: Not Full",2)
 	}
 }
 
 mechanic := object()
 retrieve(isAFK:=true) {
+	modeHeader("Retrieve")
+	setTimer(isHooked,500)
 	ui.autoFish := isAFK
 	if ui.cancelOperation
 		return
@@ -735,7 +744,7 @@ retrieve(isAFK:=true) {
 	while !reeledIn() {
 		if ui.cancelOperation
 			return		
-		if isHooked() {
+		if ui.isHooked {
 			landFish()
 			return
 		}
@@ -766,47 +775,47 @@ retrieve(isAFK:=true) {
 			mechanic.current := "reelFreq"
 			if mechanic.number < 11 
 				mechanic.current := "twitchFreq"
-			if mechanic.number > 21
+			if mechanic.number > 19
 				mechanic.current := "stopFreq"
 			currMechanic := mechanic.current
 			switch mechanic.number {
 				case 1,2,3,4,5,6,7,8,9,10:
 					if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
-					&& (mechanic.last != mechanic.current || mechanic.repeats < 3) {
-						if isHooked() {
+					&& (mechanic.last != mechanic.current || mechanic.repeats <= 3) {
+						if ui.isHooked {
 							landFish()
 							return
 						}
 						log("Retrieve: Twitch",1)
 				 		sendNice("{space down}")
 						sendNice("{RButton Down}")
-						sleep(round(random(100,200)))
+						sleep(round(random(100,300)))
 						sendNice("{RButton Up}")
 						sendNice("{space up}")
 					}
 				case 21,22,23,24,25,26,27,28,29,30:
 					mechanic.number -= 20
 					if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
-					&& (mechanic.last != mechanic.current || mechanic.repeats < 3) {
-					if isHooked() {
+					&& (mechanic.last != mechanic.current || mechanic.repeats <= 3) {
+					if ui.isHooked {
 						landFish()
 						return
 					}
 					log("Retrieve: Pause",1)
 						sendNice("{space up}")
-						sleep(1000)
-						sleep(round(random(99-999)))
+						sleep500(random(2,3))
+						sleep(round(random(1-499)))
 					}
 				case 11,12,13,14,15,16,17,18,19,20:
 					mechanic.number -= 10
 					if (mechanic.last != mechanic.current || mechanic.repeats < 3) {
-						if isHooked() {
+						if ui.isHooked {
 							landFish()
 							return
 						}	
 						log("Retrieve: Reel",1)
 						sendNice("{space down}")
-						sleep(1500)
+						sleep500(3)
 						sendNice("{space up}")
 					}
 			}
@@ -819,7 +828,7 @@ retrieve(isAFK:=true) {
 				mechanic.last := mechanic.current	
 		}
 	}
-	log("___________________________________________________________________",2)
+	log("Ready",1)
 
 	panelMode("off")
 }
@@ -855,7 +864,18 @@ sliderMoved(this_slider,info*) {
 		sleep(10)
 	}
 }
-	
+ui.mode := ""
+ui.lastMode := ui.mode
+modeHeader(mode,debugLevel:=1) {
+	ui.mode := mode
+	log(ui.lastMode ": Stopping",1,mode ": Stopped")
+	log("Ready",debugLevel)
+	log(ui.mode,debugLevel)
+	log("Ready",debugLevel)
+	Log(ui.mode ": Starting",1,ui.mode ": Started")
+	ui.lastMode := ui.mode
+}
+
 updateAfkTime(*) {	
 	ui.secondsElapsed += 1
 	ui.fishLogAfkTime.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
@@ -972,7 +992,7 @@ detectPrompts(logWork := false) {
 			log("Ads: Ad Closed",1)
 		}		
 	}
-	log("___________________________________________________________________",2)
+	;log("___________________________________________________________________",2)
 }
 appReload(*) {
 	reload()
@@ -1036,9 +1056,9 @@ createGui() {
 	ui.fishGui.opt("-caption owner" winGetId(ui.game))
 	ui.fishGui.backColor := ui.bgColor[1]
 	winSetTransColor("010203",ui.fishGui.hwnd)
-	ui.appFrame := ui.fishGui.addText("x300 y30 w1282 h722 c" ui.fontColor[3] " background" ui.bgColor[1])
-	ui.appFrame2 := ui.fishGui.addText("x300 y32 w1281 h719 c" ui.fontColor[1] " background" ui.bgColor[3])
-	ui.fpBg := ui.fishGui.addText("x301 y33 w1279 h717 c010203 background010203")
+	ui.appFrame := ui.fishGui.addText("x300 y32 w1281 h719 c" ui.fontColor[3] " background" ui.bgColor[3])
+	ui.appFrame2 := ui.fishGui.addText("x301 y33 w1279 h717 c" ui.fontColor[1] " background" ui.bgColor[1])
+	ui.fpBg := ui.fishGui.addText("x302 y34 w1278 h715 c010203 background010203")
 	ui.titleBarOutline := ui.fishGui.addText("x299 y0 w1282 h30 background" ui.bgColor[1])
 	ui.titleBarOutline2 := ui.fishGui.addText("x300 y1 w1281 h30 background" ui.bgColor[3])
 	ui.titleBarOutline3 := ui.fishGui.addText("x301 y2 w1279 h28 background" ui.bgColor[1])
@@ -1240,11 +1260,11 @@ createGui() {
 	ui.fishLogFooter := ui.fishGui.addText("x3 y724 w294 h25 background" ui.bgColor[5]) ;61823A
 	ui.fishStatusText := ui.fishGui.addText("section x5 y723 w290 h25 center c" ui.fontColor[5] " backgroundTrans","Ready")
 	ui.fishStatusText.setFont("s16 bold","Miriam Fixed")
-	ui.fishLogTimerOutline := ui.fishGui.addText("x1047 y710 w268 h40 background" ui.bgColor[3])
-	ui.fishLogTimerOutline2 := ui.fishGui.addText("x1048 y711 w266 h38 background" ui.bgColor[1])
-	ui.fishLogTimerOutline3 := ui.fishGui.addText("x1049 y712 w264 h36 background" ui.bgColor[2])
-	ui.fishLogTimer := ui.fishGui.addText("x1050 y713 w263 h35 background3F3F3F") ;61823A
-	ui.timerAnim := ui.fishGui.addText("x1047 y710 w268 h40 background010203")
+	;ui.fishLogTimerOutline := ui.fishGui.addText("x1047 y710 w268 h40 background" ui.bgColor[3])
+	;ui.fishLogTimerOutline2 := ui.fishGui.addText("x1048 y711 w266 h38 background" ui.bgColor[1])
+	;ui.fishLogTimerOutline3 := ui.fishGui.addText("x1049 y712 w264 h36 background" ui.bgColor[2])
+	;ui.fishLogTimer := ui.fishGui.addText("x1050 y713 w263 h35 background3F3F3F") ;61823A
+	;ui.timerAnim := ui.fishGui.addText("x1047 y710 w268 h40 background010203")
 	ui.fishLogAfkTimeLabel := ui.fishGui.addText("hidden section right x751 y695 w80 h40 c" ui.fontColor[3] " backgroundTrans","AFK")
 	ui.fishLogAfkTimeLabel.setFont("s16","Arial")
 	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x751 y707 w80 h40 c" ui.fontColor[3] " backgroundTrans","Timer")
@@ -1456,7 +1476,6 @@ startButtonClicked(*) {
 		winActivate("ahk_exe fishingPlanet.exe")
 		ui.cancelOperation := false
 		autoFishStart()
-		;startButtonOn()
 }
 
 updateControls(*) {
@@ -1491,7 +1510,6 @@ updateControls(*) {
 
 cancelOperation(*) {
 	ui.cancelOperation := true
-	;lightsOff()
 	panelMode("off")
 	autoFishStop()
 	send("{space up}")
@@ -1501,8 +1519,7 @@ cancelOperation(*) {
 }
 	
 buttonAfk(enabled) {
-	
-	}
+}
 	
 	
 buttonCast(enabled) {

@@ -205,7 +205,6 @@ install() {
 			FileInstall("./Img/button_nofs.png",InstallDir "/img/button_nofs.png",1) 
 			FileInstall("./Img/button_fs.png",InstallDir "/img/button_fs.png",1) 
 			FileInstall("./Img/button_close.png",InstallDir "/Img/button_close.png",true)
-			FileInstall("./Img/rod.png",InstallDir "/Img/rod.png",true)
 			fileInstall("./Img/button_save.png",InstallDir "/img/button_save.png",1)
 			fileInstall("./Img/button_new.png",InstallDir "/img/button_new.png",1)
 			fileInstall("./Img/button_delete.png",InstallDir "/img/button_delete.png",1)
@@ -215,12 +214,10 @@ install() {
 			fileInstall("./img/button_arrowRight.png",installDir "/img/button_arrowRight.png",1)
 			fileInstall("./img/toggle_on.png",cfg.installDir "/img/toggle_on.png",1)
 			fileInstall("./img/toggle_off.png",cfg.installDir "/img/toggle_off.png",1)
-			fileInstall("./img/progress_bg.png",cfg.installDir "/img/progress_bg.png",1)
 			fileInstall("./img/play_ani_1.png",cfg.installDir "/img/play_ani_1.png",1)
 			fileInstall("./img/play_ani_2.png",cfg.installDir "/img/play_ani_2.png",1)
 			fileInstall("./img/play_ani_3.png",cfg.installDir "/img/play_ani_3.png",1)
 			fileInstall("./img/play_ani_0.png",cfg.installDir "/img/play_ani_0.png",1)
-			fileInstall("./img/progress_play.png",cfg.installDir "/img/progress_play.png",1)
 			fileInstall("./redist/sqlite3.dll",cfg.installDir "/redist/sqlite3.dll",1)
 			fileInstall("./redist/ss.exe",cfg.installDir "/redist/ss.exe",1)
 			FileInstall("./update.exe",InstallDir "/update.exe",1)
@@ -379,17 +376,21 @@ log(msg,debug:=0,msgHistory:=msg) {
 	if debug > cfg.debug
 		return
 	if ui.lastMsg {
-		ui.fishStatusText.text := (msg=="___________________________________________________________________") ? "Ready" : msg
-		;if ui.fishLogArr.length > 33 {
-			
-			ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
-			ui.fishLogText.delete()
-			ui.fishLogText.add(ui.fishLogArr)
-			ui.fishLogArr.removeAt(1)
-		;} else {
-		;	ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
-		;	ui.fishLogText.delete()
-		;	ui.fishLogText.add(ui.fishLogArr)
+	if msg=="divider" {
+		msg:="Ready"
+		msgHistory:="———————————————————————————————————————————————————————————————————————————————————————————————————" 			
+	}
+	;ui.fishStatusText.text := (msg=="___________________________________________________________________") ? "Ready" : msg
+	;if ui.fishLogArr.length > 33 {
+	ui.fishStatusText.text := msg
+	ui.fishLogArr.push((ui.lastMsg=="Ready") ? "——————————————————————————————————————" : formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+	ui.fishLogText.delete()
+	ui.fishLogText.add(ui.fishLogArr)
+	ui.fishLogArr.removeAt(1)
+	;} else {
+	;	ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+	;	ui.fishLogText.delete()
+	;	ui.fishLogText.add(ui.fishLogArr)
 	}
 	try {
 		ui.fishLogStr := ""
