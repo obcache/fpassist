@@ -76,30 +76,30 @@ statPanel(*) {
 	x-=20
 	y-=3
 	ui.statSessionStartTimeLabel := ui.fishGui.addText("x" 7+x " y" 5+y " right section w80 r1 backgroundTrans c" ui.fontColor[2],"Session: ")
-	ui.statSessionStartTime := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyyMMdd HH:mm:ss"))
+	ui.statSessionStartTime := ui.fishGui.addText("x+0 ys w130 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyy-MM-dd@hh:mm:ss"))
 	
-	ui.statCastLengthLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast: ")
+	ui.statCastLengthLabel := ui.fishGui.addText("x+-15 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast: ")
 	ui.statCastLength := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.castLength.value)
 	
-	ui.statFishCountLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Fish Count: ")
+	ui.statFishCountLabel := ui.fishGui.addText("x+-35 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Fish Count: ")
 	ui.statFishCount := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2], ui.fishLogCount.text)
 	
 	ui.statAfkStartTimeLabel := ui.fishGui.addText("xs-320 y+0 right section w80 r1 backgroundTrans c" ui.fontColor[2],"Start: ")
-	ui.statAfkStartTime := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyyMMdd HH:mm:ss"))
+	ui.statAfkStartTime := ui.fishGui.addText("x+0 ys w130 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyy-MM-dd@HH:mm:ss"))
 	
-	ui.statDragLevelLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Drag: ")
+	ui.statDragLevelLabel := ui.fishGui.addText("x+-15 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Drag: ")
 	ui.statDragLevel := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.dragLevel.value)
 	
-	ui.statCastCountLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast Count: ")
+	ui.statCastCountLabel := ui.fishGui.addText("x+-35 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast Count: ")
 	ui.statCastCount := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2], "000")
 	
 	ui.statAfkDurationLabel := ui.fishGui.addText("xs-320 y+0 right section w80 r1 backgroundTrans c" ui.fontColor[2],"Duration: ")
-	ui.statAfkDuration := ui.fishGui.addText("x+0 ys w80 r1 background" ui.bgColor[1] " c" ui.fontColor[2],"")
+	ui.statAfkDuration := ui.fishGui.addText("x+0 ys w130 r1 background" ui.bgColor[1] " c" ui.fontColor[2],"")
 	
-	ui.statReelSpeedLabel := ui.fishGui.addText("x+0 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Speed: ")
+	ui.statReelSpeedLabel := ui.fishGui.addText("x+-15 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Speed: ")
 	ui.statReelSpeed := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.reelSpeed.value)
 	
-	ui.viewLog := ui.fishGui.addText("x+0 ys right section w55 r1 backgroundTrans c" ui.fontColor[2],"View Log")
+	ui.viewLog := ui.fishGui.addText("x+-35 ys right section w55 r1 backgroundTrans c" ui.fontColor[2],"View Log")
 	ui.viewLog.setFont("s9 underline")
 	ui.viewLog.onEvent("click",viewLog)
 	

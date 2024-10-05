@@ -291,21 +291,7 @@ cleanExit(*) {
 }
 
 exitFunc(*) {
-	; ui.profileNameStr := ""
-	; ui.castLengthStr := ""
-	; ui.castTimeStr := ""
-	; ui.sinkTimeStr := ""
-	; ui.reelFreqStr := ""
-	; ui.reelSpeedStr := ""
-	; ui.dragLevelStr := ""
-	; ui.twitchFreqStr := ""
-	; ui.stopFreqStr := ""
-	; ui.zoomEnabledStr := ""
-	; ui.floatEnabledStr := ""
-	; ui.bgModeEnabledStr := ""
-	
-
-	for setting in profileSettings {
+	for setting in cfg.profileSettings {
 		ui.%setting%Str := ""
 		if setting != "profileName" {
 			while cfg.%setting%.length < cfg.profileName.length
@@ -316,53 +302,6 @@ exitFunc(*) {
 			}
 		iniWrite(rtrim(ui.%setting%Str,","),cfg.file,"Game",setting)
 	}
-	
-
-	; iniWrite(ui.profileNameStr,cfg.file,"Game","ProfileName")
-	; iniWrite(ui.castLengthStr,cfg.file,"Game","CastLength")
-	; iniWrite(ui.reelSpeedStr,cfg.file,"Game","ReelSpeed")
-	; iniWrite(ui.dragLevelStr,cfg.file,"Game","DragLevel")
-	; iniWrite(ui.twitchFreqStr,cfg.file,"Game","TwitchFreq")
-	; iniWrite(ui.stopFreqStr,cfg.file,"Game","StopFreq")
-	; iniWrite(ui.zoomEnabledStr,cfg.file,"Game","ZoomEnabled")
-	; iniWrite(ui.floatEnabledStr,cfg.file,"Game","FloatEnabled")
-	; iniWrite(ui.bgModeEnabledStr,cfg.file,"Game","BgModeEnabled")
-
-	; loop cfg.profileName.length {
-		; try
-			; ui.profileNameStr .= cfg.profileName[a_index] ","
-		; try
-			; ui.castLengthStr .= cfg.castLength[a_index] ","
-		; try
-			; ui.reelSpeedStr .= cfg.reelSpeed[a_index] ","
-		; try
-			; ui.dragLevelStr .= cfg.dragLevel[a_index] ","
-		; try
-			; ui.reelFreqStr .= cfg.reelFreq[a_index] ","
-		; try
-			; ui.twitchFreqStr .= cfg.twitchFreq[a_index] ","
-		; try
-			; ui.stopFreqStr .= cfg.stopFreq[a_index] ","
-		; try
-			; ui.floatEnabledStr .= cfg.floatEnabled[a_index] ","
-		; try
-			; ui.zoomEnabledStr .= cfg.zoomEnabled[a_index] ","
-		; try
-			; ui.bgModeStr .= cfg.bgModeEnabled[a_index] ","
-	; }
-	
-	; iniwrite(rtrim(ui.profileNameStr,","),cfg.file,"Game","ProfileName")
-	; iniWrite(rtrim(ui.castLengthStr,","),cfg.file,"Game","CastLength")
-	; iniWrite(rtrim(ui.castTime,","),cfg.file,"Game","CastTime")
-	; iniWrite(rtrim(ui.sinkTime,","),cfg.file,"Game","SinkTime")
-	; iniWrite(rtrim(ui.reelSpeedStr,","),cfg.file,"Game","ReelSpeed")
-	; iniWrite(rtrim(ui.dragLevelStr,","),cfg.file,"Game","DragLevel")
-	; iniWrite(rtrim(ui.twitchFreqStr,","),cfg.file,"Game","TwitchFreq")
-	; iniWrite(rtrim(ui.stopFreqStr,","),cfg.file,"Game","stopFreq")
-	; iniWrite(rtrim(ui.reelFreqStr,","),cfg.file,"Game","ReelFreq")
-	; iniWrite(rtrim(ui.zoomEnabledStr,","),cfg.file,"Game","ZoomEnabled")
-	; iniWrite(rtrim(ui.floatEnabledStr,","),cfg.file,"Game","FloatEnabled")
-	; iniWrite(rtrim(ui.bgModeEnabledStr,","),cfg.file,"Game","BgModeEnabled")
 	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
 	iniWrite(cfg.rodCount,cfg.file,"Game","RodCount")
 	exitApp
@@ -371,6 +310,7 @@ exitFunc(*) {
 debug(msg,debug) {
 	log(msg,debug:=1,msgHistory:=msg)
 }
+
 ui.lastMsg := ""
 log(msg,debug:=0,msgHistory:=msg) {
 	if debug > cfg.debug
