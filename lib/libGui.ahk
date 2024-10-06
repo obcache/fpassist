@@ -251,7 +251,8 @@ loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 				sleep(1)
 			}
 			ui.notifyGui.hide()
-			
+			winActivate(ui.game)
+			setTimer () => detectPrompts(1),-3000
 	}
 }
 
@@ -303,7 +304,7 @@ WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
 		try
 			winGetPos(&x,&y,&w,&h,ui.fishGui)
 		try
-			winMove(x+301,y+31,,,ui.game)
+			winMove(x+(301*(a_screenDpi/96)),y+(31*(a_screenDpi/96)),,,ui.game)
 		try
 			winMove(x+1101,y+753,,,ui.disabledGui) 
 		try
@@ -311,3 +312,97 @@ WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
 	
 }
 
+
+cancelButtonOn(*) {
+	ui.cancelButtonBg.opt("background" ui.trimColor[2])
+	ui.cancelButtonBg.redraw()
+	ui.cancelButton.setFont("c" ui.trimFontColor[2])
+	ui.cancelButton.redraw()
+	ui.cancelButtonHotkey.setFont("c" ui.trimFontColor[2])
+	ui.cancelButtonHotkey.redraw()
+}
+
+cancelButtonOff(*) {
+	ui.cancelButtonBg.opt("background" ui.trimDarkColor[2])
+	ui.cancelButtonBg.redraw()
+	ui.cancelButton.setFont("c" ui.trimDarkFontColor[2])
+	ui.cancelButton.redraw()
+	ui.cancelButtonHotkey.setFont("c" ui.trimDarkFontColor[2])
+	ui.cancelButtonHotkey.redraw()
+}
+
+startButtonOff(*) {
+	ui.startButtonBg.opt("background" ui.trimDarkColor[1])
+	ui.startButtonBg.redraw()
+	ui.startButton.setFont("c" ui.trimDarkFontColor[1])
+	ui.startButton.redraw()
+	ui.startButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	ui.startButton.redraw()
+}
+
+startButtonOn(*) {
+	ui.startButtonBg.opt("background" ui.trimColor[1])
+	ui.startButtonBg.redraw()
+	ui.startButton.setFont("c" ui.trimFontColor[1])
+	ui.startButton.redraw()
+	ui.startButtonHotkey.setFont("c" ui.trimFontColor[1])
+	ui.startButton.redraw()
+	cancelButtonOn()
+}
+
+castButtonOn(*) {
+	ui.castButtonBg.opt("background" ui.trimColor[1])
+	ui.castButtonBg.redraw()
+	ui.castButton.setFont("c" ui.trimFontColor[1])
+	ui.castButton.redraw()
+	ui.castButtonHotkey.setFont("c" ui.trimFontColor[1])
+	ui.castButton.redraw()
+	cancelButtonOn()
+}
+
+castButtonOff(*) {
+	ui.castButtonBg.opt("background" ui.trimDarkColor[1])
+	ui.castButtonBg.redraw()
+	ui.castButton.setFont("c" ui.trimDarkFontColor[1])
+	ui.castButtonBg.redraw()
+	ui.castButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	ui.castButtonHotkey.redraw()
+}
+	
+reelButtonOn(*) {
+		ui.reelButtonBg.opt("background" ui.trimColor[1])
+		ui.reelButtonBg.redraw()
+		ui.reelButton.setFont("c" ui.trimFontColor[1])
+		ui.reelButton.redraw()
+		ui.reelButtonHotkey.setFont("c" ui.trimFontColor[1])
+		ui.reelButtonHotkey.redraw()	
+		cancelButtonOn()
+}
+
+reelButtonOff(*) {
+	ui.reelButtonBg.opt("background" ui.trimDarkColor[1])
+	ui.reelButtonBg.redraw()
+	ui.reelButton.setFont("c" ui.trimDarkFontColor[1])
+	ui.reelButton.redraw()
+	ui.reelButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	ui.reelButtonHotkey.redraw()
+}
+
+retrieveButtonOn(*) {
+	ui.retrieveButtonBg.opt("background" ui.trimColor[1])
+	ui.retrieveButtonBg.redraw()
+	ui.retrieveButton.setFont("c" ui.trimFontColor[1])
+	ui.retrieveButton.redraw()
+	ui.retrieveButtonHotkey.setFont("c" ui.trimFontColor[1])
+	ui.retrieveButtonHotkey.redraw()
+	cancelButtonOn()
+}
+
+retrieveButtonOff(*) {
+	ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
+	ui.retrieveButtonBg.redraw()
+	ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
+	ui.retrieveButton.redraw()
+	ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
+	ui.retrieveButtonHotkey.redraw()
+}

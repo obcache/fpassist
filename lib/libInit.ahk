@@ -26,6 +26,8 @@ initValues(*) {
 	ui.loadingProgress 	:= 5
 	ui.loadingProgress2 := 5
 	ui.playAniStep 		:= 0
+	
+
 	defaultValue := 0
 
 	for setting in cfg.profileSettings {
@@ -75,12 +77,12 @@ startGame(*) {
 		setTimer(startupProgress2,120)
 	}
 	winSetTransparent(1,ui.game)
-	winMove(0,0,1280,720,ui.game)
+	winMove(0,0,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
 	sleep(1000)
 	ui.loadingProgress.value += 4
 	ui.loadingProgress2.value += 4
 	winGetPos(&x,&y,&w,&h,ui.game)
-	while w != 1280 || h != 720 {
+	while w != 1280*(a_screenDpi/96) || h != 720*(a_screenDpi/96) {
 		sleep(1000)
 		if w == a_screenWidth && h == a_screenHeight {
 			winActivate("ahk_exe fishingPlanet.exe")
@@ -88,7 +90,7 @@ startGame(*) {
 			sleep(500)
 			ui.loadingProgress.value += 2
 			ui.loadingProgress2.value += 2
-			winMove(0,0,1280,720,ui.game)
+			winMove(0,0,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
 			sleep(500)
 			ui.loadingProgress.value += 2
 			ui.loadingProgress2.value += 2
