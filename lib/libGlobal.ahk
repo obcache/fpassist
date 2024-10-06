@@ -225,9 +225,13 @@ install() {
 			iniWrite(installDir,installDir "/fpassist.ini","System","InstallDir")
 			if errorLevel
 				return errorLevel
+			
 			run(installDir "\" a_appName ".exe")
 			sleep(4500)
+			ui.pbConsole.destroy()
 			exitApp
+
+			exit
 		
 		}
 	}
