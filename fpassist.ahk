@@ -1,4 +1,4 @@
-A_FileVersion := "1.2.9.8"
+A_FileVersion := "1.2.9.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -133,13 +133,17 @@ autoFishStop(restart*) {
 	} else {
 		panelMode("off")
 		ui.secondsElapsed := 0
-		ui.fishLogAfkTime.text := "00:00:00"
+		ui.fishLogAfkTime.text := "00:00:00" 
 	}
+}
+^+r:: {
+	autoFishRestart()
 }
 
 autoFishRestart(*) {
 	autoFishStop("restart")
 }
+
 
 autoFishStart(*) {
 	modeHeader("AFK")
@@ -159,26 +163,26 @@ autoFishStart(*) {
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
-	send("{space up}")
-	send("{lshift up}")
-	send("{lbutton up}")
-	send("{rbutton up}")
+	resetKeyStates()
 	setTimer(detectPrompts,15000)
 	while ui.autoFish == 1 && !ui.cancelOperation {
 		detectPrompts(1)
 		(sleep500(2,0)) ? exit : 0
-		(!reeledIn()) 
-			? reelIn(1) 
-			: (cast(1)
-				,(!reeledIn()) 
-					? retrieve(1) 
-					: 0)
+		if !reeledIn() 
+			reelIn(1) 
+		if reeledIn()
+			cast(1)
+		if !reeledIn() 
+		retrieve(1)
+	} else {
+		setTimer () => autoFishRestart(),-100
+		return
 	}
-	send("{LButton Up}{RButton Up}{space up}")
-	sleep(1500)
+	sleep500(3)
 	analyzeCatch()
-	sleep(1500)
+	sleep500(3)
 	checkKeepnet()
+	send("{LButton Up}{RButton Up}{space up}")
 	ui.cycleAFK := true
 	if !ui.autoFish || ui.cancelOperation {
 		autoFishStop()
@@ -199,6 +203,7 @@ if (checkPixel(1090,510,"0x1EA9C3")) || (checkPixel(1090,510,"0x419AAC")) {
 	}
 	return ui.isHooked
 }
+
 checkPixel(x,y,targetColor) {
 	screenColor := round(pixelGetColor(x,y))
 	if (targetColor >= screenColor-10000) && (targetColor <= screenColor+10000)
@@ -373,7 +378,7 @@ detectPrompts(logWork := false) {
 			sleep(1000)
 		}
 		
-		if pixelGetColor(541,590) == "0xFFFFFF" {
+		if round(pixelGetColor(535,598)) > round(0xFFFFFF)-100000 {
 			log("Ads: Ad Detected",1)
 			ui.popupFound := true
 			mouseGetPos(&x,&y)
@@ -440,6 +445,11 @@ sendNice(payload,gameWin:=ui.game) {
 		sendIfWinActive(payload,gameWin:=ui.game,true)
 	}
 }
+resetKeystates(*) {
+	send("{space up}")
+	send("{lbutton up}")
+	send("{rbutton up}")
+}
 
 calibrate(*) {
 	modeHeader("Calibrate")
@@ -474,12 +484,24 @@ calibrate(*) {
 	log("Ready",1)
 }
 cast(isAFK:=true,*) {
-	ui.autoFish := isAFK
+	ui.cancelOperation := false
 	modeHeader("Cast")
 	panelMode("cast")
 	ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
 	sendIfWinActive("{backspace}",ui.game,true)
 	errorLevel := sleep500(3)
+	loop 10 {
+		if !reeledIn() {
+			sleep500(2)
+		} else {
+			break 
+		}
+		timeout := a_index
+		if timeout == 10 {
+			autoFishStop()
+			return
+		}
+	}
 	log("Cast: Drawing Back Rod",1)
 	sendNice("{space down}")
 	(cfg.profileSelected <= cfg.castLength.length)  
@@ -505,20 +527,26 @@ cast(isAFK:=true,*) {
 		sleep(150)
 	if !ui.autoFish
 		panelMode("Off")
-}          
+}
+
 retrieve(isAFK:=true) {
+	ui.cancelOperation := false
 	modeHeader("Retrieve")
 	setTimer(isHooked,500)
-	ui.autoFish := isAFK
 	if ui.cancelOperation
 		return
 	panelMode("retrieve")
 	if ui.floatEnabled.value {
-		log("Retrieve: Watching Float",1,"Retrieve: Watched Float")
-		ui.retrieveButton.text := "Float"
+		log("Watch: Monitoring Bait",1)
+		ui.retrieveButton.text := "Watch"
 		while !ui.cancelOperation && !reeledIn() {
 			if !ui.isHooked 
 				sleep(500)
+			if a_index > 600 {
+				log("Watch: Stale - Recasting",1)
+				setTimer(reelIn,-100)
+				return
+			}
 		} else {
 				ui.retrieveButton.text := "Retrie&ve"
 				landFish()
@@ -597,9 +625,14 @@ retrieve(isAFK:=true) {
 		}
 	}
 	panelMode("off")
+	timeOut := 0
+	while !reeledIn() && timeOut < 20
+		sleep500(1)
+	if timeOut > 19
+		return
 }
 reelIn(isAFK:=true,*) {
-	ui.autoFish := isAFK
+	ui.cancelOperation := false
 	modeHeader("Reel")
 	panelMode("reel")
 	loop 5 {
