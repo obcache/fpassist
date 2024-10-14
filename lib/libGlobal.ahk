@@ -8,18 +8,179 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 	Return
 }
 
+
+panelMode(mode) {
+	startButtonOff()
+	castButtonOff()
+	retrieveButtonOff()
+	reelButtonOff()
+	cancelButtonOff()
+	if ui.autoFish
+		startButtonOn()
+	switch mode {
+		case "cast":
+			castButtonOn()
+		case "retrieve":
+			retrieveButtonOn()
+		case "reel":
+			reelButtonOn()
+		case "afk":
+			startButtonOn()
+		case "off":
+			return
+	}
+	cancelButtonOn()
+}
+
+osdNotify(msg) {
+	winGetPos(&x,&y,&w,&h,ui.fishGui)	
+	msgWidth := strLen(msg)*5
+	ui.osdNotify := ui.fishGui.addText("-hidden x" (w/2)-(msgWidth/2) " y100 w" msgWidth " h50 backgroundTrans cEEEEEE",msg)
+	setTimer () => ui.osdNotify.opt("hidden"),-5000
+}
+
+
+themeDef(themeNum:=1,*) {
+	switch themeNum {
+		case 1:
+			ui.bgColor 				:= ["202020","323032","454548","1B1A1C","DFDFFF","999999"]
+			ui.fontColor 			:= ["151415","A0AFB5","D0D5FF","666666","353535","50556F"]
+			ui.trimColor 			:= ["DFDFFF","6d0f0f","f39909","11EE11","EE1111","303030"]
+			ui.trimDarkColor 		:= ["101011","2d0f0f","7b4212","11EE11","EE1111","303030"]
+			ui.trimFontColor 		:= ["282828","d0b7b4","44DDCC","11EE11","EE1111","303030"]
+			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
+		case 2:
+			ui.bgColor 				:= ["202020","323032","454548","1B1A1C","DFDFFF","999999"]
+			ui.fontColor 			:= ["151415","A0AFB5","D0D5FF","666666","353535","50556F"]
+			ui.trimColor 			:= ["DFDFFF","6d0f0f","44DDCC","11EE11","EE1111","303030"]
+			ui.trimDarkColor 		:= ["101011","2d0f0f","44DDCC","11EE11","EE1111","303030"]
+			ui.trimFontColor 		:= ["282828","d0b7b4","44DDCC","11EE11","EE1111","303030"]
+			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
+		case 3:
+			ui.bgColor 				:= ["202020","323032","454548","1B1A1C","DFDFFF","999999"]
+			ui.fontColor 			:= ["151415","A0AFB5","D0D5FF","666666","353535","50556F"]
+			ui.trimColor 			:= ["DFDFFF","6d0f0f","44DDCC","11EE11","EE1111","303030"]
+			ui.trimDarkColor 		:= ["101011","2d0f0f","44DDCC","11EE11","EE1111","303030"]
+			ui.trimFontColor 		:= ["282828","d0b7b4","44DDCC","11EE11","EE1111","303030"]
+			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
+	}
+}
+initVars(*) {
+	cfg.profile 			:= array()
+	ui.fishLogArr 			:= array()
+	ui.sliderList 			:= array()
+	
+	cfg.file 				:= a_appName ".ini"
+	cfg.installDir 			:= a_mydocuments "\" a_appName "\"
+	
+	ui.gameExe 				:= "fishingPlanet.exe"
+	ui.game 				:= "ahk_exe " ui.gameExe
+
+	cfg.buttons 			:= ["startButton","castButton","retrieveButton","reelButton","cancelButton","reloadButton","exitButton"]
+	;cfg.profileSettings 	:= ["profileName","castLength","castTime","sinkTime","reelSpeed","dragLevel","landAggro","twitchFreq","stopFreq","reelFreq","zoomEnabled","floatEnabled","bgModeEnabled"]
+	;cfg.profileDefaults 	:= {"NewProfile","1900","1","1","1","1","1","1","1","0","0","0"]
+
+	cfg.profileSetting := map()
+		cfg.profileSetting["profileName"] := "NewProfile"
+		cfg.profileSetting["castLength"] := "1900"
+		cfg.profileSetting["castTime"] := "1"
+		cfg.profileSetting["sinkTime"] := "1"
+		cfg.profileSetting["reelSpeed"] := "1"
+		cfg.profileSetting["dragLevel"] := "1"
+		cfg.profileSetting["landAggro"] := "1"
+		cfg.profileSetting["twitchFreq"] := "1"
+		cfg.profileSetting["stopFreq"] := "1"
+		cfg.profileSetting["reelFreq"] := "1"
+		cfg.profileSetting["zoomEnabled"] := "0"
+		cfg.profileSetting["floatEnabled"] := "0"
+		cfg.profileSetting["bgModeEnabled"] := "0"
+
+	ui.greenCheckColor 		:= round(0x7ED322)
+	ui.sessionStartTime 	:= A_Now
+	ui.enabled 				:= true
+	cfg.emptyKeepnet 		:= false
+	ui.autoFish 			:= false
+	ui.isAFK 				:= false
+	ui.isFS 				:= false
+	ui.fullscreen 			:= false
+	ui.isHooked				:= false
+	ui.reeledIn 			:= false
+	ui.cancelOperation 		:= false
+	ui.casting 				:= false
+	ui.autoclickerActive 	:= false
+	ui.fishCount 			:= 000
+	ui.castCount 			:= 000
+	tmp.h					:= 40
+	ui.currDrag 			:= 0
+	defaultValue 			:= 0
+	ui.secondsElapsed 		:= 0
+	ui.loadingProgress 		:= 5
+	ui.loadingProgress2 	:= 5
+	ui.playAniStep 			:= 0
+	ui.startKey 			:= "f"
+	ui.cancelKey 			:= "q"
+	ui.reloadKey 			:= "F5"
+	ui.castKey 				:= "c"
+	ui.reelKey 				:= "r"
+	ui.exitKey 				:= "F4"
+	ui.retrieveKey 			:= "v"
+	ui.flashlight 			:= "+F"
+	ui.startKeyMouse 		:= "!LButton"
+	ui.stopKeyMouse 		:= "!RButton"
+	ui.mode 				:= ""
+	ui.lastMsg 				:= ""
+	ui.lastMode 			:= ui.mode
+}
+
+cfgWrite(*) {
+	for setting,default in cfg.profileSetting {
+		ui.%setting%Str := ""
+		if setting != "profileName" {
+			while cfg.%setting%.length < cfg.profileName.length
+				cfg.%setting%.push(ui.%setting%.value)
+			}
+			for profile in cfg.profileName {
+				ui.%setting%Str .= cfg.%setting%[a_index] ","
+			}
+		iniWrite(rtrim(ui.%setting%Str,","),cfg.file,"Game",setting)
+	}
+	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
+	iniWrite(cfg.rodCount,cfg.file,"Game","RodCount")
+	ui.fishGui.getPos(&guiX,&guiY,&guiW,&guiH)
+	iniWrite(guiX,cfg.file,"System","GuiX")
+	iniWrite(guiY,cfg.file,"System","GuiY")
+	iniWrite(guiW,cfg.file,"System","GuiW")
+	iniWrite(guiH,cfg.file,"System","GuiH")
+}
+
+cfgLoad(*) {
+	for setting,default in cfg.profileSetting {
+		 cfg.%setting% := strSplit(iniRead(cfg.file,"Game",setting,default),",")
+	}
+	cfg.profileSelected 	:= iniRead(cfg.file,"Game","ProfileSelected",1)
+	cfg.debug 				:= iniRead(cfg.file,"System","Debug",2)
+	cfg.rodCount 			:= iniRead(cfg.file,"Game","RodCount",6)
+	cfg.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
+}
+
 initTrayMenu(*) {
 	A_TrayMenu.Delete
 	A_TrayMenu.Add
 	A_TrayMenu.Add("Show Window", restoreWin)
 	A_TrayMenu.Add("Hide Window", HideGui)
 	A_TrayMenu.Add("Reset Window Position", ResetWindowPosition)
-	; A_TrayMenu.Add("Toggle Dock", DockApps)
 	A_TrayMenu.Add()
 	A_TrayMenu.Add("Toggle Log Window", toggleConsole)
 	A_TrayMenu.Add()
 	A_TrayMenu.Add("Exit App", KillMe)
 	A_TrayMenu.Default := "Show Window"
+}
+
+isEnabled(*) {
+		if ui.enabled && winActive(ui.game)
+			return 1
+		else
+			return 0
 }
 
 guiVis(guiName,isVisible:= true) {
@@ -31,7 +192,6 @@ guiVis(guiName,isVisible:= true) {
 		WinSetTransparent(0,guiName)
 
 	}
-	
 }
 
 notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := "Left",YN := "") {
@@ -87,7 +247,6 @@ notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := 
 fadeOSD() {
 	ui.transparent := 250
 	While ui.Transparent > 10 { 	
-	
 		try
 			WinSetTransparent(ui.Transparent,ui.notifyGui)
 		ui.Transparent -= 3
@@ -95,9 +254,7 @@ fadeOSD() {
 	}
 	try
 		guiVis(ui.notifyGui,false)
-	
 	ui.Transparent := ""
-	
 }
 
 sendIfWinActive(msg,win := "A",wait := false) {
@@ -259,8 +416,7 @@ verifyAdmin(*) {
 			run '*runAs "' a_scriptFullPath '" /restart'
 		else
 			run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
-			run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'
-		
+			run '*runAs "' a_ahkPath '" /restart "' a_scriptFullPath '"'		
 	}
 
 	a_cmdLine := dllCall("GetCommandLine", "str")
@@ -269,8 +425,6 @@ verifyAdmin(*) {
 					? true
 					: false		
 }	
-
-onExit(exitFunc)
 
 cleanExit(*) {
 	if winExist(ui.game) {
@@ -288,43 +442,23 @@ cleanExit(*) {
 }
 
 exitFunc(*) {
-	for setting in cfg.profileSettings {
-		ui.%setting%Str := ""
-		if setting != "profileName" {
-			while cfg.%setting%.length < cfg.profileName.length
-				cfg.%setting%.push(ui.%setting%.value)
-			}
-			for profile in cfg.profileName {
-				ui.%setting%Str .= cfg.%setting%[a_index] ","
-			}
-		iniWrite(rtrim(ui.%setting%Str,","),cfg.file,"Game",setting)
-	}
-	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
-	iniWrite(cfg.rodCount,cfg.file,"Game","RodCount")
+	cfgWrite()
 	exitApp
 }
 
-
-ui.lastMsg := ""
 log(msg,debug:=0,msgHistory:=msg) {
 	if debug > cfg.debug
 		return
 	if ui.lastMsg {
-	if msg=="divider" {
-		msg:="Ready"
-		msgHistory:="———————————————————————————————————————————————————————————————————————————————————————————————————" 			
-	}
-	;ui.fishStatusText.text := (msg=="___________________________________________________________________") ? "Ready" : msg
-	;if ui.fishLogArr.length > 33 {
-	ui.fishStatusText.text := msg
-	ui.fishLogArr.push((ui.lastMsg=="Ready") ? "——————————————————————————————————————" : formatTime(,"[hh:mm:ss] ") ui.lastMsg)
-	ui.fishLogText.delete()
-	ui.fishLogText.add(ui.fishLogArr)
-	ui.fishLogArr.removeAt(1)
-	;} else {
-	;	ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
-	;	ui.fishLogText.delete()
-	;	ui.fishLogText.add(ui.fishLogArr)
+		if msg=="divider" {
+			msg:="Ready"
+			msgHistory:="———————————————————————————————————————————————————————————————————————————————————————————————————" 			
+		}
+		ui.fishStatusText.text := msg
+		ui.fishLogArr.push((ui.lastMsg=="Ready") ? "——————————————————————————————————————" : formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+		ui.fishLogText.delete()
+		ui.fishLogText.add(ui.fishLogArr)
+		ui.fishLogArr.removeAt(1)
 	}
 	try {
 		ui.fishLogStr := ""
@@ -347,16 +481,13 @@ arr2str(arrayName) {
 	}
 	return rtrim(stringFromArray,",")
 }
+
 newGuid(*) {
 	return ComObjCreate("Scriptlet.TypeLib").GUID
 }
-;createPbConsole("poo")
+
 createPbConsole(title) {
 	transColor := "010203"
-	; ui.pbConsoleBg := gui()
-	; ui.pbConsoleBg.backColor := "304030"
-	; ui.pbConsoleHandle := ui.pbConsoleBg.addPicture("w700 h400 background203020","")
-	; ui.pbConsoleBg.show("w700 h400 noActivate")
 	ui.pbConsole := gui()
 	ui.pbConsole.opt("-caption -border toolWindow alwaysOnTop")
 	ui.pbConsole.backColor := transColor
@@ -370,10 +501,7 @@ createPbConsole(title) {
 	ui.pbConsoleData := ui.pbConsole.addText("xs+6 w676 h280 backgroundTrans c" ui.fontColor[2],"")
 	ui.pbConsoleData.setFont("s16")
 	drawOutlineNamed("pbConsoleOutside",ui.pbConsole,1,0,689,298,ui.bgColor[3],ui.bgColor[3],2)
-	;drawOutlineNamed("pbConsoleOutside2",ui.pbConsole,2,2,690,298,ui.bgColor[2],ui.bgColor[1],1)
-	;drawOutlineNamed("pbConsoleOutside3",ui.pbConsole,2,3,688,296,ui.bgColor[3],ui.bgColor[2],2)
 	ui.pbConsole.show("w694 h300 noActivate")
-	; ui.pbConsoleBg.opt("-caption owner" ui.pbConsole.hwnd)
 }
 
 hidePbConsole(*) {

@@ -23,7 +23,7 @@ slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20
 	if (label)
 	switch substr(labelAlign,1,1) {
 		case "r":
-			ui.%name%Label := gui.addText("x+-4 ys+6 backgroundTrans c" ui.fontColor[4],label)
+			ui.%name%Label := gui.addText("x+-4 ys+4 backgroundTrans c" ui.fontColor[4],label)
 			ui.%name%Label.setFont("s9")
 		case "b":
 			ui.%name%Label := gui.addText("xs+3 y+-7 backgroundTrans c" ui.fontColor[4],label)
