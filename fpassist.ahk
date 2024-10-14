@@ -95,7 +95,7 @@ autoFishStop(restart*) {
 	; if !fileExist(a_scriptDir "/logs/current_log.txt")
 		; fileAppend('"Session Start","AFK Start","AFK Duration","Fish Caught","Cast Count","Cast Length","Drag Level","Reel Speed"`n', a_scriptDir "/logs/current_log.txt")
 	; fileAppend(ui.statSessionStartTime.text "," ui.statAfkStartTime.text "," ui.statAfkDuration.text "," ui.statFishCount.text "," ui.statCastCount.text "," ui.statCastLength.text "," ui.statDragLevel.text "," ui.statReelSpeed.text "`n", a_scriptDir "/logs/current_log.txt")
-
+	
 	if restart=="restart" {
 		autoFishStart()
 	} else {

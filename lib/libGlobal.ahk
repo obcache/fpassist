@@ -94,7 +94,7 @@ initVars(*) {
 		cfg.profileSetting["zoomEnabled"] := "0"
 		cfg.profileSetting["floatEnabled"] := "0"
 		cfg.profileSetting["bgModeEnabled"] := "0"
-
+	tmp.beenPaused			:= false
 	ui.greenCheckColor 		:= round(0x7ED322)
 	ui.sessionStartTime 	:= A_Now
 	ui.enabled 				:= true
@@ -493,6 +493,12 @@ createPbConsole(title) {
 	ui.pbConsole.backColor := transColor
 	ui.pbConsole.color := transColor
 	winSetTransColor(transColor,ui.pbConsole)
+			ui.bgColor 				:= ["202020","323032","454548","1B1A1C","DFDFFF","999999"]
+			ui.fontColor 			:= ["151415","A0AFB5","D0D5FF","666666","353535","50556F"]
+			ui.trimColor 			:= ["DFDFFF","6d0f0f","f39909","11EE11","EE1111","303030"]
+			ui.trimDarkColor 		:= ["101011","2d0f0f","7b4212","11EE11","EE1111","303030"]
+			ui.trimFontColor 		:= ["282828","d0b7b4","44DDCC","11EE11","EE1111","303030"]
+			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
 	ui.pbConsoleDataBg := ui.pbConsole.addText("x0 y0 w690 h296 background" ui.bgColor[1])
 	ui.pbConsoleTitle := ui.pbConsole.addText("x2 y0 w685 h35 section center background" ui.bgColor[2] " c" ui.fontColor[2],title)
 	ui.pbConsoleTitle.setFont("s20","Verdana Bold")
