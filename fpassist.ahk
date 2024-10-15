@@ -411,8 +411,8 @@ reelIn(isAFK:=true,*) {
 tmp.retrieveFlashOn := false
 flashRetrieve(*) {
 	(tmp.retrieveFlashOn := !tmp.retrieveFlashOn)
-		? (ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("backgroundc482a11"),ui.retrieveButtonHotkey.opt("backgroundc482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
-		: (ui.retrieveButtonBg.opt("background" ui.trimDarkColor[3]),ui.retrieveButton.opt("background1f1105"),ui.retrieveButtonHotkey.opt("background1f1105"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+		? (ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("c482a11"),ui.retrieveButtonHotkey.opt("c482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+		: (ui.retrieveButtonBg.opt("background" ui.trimDarkColor[3]),ui.retrieveButton.opt("c1f1105"),ui.retrieveButtonHotkey.opt("c1f1105"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
 }
 	
 landFish(*) {
