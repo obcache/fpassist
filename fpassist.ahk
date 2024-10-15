@@ -433,7 +433,7 @@ landFish(*) {
 	sendNice("{space Up}")
 	setTimer(flashRetrieve,0)
 	ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
-	ui.retrieveBuggon.opt("c" ui.trimDarkFontColor[1])
+	ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
 	ui.retrieveButtonBg.redraw()
 	ui.retrieveButton.redraw()
 	sleep(1500)
