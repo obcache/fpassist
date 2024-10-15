@@ -235,7 +235,7 @@ calibrate(*) {
 
 cast(isAFK:=true,*) {
 	if cfg.floatEnabled[cfg.profileSelected]
-		sleep(3000)
+		sleep(4500)
 	ui.cancelOperation := false
 	modeHeader("Cast")
 	panelMode("cast")
