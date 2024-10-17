@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.0.1"
+A_FileVersion := "1.3.0.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -41,10 +41,15 @@ hotIfWinActive(ui.game)
 	hotkey("CapsLock",toggleEnabled)
 hotIf()
 
+startHotkey(*) {
+	autoFishStop()
+	autoFishStart()
+}
+
 hotIf(isEnabled)
 	hotkey(ui.reelKey,singleReel)
-	hotKey(ui.startKey,autoFishStart)
-	hotKey(ui.startKeyMouse,autoFishStart)
+	hotKey(ui.startKey,startHotkey)
+	hotKey(ui.startKeyMouse,startHotkey)
 	hotKey(ui.stopKeyMouse,autoFishStop)
 	hotKey(ui.reloadKey,appReload)
 	hotKey(ui.castKey,singleCast)
@@ -119,7 +124,9 @@ autoFishStart(mode:="reel",*) {
 		reelIn()
 		return
 	}
-	modeHeader("AFK")
+	log("Ready",1)
+	log("STARTING: AFK",1,"STARTED: AFK")
+
 	setTimer(updateAfkTime,1000)
 	ui.statAfkStartTime.text := formatTime(,"yyyy-MM-dd@hh:mm:ss")
 	ui.cancelOperation 		:= false
