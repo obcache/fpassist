@@ -11,7 +11,7 @@ if (InStr(A_LineFile,A_ScriptFullPath))
 	Return
 }
 
-slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20,range := 0-10,tickInterval := 1,default := 1,align := "center",label := "",orient := "",labelAlign := "r") {
+slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20,range := 0-10,tickInterval := 1,default := 1,align := "center",label := "",orient := "",labelAlign := "r",fontSize := "9") {
 	ui.sliderList.push(name)
 	cfg.%name% := strSplit(iniRead(cfg.file,"Game",name,"1,1,1,1,1"),",")
 	ui.%name% := gui.addSlider("section v" name " x" x " y" y " w" w " h" h " tickInterval" tickInterval " " orient " range" range " " align " toolTip")
@@ -24,10 +24,17 @@ slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20
 	switch substr(labelAlign,1,1) {
 		case "r":
 			ui.%name%Label := gui.addText("x+-4 ys+4 backgroundTrans c" ui.fontColor[4],label)
-			ui.%name%Label.setFont("s9")
+			ui.%name%Label.setFont("s" fontSize)
 		case "b":
-			ui.%name%Label := gui.addText("xs+3 y+-7 backgroundTrans c" ui.fontColor[4],label)
-			ui.%name%Label.setFont("s9")
+			if orient=="vertical" {
+				ui.%name%Label := gui.addText("xs+3 y+-7 backgroundTrans c" ui.fontColor[4],label)
+			} else {
+				ui.%name%label := gui.addText("xs-3 y+1 w" w " backgroundTrans " align " c" ui.fontColor[4],label)
+			}
+			ui.%name%Label.setFont("s" fontSize)
+		case "l":
+			ui.%name%Label := gui.addText("x+-" w+58 " ys+2 backgroundTrans c" ui.fontColor[4],label)
+			ui.%name%Label.setFont("s" fontSize)		
 	}
 }
 

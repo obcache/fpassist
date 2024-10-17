@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.0.0"
+A_FileVersion := "1.3.0.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -65,8 +65,9 @@ stopBgMode(*) {
 	winWait(ui.game)
 }
 
-autoFishStop(restart*) {
+autoFishStop(restart:="",*) {
 	log("AFK: Stopping",1,"AFK: Stopped")
+	setTimer () => log("Ready"),-2500 
 	setTimer(isHooked,0)
 	setTimer(landFish,0)
 	setTimer(updateAfkTime,0)
@@ -92,9 +93,9 @@ autoFishStop(restart*) {
 	ui.bigFishCaughtLabel.opt("+hidden")
 	ui.bigFishCaughtLabel2.opt("+hidden")	
 
-	; if !fileExist(a_scriptDir "/logs/current_log.txt")
-		; fileAppend('"Session Start","AFK Start","AFK Duration","Fish Caught","Cast Count","Cast Length","Drag Level","Reel Speed"`n', a_scriptDir "/logs/current_log.txt")
-	; fileAppend(ui.statSessionStartTime.text "," ui.statAfkStartTime.text "," ui.statAfkDuration.text "," ui.statFishCount.text "," ui.statCastCount.text "," ui.statCastLength.text "," ui.statDragLevel.text "," ui.statReelSpeed.text "`n", a_scriptDir "/logs/current_log.txt")
+	 if !fileExist(a_scriptDir "/logs/current_log.txt")
+		 fileAppend('"Session Start","AFK Start","AFK Duration","Fish Caught","Cast Count","Cast Length","Drag Level","Reel Speed"`n', a_scriptDir "/logs/current_log.txt")
+	 fileAppend(ui.statSessionStartTime.text "," ui.statAfkStartTime.text "," ui.statAfkDuration.text "," ui.statFishCount.text "," ui.statCastCount.text "," ui.statCastLength.text "," ui.statDragLevel.text "," ui.statReelSpeed.text "`n", a_scriptDir "/logs/current_log.txt")
 	
 	if restart=="restart" {
 		autoFishStart()
@@ -136,10 +137,6 @@ autoFishStart(mode:="reel",*) {
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
 	resetKeyStates()
-	if !reeledIn() {
-		reelIn()
-		sleep(3000)
-	}
 	while ui.autoFish == 1 && !ui.cancelOperation {
 		detectPrompts(1)
 		(sleep500(2,0)) ? exit : 0
@@ -147,17 +144,21 @@ autoFishStart(mode:="reel",*) {
 		switch mode {
 			case "cast":
 				mode:="retrieve"
+				if !reeledIn() {
+					reelIn()
+					sleep(3000)
+				}
 				if reeledIn()
 					cast(1)
 			case "retrieve":
 				mode:="reel"
 				if !reeledIn()
-					retrieve(1)
+					retrieve(1)		
 			case "restart":
 				setTimer () => autoFishRestart(),-100
 				return
 			case "reel":
-				mode:="cast"
+				mode:="cast" 
 				if !reeledIn()
 					reelIn(1)				
 			default:
@@ -228,7 +229,7 @@ calibrate(*) {
 		sendNice("{click wheelUp}") 
 		sleep(50)
 	}
-	log("Ready",1)
+	;log("Ready",1)
 	if ui.cancelOperation
 		return
 }
@@ -290,6 +291,12 @@ retrieve(isAFK:=true) {
 		ui.retrieveButton.text := "Watch"
 		panelMode("retrieve")
 		while !ui.cancelOperation && !reeledIn() {
+			if a_index > cfg.recastTime[cfg.profileSelected]*2*60 {
+				log("Cast: Stale",1)
+				log("Cast: Recasting",1)
+				reelIn()
+				return
+			}
 			if isHooked() { 
 				winActivate(ui.game)
 				ui.retrieveButton.text := "Retrie&ve"
@@ -418,6 +425,7 @@ flashRetrieve(*) {
 landFish(*) {
 	setTimer(isHooked,0)
 	modeHeader("Land Fish")
+	
 	setTimer(flashRetrieve,1500)
 	sendNice("{RButton down}")
 	sleep(1500)
@@ -434,7 +442,9 @@ landFish(*) {
 	setTimer(flashRetrieve,0)
 	ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
 	ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
+	ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
 	ui.retrieveButtonBg.redraw()
+	ui.retrieveButtonHotkey.redraw()
 	ui.retrieveButton.redraw()
 	sleep(1500)
 	analyzeCatch()
@@ -580,10 +590,12 @@ detectPrompts(logWork := false) {
 
 		tmpColor1 := pixelGetColor(480,590)
 		tmpColor2 := pixelGetColor(680,590)
-		if (round(tmpColor1) > round(0xF79A45)-10000 &&
+		if ((round(tmpColor1) > round(0xF79A45)-10000 &&
 			round(tmpColor1) < round(0xF79A45)+10000)
 		&&	(round(tmpColor2) > round(0x45606C)-10000 &&
-			round(tmpColor2) < round(0x45606C)+10000) {
+			round(tmpColor2) < round(0x45606C)+10000)) || 
+			(round(pixelGetColor(1396,77) > round(0xC1C2C2)-10000) &&
+			round(pixelGetColor(1396,77) < round(0xC1C2C2)+10000)) {
 				log("Popup: Ad Detected",1,"Popup: Ad Dismissed")
 				send("{escape}")
 				ui.popupFound := true

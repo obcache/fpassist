@@ -66,17 +66,17 @@ createGui() {
 	ui.fishGui.onEvent("escape",cancelEditProfileName)
 	ui.castLength := ui.fishGui.addSlider("section toolTip background" ui.bgColor[4] " buddy2ui.castLengthText altSubmit center x62 y756 w176 h16  range1000-2500",1910)
 	ui.castLength.onEvent("change",castLengthChanged)
-	ui.castLengthLabel := ui.fishGui.addText("xs+3 y+6 w40 h13 right backgroundTrans","Cast")
-	ui.castLengthLabel.setFont("s11 c" ui.fontColor[4])
-	ui.castLengthLabel2 := ui.fishGui.addText("xs+3 y+-1 w40 h20 right backgroundTrans","Adjust")
-	ui.castLengthLabel2.setFont("s11 c" ui.fontColor[4])
-	ui.castLengthText := ui.fishGui.addText("x+2 ys+18 left w70 h32 backgroundTrans c" ui.fontColor[3])
+	ui.castLengthLabel := ui.fishGui.addText("xs-3 y+1 w40 h13 right backgroundTrans","Cast")
+	ui.castLengthLabel.setFont("s8 c" ui.fontColor[4])
+	ui.castLengthLabel2 := ui.fishGui.addText("xs-3 y+-4 w40 h20 right backgroundTrans","Adjust")
+	ui.castLengthLabel2.setFont("s8 c" ui.fontColor[4])
+	ui.castLengthText := ui.fishGui.addText("x+0 ys+14 left w70 h32 backgroundTrans c" ui.fontColor[3])
 	while cfg.profileSelected > cfg.castLength.Length
 		cfg.castLength.push("2000")
 	ui.castLengthText.text := cfg.castLength[cfg.profileSelected]
 	ui.castLength.value := cfg.castLength[cfg.profileSelected]
 	
-	ui.castLengthText.setFont("s24")
+	ui.castLengthText.setFont("s17")
 	
 	slider("reelSpeed",,6,755,20,50,"1-4",1,1,"left","Reel","vertical","b")
 	slider("dragLevel",,33,755,20,50,"1-12",1,1,"center","Drag","vertical","b")
@@ -85,18 +85,18 @@ createGui() {
 	slider("stopFreq",,291,790,50,15,"0-10",1,1,"center","Stop && Go")
 	slider("castTime",,236,755,20,50,"2-6",1,1,"center","Cast","vertical","b")
 	slider("sinkTime",,263,755,20,50,"1-10",1,1,"center","Sink","vertical","b")
-	
+	slider("recastTime",,157,778,80,15,"0-20",1,1,"center","Recast",,"b","11")
 	slider("reelFreq",,0,0,0,0,"0-10",1,10,"center","Reel")
 	ui.reelFreq.value := 10
 	ui.reelFreq.opt("hidden")
-	ui.zoomEnabled := ui.fishGui.addCheckBox("x189 y791 w15 center h15")
+	ui.zoomEnabled := ui.fishGui.addCheckBox("x100 y797 w10 center h15")
 	ui.zoomEnabled.onEvent("click",toggledZoom)
-	ui.zoomEnabledLabel := ui.fishGui.addText("x204 y792 w30 h15 backgroundTrans c" ui.fontColor[4],"Zoom")
+	ui.zoomEnabledLabel := ui.fishGui.addText("x70 y797 w40 h15 backgroundTrans c" ui.fontColor[4],"Zoom")
 	ui.zoomEnabledLabel.setFont("s8")	
 	
-	ui.floatEnabled := ui.fishGui.addCheckBox("x189 y777 w15 center h15",cfg.floatEnabled[cfg.profileSelected])
+	ui.floatEnabled := ui.fishGui.addCheckBox("x116 y797 w10 center h15",cfg.floatEnabled[cfg.profileSelected])
 	ui.floatEnabled.onEvent("click",toggledFloat)
-	ui.floatEnabledLabel := ui.fishGui.addText("x204 y778 w30 h15 backgroundTrans c" ui.fontColor[4],"Float")
+	ui.floatEnabledLabel := ui.fishGui.addText("x130 y797 w30 h15 backgroundTrans c" ui.fontColor[4],"Float")
 	ui.floatEnabledLabel.setFont("s8")
 
 	; ui.bgModeEnabled := ui.fishGui.addCheckBox("x381 y757 w12 h12 right")
@@ -228,18 +228,18 @@ createGui() {
 	;ui.fishLogTimerOutline3 := ui.fishGui.addText("x1049 y712 w264 h36 background" ui.bgColor[2])
 	;ui.fishLogTimer := ui.fishGui.addText("x1050 y713 w263 h35 background3F3F3F") ;61823A
 	;ui.timerAnim := ui.fishGui.addText("x1047 y710 w268 h40 background010203")
-	ui.fishLogAfkTimeLabel := ui.fishGui.addText("hidden section right x751 y695 w80 h40 c" ui.fontColor[3] " backgroundTrans","AFK")
-	ui.fishLogAfkTimeLabel.setFont("s16 q5","Arial")
-	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x751 y707 w80 h40 c" ui.fontColor[3] " backgroundTrans","Timer")
-	ui.fishLogAfkTimeLabel2.setFont("s19 q5","Arial")
-	ui.fishLogAfkTime := ui.fishGui.addText("hidden x835 y688 w200 h60 c" ui.fontColor[3] " backgroundTrans","00:00:00")
-	ui.fishLogAfkTime.setFont("s35 q5","Arial")
-	ui.bigFishCaught := ui.fishGui.addText("hidden x1160 y666 w160 h300 backgroundTrans c" ui.fontColor[3],format("{:03i}","000"))
-	ui.bigFishCaught.setFont("s54 q5")
-	ui.bigFishCaughtLabel := ui.fishGui.addText("hidden right x1053 y677 w100 h40 backgroundTrans c" ui.fontColor[3],"Fish")
-	ui.bigFishCaughtLabel.setFont("s24 q5")
-	ui.bigFishCaughtLabel2 := ui.fishGui.addtext("hidden right x1055 y696 w100 h40 backgroundTrans c" ui.fontColor[3],"Count")
-	ui.bigFishCaughtLabel2.setFont("s28 q5")
+	ui.fishLogAfkTimeLabel := ui.fishGui.addText("hidden section right x751 y695 w80 h40 c" ui.trimFontColor[6] " backgroundTrans","AFK")
+	ui.fishLogAfkTimeLabel.setFont("s16 q4","Arial")
+	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x751 y707 w80 h40 c" ui.trimFontColor[6] " backgroundTrans","Timer")
+	ui.fishLogAfkTimeLabel2.setFont("s19 q4","Arial")
+	ui.fishLogAfkTime := ui.fishGui.addText("hidden x835 y688 w200 h60 c" ui.trimFontColor[6] " backgroundTrans","00:00:00")
+	ui.fishLogAfkTime.setFont("s35 q4","Arial")
+	ui.bigFishCaught := ui.fishGui.addText("hidden x1160 y666 w160 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}","000"))
+	ui.bigFishCaught.setFont("s54 q4")
+	ui.bigFishCaughtLabel := ui.fishGui.addText("hidden right x1053 y677 w100 h40 backgroundTrans c" ui.trimFontColor[6],"Fish")
+	ui.bigFishCaughtLabel.setFont("s24 q4")
+	ui.bigFishCaughtLabel2 := ui.fishGui.addtext("hidden right x1055 y696 w100 h40 backgroundTrans c" ui.trimFontColor[6],"Count")
+	ui.bigFishCaughtLabel2.setFont("s28 q4")
 
 	if winExist(ui.game) {
 		winSetTransparent(255,ui.game)
