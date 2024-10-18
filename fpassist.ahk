@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.0.2"
+A_FileVersion := "1.3.0.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -70,6 +70,8 @@ stopBgMode(*) {
 	winWait(ui.game)
 }
 
+
+
 autoFishStop(restart:="",*) {
 	log("AFK: Stopping",1,"AFK: Stopped")
 	setTimer () => log("Ready"),-2500 
@@ -84,8 +86,6 @@ autoFishStop(restart:="",*) {
 	ui.casting 			:= false
 	ui.retrieving 		:= false
 
-	setTimer () => detectPrompts(),-6000
-	setTimer () => detectPrompts(),-10000
 	send("{space up}")
 	send("{lshift up}")
 	send("{lbutton up}")
@@ -122,7 +122,7 @@ autoFishRestart(*) {
 autoFishStart(mode:="reel",*) {
 	if mode=="reelStop" {
 		reelIn()
-		return
+		exit
 	}
 	log("Ready",1)
 	log("STARTING: AFK",1,"STARTED: AFK")
@@ -132,9 +132,7 @@ autoFishStart(mode:="reel",*) {
 	ui.cancelOperation 		:= false
 	ui.autoFish 			:= true
 	ui.isAFK				:= true
-	ui.reeledIn 			:= false
-	ui.casting 				:= false
-	ui.retrieving 			:= false
+	ui.reeledIn:=reeledIn()
 	ui.cycleAFK := false
 	panelMode("afk")
 	ui.fishLogAfkTime.opt("-hidden")
@@ -144,7 +142,7 @@ autoFishStart(mode:="reel",*) {
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
 	resetKeyStates()
-	while ui.autoFish == 1 && !ui.cancelOperation {
+	while ui.autoFish {
 		detectPrompts(1)
 		(sleep500(2,0)) ? exit : 0
 		
@@ -180,12 +178,12 @@ autoFishStart(mode:="reel",*) {
 	checkKeepnet()
 	send("{LButton Up}{RButton Up}{space up}")
 	ui.cycleAFK := true
-	if !ui.autoFish || ui.cancelOperation {
+	if !ui.autoFish {
 		autoFishStop()
-		ui.cancelOperation := false
-	} else {
-		panelMode("off")
+		return
 	}
+	if !ui.cycleAfk
+	panelMode("off")
 }
 
 isHooked(*) {
@@ -422,7 +420,7 @@ reelIn(isAFK:=true,*) {
 		autoFishStop()
 	}
 }
-tmp.retrieveFlashOn := false
+
 flashRetrieve(*) {
 	(tmp.retrieveFlashOn := !tmp.retrieveFlashOn)
 		? (ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("c482a11"),ui.retrieveButtonHotkey.opt("c482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
@@ -435,7 +433,7 @@ landFish(*) {
 	
 	setTimer(flashRetrieve,1500)
 	sendNice("{RButton down}")
-	sleep(1500)
+	sleep(1000)
 	sendNice("{space Down}")
 	while !reeledIn() && ui.autoFish && !ui.cancelOperation {
 		sendNice("{RButton Down}")

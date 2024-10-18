@@ -96,6 +96,7 @@ initVars(*) {
 		cfg.profileSetting["bgModeEnabled"] := "0"
 		cfg.profileSetting["recastTime"] := "5"
 	tmp.beenPaused			:= false
+	tmp.retrieveFlashOn 	:= false
 	ui.greenCheckColor 		:= round(0x7ED322)
 	ui.sessionStartTime 	:= A_Now
 	ui.enabled 				:= true

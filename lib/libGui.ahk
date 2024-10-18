@@ -229,17 +229,17 @@ createGui() {
 	;ui.fishLogTimer := ui.fishGui.addText("x1050 y713 w263 h35 background3F3F3F") ;61823A
 	;ui.timerAnim := ui.fishGui.addText("x1047 y710 w268 h40 background010203")
 	ui.fishLogAfkTimeLabel := ui.fishGui.addText("hidden section right x751 y695 w80 h40 c" ui.trimFontColor[6] " backgroundTrans","AFK")
-	ui.fishLogAfkTimeLabel.setFont("s16 q4","Arial")
+	ui.fishLogAfkTimeLabel.setFont("s16 q5","Arial")
 	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x751 y707 w80 h40 c" ui.trimFontColor[6] " backgroundTrans","Timer")
-	ui.fishLogAfkTimeLabel2.setFont("s19 q4","Arial")
+	ui.fishLogAfkTimeLabel2.setFont("s19 q5","Arial")
 	ui.fishLogAfkTime := ui.fishGui.addText("hidden x835 y688 w200 h60 c" ui.trimFontColor[6] " backgroundTrans","00:00:00")
-	ui.fishLogAfkTime.setFont("s35 q4","Arial")
+	ui.fishLogAfkTime.setFont("s35 q5","Arial")
 	ui.bigFishCaught := ui.fishGui.addText("hidden x1160 y666 w160 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}","000"))
-	ui.bigFishCaught.setFont("s54 q4")
+	ui.bigFishCaught.setFont("s54 q5")
 	ui.bigFishCaughtLabel := ui.fishGui.addText("hidden right x1053 y677 w100 h40 backgroundTrans c" ui.trimFontColor[6],"Fish")
-	ui.bigFishCaughtLabel.setFont("s24 q4")
+	ui.bigFishCaughtLabel.setFont("s24 q5")
 	ui.bigFishCaughtLabel2 := ui.fishGui.addtext("hidden right x1055 y696 w100 h40 backgroundTrans c" ui.trimFontColor[6],"Count")
-	ui.bigFishCaughtLabel2.setFont("s28 q4")
+	ui.bigFishCaughtLabel2.setFont("s28 q5")
 
 	if winExist(ui.game) {
 		winSetTransparent(255,ui.game)

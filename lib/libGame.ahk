@@ -9,7 +9,6 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) { 
-		winActivate("ahk_exe fishingPlanet.exe")
 		ui.cancelOperation := false
 		autoFishStart()
 }
@@ -224,3 +223,7 @@ cancelEditProfileName(*) {
 	ui.profileDeleteButton.opt("-hidden")
 	
 }
+
+setTimer () => detectPrompts(),-6000
+setTimer () => detectPrompts(),-10000
+
