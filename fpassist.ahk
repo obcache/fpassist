@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.0.4"
+A_FileVersion := "1.3.0.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -240,13 +240,13 @@ calibrate(*) {
 }
 
 cast(isAFK:=true,*) {
-	if cfg.floatEnabled[cfg.profileSelected]
-		sleep(4500)
+	log("Cast: Preparing",1,"Cast: Prepared")
 	ui.cancelOperation := false
 	modeHeader("Cast")
 	panelMode("cast")
 	ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
-	sendIfWinActive("{backspace}",ui.game,true)
+	sleep(4500)
+	;sendIfWinActive("{backspace}",ui.game,true)
 	errorLevel := sleep500(6)
 	loop 10 {
 		if !reeledIn() {
