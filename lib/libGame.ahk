@@ -79,7 +79,7 @@ updateControls(*) {
 	try 
 		ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
 	try
-		ui.zoomEnabled.value := cfg.zoomEnabled[cfg.profileSelected]
+		ui.BoatEnabled.value := cfg.BoatEnabled[cfg.profileSelected]
 	try
 		ui.floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
 	try
@@ -139,7 +139,7 @@ deleteProfileName(*) {
 		try
 			cfg.reelSpeed.removeAt(cfg.profileSelected)
 		try
-			cfg.zoomEnabled.removeAt(cfg.profileSelected)
+			cfg.BoatEnabled.removeAt(cfg.profileSelected)
 
 		if cfg.profileSelected > cfg.profileName.length {
 			cfg.profileSelected := 1
@@ -163,7 +163,7 @@ deleteProfileName(*) {
 		try
 			ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
 		try
-			ui.zoomEnabled.value := cfg.zoomEnabled[cfg.profileSelected]
+			ui.BoatEnabled.value := cfg.BoatEnabled[cfg.profileSelected]
 		try
 			ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
 	} else {

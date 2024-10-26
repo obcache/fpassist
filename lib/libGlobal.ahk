@@ -77,7 +77,7 @@ initVars(*) {
 	ui.game 				:= "ahk_exe " ui.gameExe
 
 	cfg.buttons 			:= ["startButton","castButton","retrieveButton","reelButton","cancelButton","reloadButton","exitButton"]
-	;cfg.profileSettings 	:= ["profileName","castLength","castTime","sinkTime","reelSpeed","dragLevel","landAggro","twitchFreq","stopFreq","reelFreq","zoomEnabled","floatEnabled","bgModeEnabled"]
+	;cfg.profileSettings 	:= ["profileName","castLength","castTime","sinkTime","reelSpeed","dragLevel","landAggro","twitchFreq","stopFreq","reelFreq","BoatEnabled","floatEnabled","bgModeEnabled"]
 	;cfg.profileDefaults 	:= {"NewProfile","1900","1","1","1","1","1","1","1","0","0","0"]
 
 	cfg.profileSetting := map()
@@ -91,7 +91,7 @@ initVars(*) {
 		cfg.profileSetting["twitchFreq"] := "1"
 		cfg.profileSetting["stopFreq"] := "1"
 		cfg.profileSetting["reelFreq"] := "1"
-		cfg.profileSetting["zoomEnabled"] := "0"
+		cfg.profileSetting["BoatEnabled"] := "0"
 		cfg.profileSetting["floatEnabled"] := "0"
 		cfg.profileSetting["bgModeEnabled"] := "0"
 		cfg.profileSetting["recastTime"] := "5"
@@ -124,6 +124,7 @@ initVars(*) {
 	ui.reloadKey 			:= "F5"
 	ui.castKey 				:= "c"
 	ui.reelKey 				:= "r"
+	ui.reelKeyFS			:= "^+space"
 	ui.exitKey 				:= "F4"
 	ui.retrieveKey 			:= "v"
 	ui.flashlight 			:= "+F"
@@ -132,6 +133,7 @@ initVars(*) {
 	ui.mode 				:= ""
 	ui.lastMsg 				:= ""
 	ui.lastMode 			:= ui.mode
+	ui.cycleStartTime		:= 0
 }
 
 cfgWrite(*) {
@@ -178,8 +180,16 @@ initTrayMenu(*) {
 	A_TrayMenu.Default := "Show Window"
 }
 
+isFS(*) {
+	if ui.fullscreen
+		return 1
+	else
+		return 0
+}
+
+ui.fullscreen := false
 isEnabled(*) {
-		if ui.enabled && winActive(ui.game)
+		if ui.enabled && winActive(ui.game) && !ui.fullscreen
 			return 1
 		else
 			return 0
@@ -451,22 +461,24 @@ exitFunc(*) {
 log(msg,debug:=0,msgHistory:=msg) {
 	if debug > cfg.debug
 		return
-	if ui.lastMsg {
-		if msg=="divider" {
-			msg:="Ready"
-			msgHistory:="———————————————————————————————————————————————————————————————————————————————————————————————————" 			
+	if ui.fullscreen {
+		try {
+			ui.fishLogStr := ""
+			loop ui.fishLogArr.length+1 {
+				ui.fishLogStr .= ui.fishLogArr[a_index+1] "`n"
+				ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
+			}
 		}
-		ui.fishStatusText.text := msg
-		ui.fishLogArr.push((ui.lastMsg=="Ready") ? "——————————————————————————————————————" : formatTime(,"[hh:mm:ss] ") ui.lastMsg)
-		ui.fishLogText.delete()
-		ui.fishLogText.add(ui.fishLogArr)
-		ui.fishLogArr.removeAt(1)
-	}
-	try {
-		ui.fishLogStr := ""
-		loop ui.fishLogArr.length {
-			ui.fishLogStr .= ui.fishLogArr[a_index] "`n"
-			ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
+	} else {
+		if ui.lastMsg {
+			ui.fishStatusText.text := msg
+			ui.fishLogArr.push(
+				(ui.lastMsg=="Ready") 
+					? "——————————————————————————————————————" 
+					: formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+			ui.fishLogArr.removeAt(1)
+			ui.fishLogText.delete()
+			ui.fishLogText.add(ui.fishLogArr)
 		}
 	}
 	ui.lastMsg := msgHistory

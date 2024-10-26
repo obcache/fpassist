@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.0.5"
+A_FileVersion := "1.3.0.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -35,6 +35,7 @@ themeDef()
 cfgLoad()
 startGame()
 createGui()
+createGuiFS()
 onExit(exitFunc)
 
 hotIfWinActive(ui.game)
@@ -46,7 +47,25 @@ startHotkey(*) {
 	autoFishStart()
 }
 
+ui.toggleReelFS := false
+toggleReelFS(*) {
+	winActivate(ui.game)
+	startReelFS()
+	
+	startReelFS(*) {
+		send("{space down}")
+	}
+	stopReelFS(*) {
+		send("{space up}")
+	}
+}
+
+hotIf(isFS)
+
+hotIf()
+
 hotIf(isEnabled)
+	hotkey(ui.reelKeyFS,toggleReelFS)
 	hotkey(ui.reelKey,singleReel)
 	hotKey(ui.startKey,startHotkey)
 	hotKey(ui.startKeyMouse,startHotkey)
@@ -73,8 +92,8 @@ stopBgMode(*) {
 
 
 autoFishStop(restart:="",*) {
-	log("AFK: Stopping",1,"AFK: Stopped")
-	setTimer () => log("Ready"),-2500 
+	;log("AFK: Stopping",1,"AFK: Stopped")
+	;setTimer () => log("Ready"),-2500 
 	setTimer(isHooked,0)
 	setTimer(landFish,0)
 	setTimer(updateAfkTime,0)
@@ -119,7 +138,7 @@ autoFishRestart(*) {
 }
 
 
-autoFishStart(mode:="reel",*) {
+autoFishStart(mode:="cast",*) {
 	if mode=="reelStop" {
 		reelIn()
 		exit
@@ -240,10 +259,21 @@ calibrate(*) {
 }
 
 cast(isAFK:=true,*) {
-	log("Cast: Preparing",1,"Cast: Prepared")
+	ui.cancelOperation := true
+	panelMode("cast")
+	if cfg.boatEnabled[cfg.profileSelected] {
+		log("Boat: Cast Rod #1",1)
+		ui.cancelOperation:=false
+		modeHeader("Boat")
+		ui.castButton.text:="Boat"
+		boatRotation()	
+		ui.castButton.text:="Cast"
+		return
+	}
+	sleep(1500)
 	ui.cancelOperation := false
 	modeHeader("Cast")
-	panelMode("cast")
+	log("Cast: Preparing",1,"Cast: Prepared")
 	ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
 	sleep(4500)
 	;sendIfWinActive("{backspace}",ui.game,true)
@@ -255,7 +285,9 @@ cast(isAFK:=true,*) {
 			break 
 		}
 		timeout := a_index
-		if timeout == 10 {
+		if timeout == 30 {
+			log("Retrieve: Timed Out Reeling In",2)
+			log("Retrieve: Stopping AFK",2)
 			autoFishStop()
 			return
 		}
@@ -267,7 +299,8 @@ cast(isAFK:=true,*) {
 		: sleep(cfg.castLength[cfg.castLength.length])
 	sendNice("{space up}")
 	log("Cast: Releasing Cast",1)
-	setTimer(calibrate,-100)
+	calibrate()
+	;setTimer(calibrate,-100)
 	log("Wait: Lure In-Flight",1)
 	loop cfg.castTime[cfg.profileSelected] {
 		sleep500(2)
@@ -276,26 +309,99 @@ cast(isAFK:=true,*) {
 	loop cfg.sinkTime[cfg.profileSelected] {
 		sleep500(2)
 	}
+	log("Cast: Closing Bail")
 	send("{space down}")
 	sleep(500)
 	send("{space up}")
-	
-	if (ui.zoomEnabled.value)
-		sendNice("{z}")
 		sleep(150)
 	if !ui.autoFish
 		panelMode("Off")
 }
 
-retrieve(isAFK:=true) {
-	ui.cancelOperation := false
+boatRotation(*) {
+	send("{1}")
+	sleep(2500)
+	send("{space down}")
+	sleep(2000)
+	send("{space up}")
+	sleep(8000)
+
+	send("{space}")
+	sleep(1500)
+	loop 12 
+		send("{-}")
+	loop cfg.dragLevel[cfg.profileSelected]
+		send("{+}")
+	sleep(1500)
+	log("Boat: Place Rod 1 in Holder",1)
+	send("{shift down}{1 down}")
+	sleep(100)
+	send("{1 up}{shift up}")
+	sleep(2000)
+	log("Boat: Switch to Rod 2",1)
+	send("{2}")
+	sleep(4500)
+	log("Boat: Cast Rod 2",1)
+	send("{space down}")
+	sleep(2000)
+	send("{space up}")
+	sleep(8000)
+	log("Boat: Closing Bail on Rod 2",1)
+	send("{space}")
+	sleep(1500)
+	log("Boat: Setting Drag on Rod 2",1)
+	loop 12 
+		send("{WheelDown}")
+	loop cfg.dragLevel[cfg.profileSelected]
+		send("{WheelUp}")
+	sleep(1500)
+
+	while ui.autoFish {
+		send("{shift down}{1}{shift up}")
+		sleep(2000)
+		while ui.autoFish && !isHooked() {
+			sleep(500)
+			if a_index > 40
+				break
+		}
+		if isHooked() {
+			landFish()
+		}
+		log("Boat: Picking up Rod 2",1)
+		send("{shift down}{1}{shift up}")
+		sleep(2000)
+		while ui.autoFish && !isHooked() {
+			sleep(500)
+			if a_index > 40
+				break
+		}
+		if isHooked()
+			landFish()
+	}
+}
+
+
+
+
+
+retrieve(*) {
+	ui.cancelOperation := true
 	modeHeader("Retrieve")
-	
+	panelMode("retrieve")
+	if (ui.secondsElapsed-ui.cycleStartTime)/60  > 20 {
+		send("{t}")
+		mouseMove(700,620)
+		sleep(100)
+		send("{LButton Down}")
+		sleep(250)
+		send("{LButton Up}")
+		sleep(250)
+	}		
+	ui.cycleStartTime:=ui.secondsElapsed
 	if ui.floatEnabled.value {
 		log("Watch: Monitoring Bait",1)
 		ui.retrieveButton.text := "Watch"
-		panelMode("retrieve")
-		while !ui.cancelOperation && !reeledIn() {
+		while !reeledIn() {
 			if a_index > cfg.recastTime[cfg.profileSelected]*2*60 {
 				log("Cast: Stale",1)
 				log("Cast: Recasting",1)
@@ -312,13 +418,16 @@ retrieve(isAFK:=true) {
 		} else
 			return
 	} else {
+		mechanic.names:=["twitchFreq","stopFreq","reelFreq"]
 		mechanic.count := 0
 		mechanic.last := ""
 		mechanic.repeats := 0
 		mechanic.current := ""
-		mechanic.number := 1
+		mechanic.number := 0
 		
+		ui.cancelOperation:=false
 		log("Retrieve: Starting",1,"Retrieve: Started")
+		
 		while !ui.cancelOperation && !reeledIn() {
 			if isHooked() { 
 				winActivate(ui.game)
@@ -326,63 +435,46 @@ retrieve(isAFK:=true) {
 				return
 			}
 			
-		mechanic.number := round(random(1,30))
-		mechanic.current := "reelFreq"
-		if mechanic.number < 11 
-			mechanic.current := "twitchFreq"
-		if mechanic.number > 19
-			mechanic.current := "stopFreq"
-		currMechanic := mechanic.current
-		switch mechanic.number {
-			case 1,2,3,4,5,6,7,8,9,10:
-				if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
-				&& (mechanic.last != mechanic.current || mechanic.repeats <= 3) {
-					if isHooked() {
-						landFish()
-						return
-					}
-					log("Retrieve: Twitch",1)
-					sendNice("{space down}")
-					sendNice("{RButton Down}")
-					sleep(round(random(100,300)))
-					sendNice("{RButton Up}")
-					sendNice("{space up}")
-				}
-			case 21,22,23,24,25,26,27,28,29,30:
-				mechanic.number -= 20
-				if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
-				&& (mechanic.last != mechanic.current || mechanic.repeats <= 3) {
-				if isHooked() {
-					landFish()
-					return
-				}
-				log("Retrieve: Pause",1)
-					sendNice("{space up}")
-					sleep500(random(2,3))
-					sleep(round(random(1-499)))
-				}
-			case 11,12,13,14,15,16,17,18,19,20:
-				mechanic.number -= 10
-				if (mechanic.last != mechanic.current || mechanic.repeats < 3) {
-					if isHooked() {
-						landFish()
-						return
-					}	
-					log("Retrieve: Reel",1)
-					sendNice("{space down}")
-					sleep500(3)
-					sendNice("{space up}")
-				}
+			mechanic.number := round(random(1,3))
+			mechanic.strength := round(random(1,10))
+			if mechanic.number == mechanic.last {
+				mechanic.repeats += 1
+			} else {
+				mechanic.repeats := 0
 			}
-		
-			if cfg.profileSelected <= cfg.%currMechanic%.length
-				if (mechanic.last == mechanic.current)
-					mechanic.repeats += 1
-				else
-					mechanic.repeats := 1
-				mechanic.last := mechanic.current	
+			
+			mechanic.last := mechanic.number
+			
+			
+			if mechanic.repeats < 2 && ui.%mechanic.names[mechanic.number]%.value >= round(random(1,10))		
+				switch mechanic.number {
+						case 0:
+							;do nothing
+						case 1:
+						log("Retrieve: Twitch",1)
+							loop round(random(1,3)) {
+								sendNice("{space down}")
+								sendNice("{RButton Down}")
+								sleep500(1)
+								sendNice("{RButton Up}")
+								sendNice("{space up}")
+								sleep500(1)
+							}
+					case 2:
+						log("Retrieve: Pause",1)
+						sendNice("{space up}")
+						sleep500(round(random(2,3)))
+					case 3:
+						log("Retrieve: Reel",1)
+						setKeyDelay(0)
+						sendNice("{space down}")
+						sleep500(2)
+						sendNice("{space up}")
+						setKeyDelay(50)
+			}
 		}
 	}
+
 	panelMode("off")
 	timeOut := 0
 	while !reeledIn() && timeOut < 20
@@ -390,6 +482,67 @@ retrieve(isAFK:=true) {
 	if timeOut > 19
 		return
 }
+				
+				
+				
+		
+			
+			; mechanic.number := round(random(1,30))
+			; mechanic.current := "reelFreq"
+			; if mechanic.number < 11 
+				; mechanic.current := "twitchFreq"
+			; if mechanic.number > 19
+				; mechanic.current := "stopFreq"
+			; currMechanic := mechanic.current
+			; switch mechanic.number {
+				; case 1,2,3,4,5,6,7,8,9,10:
+					; if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
+					; && (mechanic.last != mechanic.current || mechanic.repeats <= 3) {
+						; if isHooked() {
+							; landFish()
+							; return
+						; }
+						; log("Retrieve: Twitch",1)
+						; sendNice("{space down}")
+						; sendNice("{RButton Down}")
+						; sleep(round(random(100,300)))
+						; sendNice("{RButton Up}")
+						; sendNice("{space up}")
+					; }
+				; case 21,22,23,24,25,26,27,28,29,30:
+					; mechanic.number -= 20
+					; if (mechanic.number < cfg.%currMechanic%[cfg.profileSelected]) 
+					; && (mechanic.last != mechanic.current || mechanic.repeats <= 3) {
+					; if isHooked() {
+						; landFish()
+						; return
+					; }
+					; log("Retrieve: Pause",1)
+						; sendNice("{space up}")
+						; sleep500(random(2,3))
+						; sleep(round(random(1-499)))
+					; }
+				; case 11,12,13,14,15,16,17,18,19,20:
+					; mechanic.number -= 10
+					; if (mechanic.last != mechanic.current || mechanic.repeats < 3) {
+						; if isHooked() {
+							; landFish()
+							; return
+						; }	
+						; log("Retrieve: Reel",1)
+						; sendNice("{space down}")
+						; sleep500(2)
+						; sendNice("{space up}")
+					; }
+				; }
+			
+				; if cfg.profileSelected <= cfg.%currMechanic%.length
+					; if (mechanic.last == mechanic.current)
+						; mechanic.repeats += 1
+					; else
+						; mechanic.repeats := 1
+					; mechanic.last := mechanic.current	
+
 
 reelIn(isAFK:=true,*) {
 	ui.cancelOperation := false
@@ -493,10 +646,11 @@ analyzeCatch(logWork:=true) {
 				ui.FishCaughtFS.text := format("{:03i}",ui.fishLogCount.text)
 	sleep(1500)
 	log("After Screenshot",2)
+	sleep(1500)
 	sendNice("{space}")
-	sleep(3000)
-	sendNice("{backspace}")
-	sleep(2000)
+	sleep(1500)
+	;sendNice("{backspace}")
+	;sleep(2000)
 }
 
 fishCaught(logWork:=true) {
@@ -549,22 +703,45 @@ reeledIn(*) {
 	ui.checkReel4 := round(pixelGetColor(1047,656))
 	ui.checkReel5 := round(pixelGetColor(1036,644))
 	if(ui.fullscreen) {
-		ui.checkReel1 := round(pixelGetColor(2963,1225))
-		ui.checkReel2 := round(pixelGetColor(2963,1301))
-		ui.checkReel3 := round(pixelGetColor(2944,1250))
-		ui.checkReel4 := round(pixelGetColor(2984,1250))
-		ui.checkReel5 := round(pixelGetColor(2944,1280))
-		ui.checkReel6 := round(pixelGetColor(2984,1280))
+		switch a_screenHeight {
+			case 1080:
+				ui.checkReel1 := round(pixelGetColor(1026,635))
+				ui.checkReel2 := round(pixelGetColor(1047,635))
+				ui.checkReel3 := round(pixelGetColor(1026,656))
+				ui.checkReel4 := round(pixelGetColor(1047,656))
+				ui.checkReel5 := round(pixelGetColor(1036,644))
+			case 1200:			
+				ui.checkReel1 := round(pixelGetColor(1026,635))
+				ui.checkReel2 := round(pixelGetColor(1047,635))
+				ui.checkReel3 := round(pixelGetColor(1026,656))
+				ui.checkReel4 := round(pixelGetColor(1047,656))
+				ui.checkReel5 := round(pixelGetColor(1036,644))
+			case 1440:			
+				if a_screenWidth=="3440" {
+					ui.checkReel1 := round(pixelGetColor(2963,1225))
+					ui.checkReel2 := round(pixelGetColor(2963,1301))
+					ui.checkReel3 := round(pixelGetColor(2944,1250))
+					ui.checkReel4 := round(pixelGetColor(2984,1250))
+					ui.checkReel5 := round(pixelGetColor(2944,1280))
+					ui.checkReel6 := round(pixelGetColor(2984,1280))
+				} else {
+					ui.checkReel1 := round(pixelGetColor(1026,635))
+					ui.checkReel2 := round(pixelGetColor(1047,635))
+					ui.checkReel3 := round(pixelGetColor(1026,656))
+					ui.checkReel4 := round(pixelGetColor(1047,656))
+					ui.checkReel5 := round(pixelGetColor(1036,644))
+				}
+		}
 	}
-		if (ui.checkReel1 >= 12250871
-			&& ui.checkReel2 >= 12250871
-			&& ui.checkReel3 >= 12250871
-			&& ui.checkReel4 >= 12250871
-			&& ui.checkReel5 < 12250871) {
-				ui.reeledIn := 1
-			} else
-			ui.reeledIn := 0
-		return ui.reeledIn	
+	if (ui.checkReel1 >= 12250871
+		&& ui.checkReel2 >= 12250871
+		&& ui.checkReel3 >= 12250871
+		&& ui.checkReel4 >= 12250871
+		&& ui.checkReel5 < 12250871) {
+			ui.reeledIn := 1
+		} else
+		ui.reeledIn := 0
+	return ui.reeledIn	
 }
 
 detectPrompts(logWork := false) {
@@ -585,6 +762,11 @@ detectPrompts(logWork := false) {
 		if round(pixelGetColor(75,50)) == ui.greenCheckColor {
 			log("Rewards: Reward Detected",1)
 			ui.popupFound := true
+			MouseMove(80,630)
+			sendIfWinActive("{LButton Down}",ui.game,true)
+			sleep(350)
+			sendIfWinActive("{LButton Up}",ui.game,true)
+			sleep(500)
 			MouseMove(215,630)
 			sendIfWinActive("{LButton Down}",ui.game,true)
 			sleep(350)
@@ -605,6 +787,12 @@ detectPrompts(logWork := false) {
 				send("{escape}")
 				ui.popupFound := true
 		}
+
+		if pixelGetColor(1079,48) == "0xF2F2F2"
+		|| pixelGetColor(1084,54) == "0xE2E3E3" {
+				log("Popup: Ad Detected",1)
+				send("{escape}")
+			}
 
 		if round(pixelGetColor(350,100)) == ui.greenCheckColor {
 			log("Trip: Trip Ended",1)
@@ -631,6 +819,14 @@ detectPrompts(logWork := false) {
 			sleep(350)
 			sendIfWinActive("{LButton Up}",ui.game,true)
 			sleep(1000)
+			if pixelGetColor(295,95) == "0x7ED322" || pixelGetColor(140,95) == "0x7ED322" {
+				mouseMove(430,600)
+				sleep(350)
+				sendIfWinActive("{LButton Down}",ui.game,true)
+				sleep(350)
+				sendIfWinActive("{LButton Up}",ui.game,true)
+				sleep(1000)
+			}
 		}
 		
 		if round(pixelGetColor(535,598)) > round(0xFFFFFF)-100000 {

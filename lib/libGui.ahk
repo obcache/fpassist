@@ -83,16 +83,16 @@ createGui() {
 	slider("landAggro",,291,756,50,15,"0-4",1,1,"center","Land Aggro",,)
 	slider("twitchFreq",,291,772,50,15,"0-10",1,1,"center","Twitch")
 	slider("stopFreq",,291,790,50,15,"0-10",1,1,"center","Stop && Go")
-	slider("castTime",,236,755,20,50,"2-6",1,1,"center","Cast","vertical","b")
-	slider("sinkTime",,263,755,20,50,"1-10",1,1,"center","Sink","vertical","b")
-	slider("recastTime",,157,778,80,15,"0-20",1,1,"center","Recast",,"b","11")
+	slider("castTime",,236,755,20,50,"0-6",1,1,"center","Cast","vertical","b")
+	slider("sinkTime",,263,755,20,50,"0-10",1,1,"center","Sink","vertical","b")
+	slider("recastTime",,157,778,80,15,"1-20",1,1,"center","Recast",,"b","11")
 	slider("reelFreq",,0,0,0,0,"0-10",1,10,"center","Reel")
 	ui.reelFreq.value := 10
 	ui.reelFreq.opt("hidden")
-	ui.zoomEnabled := ui.fishGui.addCheckBox("x100 y797 w10 center h15")
-	ui.zoomEnabled.onEvent("click",toggledZoom)
-	ui.zoomEnabledLabel := ui.fishGui.addText("x70 y797 w40 h15 backgroundTrans c" ui.fontColor[4],"Zoom")
-	ui.zoomEnabledLabel.setFont("s8")	
+	ui.BoatEnabled := ui.fishGui.addCheckBox("x100 y797 w10 center h15")
+	ui.BoatEnabled.onEvent("click",toggledBoat)
+	ui.BoatEnabledLabel := ui.fishGui.addText("x75 y797 w40 h15 backgroundTrans c" ui.fontColor[4],"Boat")
+	ui.BoatEnabledLabel.setFont("s8")	
 	
 	ui.floatEnabled := ui.fishGui.addCheckBox("x116 y797 w10 center h15",cfg.floatEnabled[cfg.profileSelected])
 	ui.floatEnabled.onEvent("click",toggledFloat)
@@ -111,10 +111,10 @@ createGui() {
 		floatEnabledStr := ""
 	}
 
-	toggledZoom(*) {
-		while cfg.zoomEnabled.length < cfg.profileSelected
-			cfg.zoomEnabled.push(false)
-		cfg.zoomEnabled[cfg.profileSelected] := ui.zoomEnabled.value
+	toggledBoat(*) {
+		while cfg.BoatEnabled.length < cfg.profileSelected
+			cfg.BoatEnabled.push(false)
+		cfg.BoatEnabled[cfg.profileSelected] := ui.BoatEnabled.value
 	}
 	
 	bgModeChanged(*) {
@@ -268,26 +268,39 @@ createGui() {
 
 
 goFS(*) {
-	fishGuiFSx := a_screenWidth-900
-	fishGuiFSy := a_screenHeight-30-200
+	ui.fullscreen := true
+	ui.fishGui.hide()
+	ui.fishGuiFS.show()
+	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
+
 	; ui.fishGuiBg := gui()
 	; ui.fishGuiBg.opt("-caption -border toolwindow alwaysOnTop owner" winGetId(ui.game))
 	; ui.fishGuiBg.backColor := 656565
 	; ui.fishGuiBg.addText("x0 y0 w500 h500 background656565")
 	; winSetTransparent(150,ui.fishGuiBg)
 	; ui.fishGuiBg.show("x95 y350 w360 h450 noactivate")
+}
+
+noFS(*) {
+	winGetPos(&x,&y,&w,&h,ui.fishGui)
+	winMove(x+300,y+30,1280,720,ui.game)
+	ui.fishGui.show()
+	ui.noFSbutton.opt("hidden")
+	ui.fishGuiFS.hide()
 	
-	ui.fullscreen := true
-	ui.fishGui.hide()
+}
+
+
+createGuiFS(*) {
+	fishGuiFSx := a_screenWidth-900
+	fishGuiFSy := a_screenHeight-30-200
 	ui.fishGuiFS := gui()
-
-
 	ui.fishGuiFS.opt("-caption -border +toolWindow alwaysOnTop owner" winGetId(ui.game))
 	ui.fishGuiFS.backColor := "010203"
 	winSetTransColor("010203",ui.fishGuiFS.hwnd)
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
 	ui.noFSbutton.onEvent("click",noFS)
-	ui.FishCaughtFS := ui.fishGuiFS.addText("x" fishGuiFSx+130-30 " y" fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.fontColor[3],format("{:03i}","0"))
+	ui.FishCaughtFS := ui.fishGuiFS.addText("x" fishGuiFSx+130-30 " y" fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.fontColor[2],format("{:03i}","0"))
 	ui.FishCaughtFS.setFont("s94")
 	ui.FishCaughtLabelFS := ui.fishGuiFS.addText("right x" fishGuiFSx-98-30 " y" fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.fontColor[3],"Fish")
 	ui.FishCaughtLabelFS.setFont("s54","Calibri")
@@ -295,19 +308,21 @@ goFS(*) {
 	ui.FishCaughtLabel2FS.setFont("s60","Calibri")
 	ui.fishLogFS := ui.fishGuiFS.addText("x95 y350 w360 h450 backgroundTrans c" ui.fontColor[3],"")
 	ui.fishLogFS.setFont("s16")
+	ui.fishGuiFS.setFont("s12")
+	ui.castButtonFSOutline := ui.fishGuiFS.addText("x10 y300 w60 h20 background" ui.bgColor[4])
+	ui.retrieveButtonFSOutline := ui.fishGuiFS.addText("x70 y300 w60 h20 background" ui.bgColor[4])
+	ui.reelButtonFSOutline := ui.fishGuiFS.addText("x130 y300 w60 h20 background" ui.bgColor[4])
+	ui.castButtonFSBg := ui.fishGuiFS.addText("x12 y302 w56 h16 background" ui.trimDarkColor[1])
+	ui.retrieveButtonFSBg := ui.fishGuiFS.addText("x72 y302 w16 h36 background" ui.trimDarkColor[1])
+	ui.reelButtonFSBg := ui.fishGuiFS.addText("x132 y302 w56 h16 background" ui.trimDarkColor[1])
+	ui.castButtonFS := ui.fishGuiFS.addText("x10 y300 w60 h20 backgroundTrans c" ui.trimDarkFontColor[1],"Cast")
+	ui.retrieveButtonFS := ui.fishGuiFS.addText("x70 y300 w60 h20 backgroundTrans c" ui.trimDarkFontColor[1],"Retrieve")
+	ui.reelButtonFS := ui.fishGuiFS.addText("x130 y300 w60 h20 backgroundTrans c" ui.trimDarkFontColor[1],"Reel")
 	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
-	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)
-	
+	ui.fishGuiFS.hide()
 
 }
 
-noFS(*) {
-	winGetPos(&x,&y,&w,&h,ui.fishGui)
-	winMove(x+300,y+30,1280,720,ui.game)
-	ui.fishGui.show()
-
-	;ui.fishGuiFS.hide()
-}
 drawButton(x,y,w,h) {
 		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
 		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background" ui.bgColor[4])
@@ -366,7 +381,7 @@ statPanel(*) {
 	}
 }
 timerFadeIn(*) {
-	while tmp.h > 0 {
+while tmp.h > 0 {
 		ui.timerAnim.move(,,,tmp.h-=1)
 		sleep(1)
 	}
@@ -402,8 +417,8 @@ while tmp.h < 40 {
 	; ui.statCastLengthLabelFS := ui.fishGuiFS.addText("x+30 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Cast: ")
 	; ui.statCastLengthFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.castLength[cfg.profileSelected])
 	
-	; ui.statFishCountLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Fish Count: ")
-	; ui.statFishCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
+; ui.statFishCountLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Fish Count: ")
+; ui.statFishCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
 	
 	; ui.statAfkStartTimeLabelFS := ui.fishGuiFS.addText("xs-333 y+0 right section w100 r1 backgroundTrans c" ui.fontColor[3],"AutoFish: ")
 	; ui.statAfkStartTimeFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
@@ -420,7 +435,7 @@ while tmp.h < 40 {
 	; ui.statReelSpeedLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Speed: ")
 	; ui.statReelSpeedFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
 	
-	; ui.viewLogFS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
+; ui.viewLogFS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
 	; ui.viewLogFS.setFont("s9 underline")
 	; ui.viewLogFS.onEvent("click",viewLog)
 	
@@ -511,7 +526,7 @@ if (visible) {
 			sleep(1)
 		}
 		winSetTransparent("Off",ui.notifyGui.hwnd)
-	} else {
+} else {
 			transparent := 255
 			while transparent < 20 {
 				winSetTransparent(transparent,ui.notifyGui.hwnd)
@@ -569,15 +584,22 @@ WM_LBUTTONDOWN_callback(this_control*) {
 }
 
 WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
-		try
-			winGetPos(&x,&y,&w,&h,ui.fishGui)
-		try
-			winMove(x+(301*(a_screenDpi/96)),y+(31*(a_screenDpi/96)),,,ui.game)
-		try
-			winMove(x+1101,y+753,,,ui.disabledGui) 
-		try
-			winMove(x+427,y+762,,,ui.editProfileGui)		
-	
+			try
+				if winExist(ui.fishGui)
+					winGetPos(&x,&y,&w,&h,ui.fishGui)
+			try 
+				if !ui.fullscreen {
+					try
+						winMove(x+(301*(a_screenDpi/96)),y+(31*(a_screenDpi/96)),,,ui.game)
+		
+					try
+						winMove(x+1101,y+753,,,ui.disabledGui) 
+					try
+						winMove(x+427,y+762,,,ui.editProfileGui)		
+				} else {
+				winMove(0,0,a_screenWidth,a_screenHeight-30,ui.fishGui)
+				winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)
+			}
 }
 
 
