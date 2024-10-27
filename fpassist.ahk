@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.0.6"
+A_FileVersion := "1.3.0.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -164,7 +164,6 @@ autoFishStart(mode:="cast",*) {
 	while ui.autoFish {
 		detectPrompts(1)
 		(sleep500(2,0)) ? exit : 0
-		
 		switch mode {
 			case "cast":
 				mode:="retrieve"
@@ -185,10 +184,6 @@ autoFishStart(mode:="cast",*) {
 				mode:="cast" 
 				if !reeledIn()
 					reelIn(1)				
-			default:
-				mode:="cast"
-				if !reeledIn
-					reelIn(1)
 		}
 	}
 	sleep500(3)
@@ -228,7 +223,7 @@ checkPixel(x,y,targetColor) {
 
 calibrate(*) {
 	modeHeader("Calibrate")
-	if ui.cancelOperation
+	if !ui.autoFish
 		return
 	log("Calibrate: Drag",1)
 	loop 13 {
@@ -236,34 +231,40 @@ calibrate(*) {
 		sendNice("{-}")
 		sleep(50)
 	}
+	if !ui.autoFish
+		return
 	ui.currDrag := 0
 	loop cfg.dragLevel[cfg.profileSelected] {
 		sendNice("{+}")
 		sleep(100)
 	}
-	if ui.cancelOperation
+	if !ui.autoFish
 		return
 	log("Calibrate: Reel Speed",1)
+	if !ui.autoFish
+		return
 	loop 6 {
 		winWait("ahk_exe fishingPlanet.exe")
 		sendNice("{click wheelDown}")
 		sleep(50)
 	}	 
+	if !ui.autoFish
+		return
 	loop cfg.reelSpeed[cfg.profileSelected] {
 		sendNice("{click wheelUp}") 
 		sleep(50)
 	}
 	;log("Ready",1)
-	if ui.cancelOperation
+	if !ui.autoFish
 		return
 }
 
 cast(isAFK:=true,*) {
-	ui.cancelOperation := true
+	if !ui.autoFish
+		return
 	panelMode("cast")
 	if cfg.boatEnabled[cfg.profileSelected] {
 		log("Boat: Cast Rod #1",1)
-		ui.cancelOperation:=false
 		modeHeader("Boat")
 		ui.castButton.text:="Boat"
 		boatRotation()	
@@ -271,13 +272,18 @@ cast(isAFK:=true,*) {
 		return
 	}
 	sleep(1500)
-	ui.cancelOperation := false
+	if !ui.autoFish
+		return
 	modeHeader("Cast")
 	log("Cast: Preparing",1,"Cast: Prepared")
 	ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
+	if !ui.autoFish
+		return
 	sleep(4500)
 	;sendIfWinActive("{backspace}",ui.game,true)
 	errorLevel := sleep500(6)
+	if !ui.autoFish
+		return
 	loop 10 {
 		if !reeledIn() {
 			sleep500(2)
@@ -301,11 +307,15 @@ cast(isAFK:=true,*) {
 	log("Cast: Releasing Cast",1)
 	calibrate()
 	;setTimer(calibrate,-100)
+	if !ui.autoFish
+		return
 	log("Wait: Lure In-Flight",1)
 	loop cfg.castTime[cfg.profileSelected] {
 		sleep500(2)
 	}
 	log("Wait: Lure Sinking",1)
+	if !ui.autoFish
+		return
 	loop cfg.sinkTime[cfg.profileSelected] {
 		sleep500(2)
 	}
@@ -313,7 +323,7 @@ cast(isAFK:=true,*) {
 	send("{space down}")
 	sleep(500)
 	send("{space up}")
-		sleep(150)
+	sleep(150)
 	if !ui.autoFish
 		panelMode("Off")
 }
@@ -379,10 +389,6 @@ boatRotation(*) {
 			landFish()
 	}
 }
-
-
-
-
 
 retrieve(*) {
 	ui.cancelOperation := true
@@ -455,20 +461,19 @@ retrieve(*) {
 							loop round(random(1,3)) {
 								sendNice("{space down}")
 								sendNice("{RButton Down}")
-								sleep500(1)
+								sleep(300)
 								sendNice("{RButton Up}")
 								sendNice("{space up}")
-								sleep500(1)
 							}
 					case 2:
 						log("Retrieve: Pause",1)
 						sendNice("{space up}")
-						sleep500(round(random(2,3)))
+						sleep500(round(random(2,4)))
 					case 3:
 						log("Retrieve: Reel",1)
 						setKeyDelay(0)
 						sendNice("{space down}")
-						sleep500(2)
+						sleep500(3)
 						sendNice("{space up}")
 						setKeyDelay(50)
 			}
@@ -548,21 +553,25 @@ reelIn(isAFK:=true,*) {
 	ui.cancelOperation := false
 	modeHeader("Reel")
 	panelMode("reel")
+	if !ui.autoFish
+		return
+
 	loop 5 {
 		sendNice("{l}")
 		sleep(150)
 	}		
 
 	while !reeledIn() {
-		if ui.cancelOperation
-			break
+		if !ui.autoFish
+			return
 		sendNice("{space down}")
 		sleep(1000)
 		sendNice("{space up}")
 	}
 	sendNice("{space up}")
-	if ui.cancelOperation
+	if !ui.autoFish
 		return
+
 	sleep(500)
 	setTimer(landFish,0)
 	;analyzeCatch()
@@ -588,7 +597,7 @@ landFish(*) {
 	sendNice("{RButton down}")
 	sleep(1000)
 	sendNice("{space Down}")
-	while !reeledIn() && ui.autoFish && !ui.cancelOperation {
+	while !reeledIn() && ui.autoFish {
 		sendNice("{RButton Down}")
 		loop round(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2))
 			sleep500(2)
@@ -647,6 +656,7 @@ analyzeCatch(logWork:=true) {
 	sleep(1500)
 	log("After Screenshot",2)
 	sleep(1500)
+	checkKeepnet()
 	sendNice("{space}")
 	sleep(1500)
 	;sendNice("{backspace}")
@@ -687,12 +697,13 @@ checkKeepnet(*) {
 			send("{LButton Down}")
 			sleep500(1)
 			send("{LButton Up}")
-			detectPrompts()
 			mouseMove(tmpX,tmpY)
-			autoFishStart()
+			setTimer(autoFishStart,-100)
+			return
 		} 
 		} else {
 		log("Keepnet: Not Full",2)
+		return 0
 	}
 }
 
