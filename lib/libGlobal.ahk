@@ -19,14 +19,38 @@ panelMode(mode) {
 		startButtonOn()
 	switch mode {
 		case "cast":
+			try {
+				ui.castIcon.value:="./img/icon_cast_on.png"
+				ui.retrieveIcon.value:="./img/icon_retrieve.png"
+				ui.reelIcon.value:="./img/icon_reel.png"
+			}
 			castButtonOn()
+		case "land":
+			retrieveButtonOn()
+			flashretrieve()
+			setTimer(flashretrieve,1500)
 		case "retrieve":
+			try {
+				ui.castIcon.value:="./img/icon_cast.png"
+				ui.retrieveIcon.value:="./img/icon_retrieve_on.png"
+				ui.reelIcon.value:="./img/icon_reel.png"
+			}
 			retrieveButtonOn()
 		case "reel":
+			try {
+				ui.castIcon.value:="./img/icon_cast.png"
+				ui.retrieveIcon.value:="./img/icon_retrieve.png"
+				ui.reelIcon.value:="./img/icon_reel_on.png"
+			}	
 			reelButtonOn()
 		case "afk":
 			startButtonOn()
 		case "off":
+			try {
+				ui.castIcon.value:="./img/icon_cast.png"
+				ui.retrieveIcon.value:="./img/icon_retrieve.png"
+				ui.reelIcon.value:="./img/icon_reel.png"
+			}	
 			return
 	}
 	cancelButtonOn()
@@ -49,7 +73,7 @@ themeDef(themeNum:=1,*) {
 			ui.trimDarkColor 		:= ["101011","2d0f0f","7b4212","11EE11","EE1111","303030"]
 			ui.trimFontColor 		:= ["282828","d0b7b4","44DDCC","11EE11","EE1111","DEDEDE"]
 			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
-		case 2:
+			case 2:
 			ui.bgColor 				:= ["202020","323032","454548","1B1A1C","DFDFFF","999999"]
 			ui.fontColor 			:= ["151415","A0AFB5","D0D5FF","666666","353535","50556F"]
 			ui.trimColor 			:= ["DFDFFF","6d0f0f","44DDCC","11EE11","EE1111","303030"]
@@ -130,9 +154,8 @@ initVars(*) {
 	ui.flashlight 			:= "+F"
 	ui.startKeyMouse 		:= "!LButton"
 	ui.stopKeyMouse 		:= "!RButton"
-	ui.mode 				:= ""
 	ui.lastMsg 				:= ""
-	ui.lastMode 			:= ui.mode
+	ui.lastMode 			:= 0
 	ui.cycleStartTime		:= 0
 }
 
@@ -187,13 +210,7 @@ isFS(*) {
 		return 0
 }
 
-ui.fullscreen := false
-isEnabled(*) {
-		if ui.enabled && winActive(ui.game) && !ui.fullscreen
-			return 1
-		else
-			return 0
-}
+
 
 guiVis(guiName,isVisible:= true) {
 	if (isVisible) {
@@ -375,6 +392,12 @@ install() {
 			fileInstall("./Img/button_edit.png",installDir "/img/button_edit.png",1)
 			fileInstall("./img/button_arrowLeft.png",installDir "/img/button_arrowLeft.png",1)
 			fileInstall("./img/button_arrowRight.png",installDir "/img/button_arrowRight.png",1)
+			fileInstall("./img/icon_cast.png",installDir "/img/icon_cast.png",1)
+			fileInstall("./img/icon_cast_on.png",installDir "/img/icon_cast_on.png",1)
+			fileInstall("./img/icon_retrieve_on.png",installDir "/img/icon_retrieve_on.png",1)
+			fileInstall("./img/icon_retrieve.png",installDir "/img/icon_retrieve.png",1)
+			fileInstall("./img/icon_reel_on.png",installDir "/img/icon_reel_on.png",1)
+			fileInstall("./img/icon_reel.png",installDir "/img/icon_reel.png",1)			
 			fileInstall("./img/toggle_on.png",installDir "/img/toggle_on.png",1)
 			fileInstall("./img/toggle_off.png",installDir "/img/toggle_off.png",1)
 			fileInstall("./img/play_ani_1.png",installDir "/img/play_ani_1.png",1)
@@ -387,6 +410,7 @@ install() {
 			fileInstall("./fpassist_currentBuild.dat",installDir "/fpassist_currentBuild.dat",1)
 			fileInstall("./img/hooman.ico",installDir "/img/hooman.ico",1)
 
+			
 			pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
 			
 			fileCreateShortcut(installDir "/fpassist.exe", a_desktop "\fpassist.lnk",installDir,,"Fishing Planet Assist",installDir "/img/hooman.ico")

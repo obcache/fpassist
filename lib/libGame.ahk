@@ -48,6 +48,47 @@ appReload(*) {
 	reload()
 }
 
+
+rodsIn(*) {
+	sleep(500)
+	send("{i}")
+	sleep(500)
+	mouseMove(125,120)
+	send("{LButton Down}")
+	sleep(150)
+	send("{LButton Up}")
+	sleep(250)
+	
+	mouseMove(255,550)
+	sleep(100)
+	send("{LButton Down}")
+	sleep(150)
+	send("{LButton Up}")	
+	sleep(250)
+	
+	mouseMove(255,615)
+	sleep(100)
+	send("{LButton Down}")
+	sleep(150)
+	send("{LButton Up}")	
+	sleep(250)
+
+	send("{i}")
+	sleep(250)
+	
+	mouseMove(155,550)
+	send("{LButton Down}")
+	sleep(150)
+	send("{LButton Up}")
+	sleep(250)
+	
+	mouseMove(155,615)
+	sleep(100)
+	send("{LButton Down}")
+	sleep(150)
+	send("{LButton Up}")	
+}
+
 toggleEnabled(*) {
 		(ui.enabled := !ui.enabled) ? toggleOn() : toggleOff()
 		toggleOn(*) {
