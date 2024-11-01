@@ -15,42 +15,36 @@ panelMode(mode) {
 	retrieveButtonOff()
 	reelButtonOff()
 	cancelButtonOff()
-	if ui.autoFish
+	ui.castIconFS.value:="./img/icon_cast.png"
+	ui.retrieveIconFS.value:="./img/icon_retrieve.png"
+	ui.reelIconFS.value:="./img/icon_reel.png"
+
+if ui.autoFish
 		startButtonOn()
 	switch mode {
 		case "cast":
 			try {
-				ui.castIcon.value:="./img/icon_cast_on.png"
-				ui.retrieveIcon.value:="./img/icon_retrieve.png"
-				ui.reelIcon.value:="./img/icon_reel.png"
+				ui.castIconFS.value:="./img/icon_cast_on.png"
 			}
 			castButtonOn()
 		case "land":
 			retrieveButtonOn()
+			ui.reelIconFS.value:="./img/icon_reel_on.png"
 			flashretrieve()
 			setTimer(flashretrieve,1500)
 		case "retrieve":
 			try {
-				ui.castIcon.value:="./img/icon_cast.png"
-				ui.retrieveIcon.value:="./img/icon_retrieve_on.png"
-				ui.reelIcon.value:="./img/icon_reel.png"
+				ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
 			}
 			retrieveButtonOn()
 		case "reel":
 			try {
-				ui.castIcon.value:="./img/icon_cast.png"
-				ui.retrieveIcon.value:="./img/icon_retrieve.png"
-				ui.reelIcon.value:="./img/icon_reel_on.png"
+				ui.reelIconFS.value:="./img/icon_reel_on.png"
 			}	
 			reelButtonOn()
 		case "afk":
 			startButtonOn()
 		case "off":
-			try {
-				ui.castIcon.value:="./img/icon_cast.png"
-				ui.retrieveIcon.value:="./img/icon_retrieve.png"
-				ui.reelIcon.value:="./img/icon_reel.png"
-			}	
 			return
 	}
 	cancelButtonOn()
@@ -406,6 +400,7 @@ install() {
 			fileInstall("./img/icon_retrieve_on.png",installDir "/img/icon_retrieve_on.png",1)
 			fileInstall("./img/icon_retrieve.png",installDir "/img/icon_retrieve.png",1)
 			fileInstall("./img/icon_reel_on.png",installDir "/img/icon_reel_on.png",1)
+			fileInstall("./img/icon_reel_flash.png",installDir "/img/icon_reel_flash.png",1)
 			fileInstall("./img/icon_reel.png",installDir "/img/icon_reel.png",1)			
 			fileInstall("./img/toggle_on.png",installDir "/img/toggle_on.png",1)
 			fileInstall("./img/toggle_off.png",installDir "/img/toggle_off.png",1)

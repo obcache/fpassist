@@ -280,8 +280,10 @@ goFS(*) {
 	guiVis(ui.fishGui,false)
 	ui.fishGuiFS.show()
 	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
-	ui.hookedX:=3050
-	ui.hookedY:=1040
+	; winSetTransparent(160,ui.fishGuiFsBg)
+	ui.hookedX:=3060
+	ui.hookedY:=1000
+	ui.hookedColor:=[0x1CACB5,0x1EA9C3]
 	ui.reeledInCoord1:=[2944,1250]
 	ui.reeledInCoord2:=[2944,1280]
 	ui.reeledInCoord3:=[2984,1250]
@@ -314,10 +316,14 @@ noFS(*) {
 
 
 createGuiFS(*) {
+	; ui.fishGuiFsBg:=gui()
+	; ui.fishGUiFsBg.opt("-caption toolWindow owner" ui.fishGui.hwnd)
+	; ui.fishGuiFsBg.backColor:="353535"
+	; winSetTransparent(0,ui.fishGuiFsBg)
 	fishGuiFSx := a_screenWidth-900
 	fishGuiFSy := a_screenHeight-30-200
 	ui.fishGuiFS := gui()
-	ui.fishGuiFS.opt("-caption -border +toolWindow alwaysOnTop owner" winGetId(ui.game))
+	ui.fishGuiFS.opt("-caption -border +toolWindow owner" ui.fishGui.hwnd)
 	ui.fishGuiFS.backColor := "010203"
 	winSetTransColor("010203",ui.fishGuiFS.hwnd)
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
@@ -333,26 +339,30 @@ createGuiFS(*) {
 	ui.fishGuiFS.setFont("s12")
 	ui.fsPanel := object()
 	ui.fsIcons := object()
-	ui.fsIcons.x := (a_screenWidth*.845)
-	ui.fsIcons.y := (a_screenHeight*.43)
+	ui.fsIcons.x := (a_screenWidth*.71)
+	ui.fsIcons.y := a_screenHeight*.89
 	ui.fsIcons.w := 100
 	ui.fsIcons.h := 100
 	ui.fsPanel.x := 50
 	ui.fsPanel.y := 230
 	ui.fsPanel.w := 60
 	ui.fsPanel.h := 20
-	ui.castIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
-	ui.retrieveIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y+ui.fsIcons.h+40 " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
-	ui.reelIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y+(ui.fsIcons.h*2)+80 " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
-	ui.castButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
-	ui.castButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x+2 " y" ui.fsPanel.y+2 " w" ui.fsPanel.w-4 " h" ui.fsPanel.h-4 " background" ui.trimDarkColor[1])
-	ui.castButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x+4 " y" ui.fsPanel.y " w" ui.fsPanel.w-4 " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Cast")
-	ui.retrieveButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
-	ui.retrieveButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.trimDarkColor[1])
-	ui.retrieveButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Retrieve")
-	ui.reelButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
-	ui.reelButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.trimDarkColor[1])
-	ui.reelButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Reel")
+	
+	;ui.fishGuiFsBg.show("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20)
+	;ui.iconFsBg := ui.fishGuiFS.addText("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20 " background" ui.bgColor[2])
+	ui.castIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
+	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsIcons.w+30 " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
+	ui.reelIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+((ui.fsIcons.w+30)*2) " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
+	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3)+90 " y" ui.fsIcons.y " w40 h90 backgroundTrans","./img/toggle_ON.png")
+	; ui.castButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
+	; ui.castButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x+2 " y" ui.fsPanel.y+2 " w" ui.fsPanel.w-4 " h" ui.fsPanel.h-4 " background" ui.trimDarkColor[1])
+	; ui.castButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x+4 " y" ui.fsPanel.y " w" ui.fsPanel.w-4 " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Cast")
+	; ui.retrieveButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
+	; ui.retrieveButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.trimDarkColor[1])
+	; ui.retrieveButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Retrieve")
+	; ui.reelButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
+	; ui.reelButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.trimDarkColor[1])
+	; ui.reelButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Reel")
 	guivis(ui.fishGuiFS,false)
 	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
 

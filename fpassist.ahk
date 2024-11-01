@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.1.3"
+A_FileVersion := "1.3.1.4"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -675,8 +675,8 @@ reelIn(isAFK:=true,*) {
 
 flashRetrieve(*) {
 	(tmp.retrieveFlashOn := !tmp.retrieveFlashOn)
-		? (ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("c482a11"),ui.retrieveButtonHotkey.opt("c482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
-		: (ui.retrieveButtonBg.opt("background" ui.trimDarkColor[3]),ui.retrieveButton.opt("c1f1105"),ui.retrieveButtonHotkey.opt("c1f1105"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+		? (ui.reelIconFS.value:="./img/icon_reel_flash.png",ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("c482a11"),ui.retrieveButtonHotkey.opt("c482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+		: (ui.reelIconFS.value:="./img/icon_reel_on.png",ui.retrieveButtonBg.opt("background" ui.trimDarkColor[3]),ui.retrieveButton.opt("c1f1105"),ui.retrieveButtonHotkey.opt("c1f1105"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
 }
 
 ^+\:: {
@@ -700,6 +700,7 @@ landFish(*) {
 	}
 	sendNice("{space Up}")
 	setTimer(flashRetrieve,0)
+	ui.reelIconFS.value:="./img/icon_reel.png"
 	ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
 	ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
 	ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])

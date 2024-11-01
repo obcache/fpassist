@@ -92,20 +92,27 @@ rodsIn(*) {
 }
 
 toggleEnabled(*) {
-		(ui.enabled := !ui.enabled && !ui.fullscreen) ? toggleOn() : toggleOff()
+		(ui.enabled := !ui.enabled) ? toggleOn() : toggleOff()
 		toggleOn(*) {
-			ui.enableButtonToggle.value := "./img/toggle_on.png"
-			ui.disabledGui.destroy()
+			if ui.fullscreen {
+				ui.toggleEnabledFS.value:="./img/toggle_on.png"
+			} else {
+				ui.enableButtonToggle.value := "./img/toggle_on.png"
+				ui.disabledGui.destroy()
+			}
 		}
 		toggleOff(*) {
-			ui.enableButtonToggle.value := "./img/toggle_off.png"
-			
+			if ui.fullscreen {
+				ui.toggleEnabledFS.value:="./img/toggle_off.png"
+			} else {
+				ui.enableButtonToggle.value := "./img/toggle_off.png"
 				ui.disabledGui := gui()
 				ui.disabledGui.opt("-caption -border toolWindow owner" ui.fishGui.hwnd)
 				ui.disabledGui.backColor := ui.bgColor[3]
 				ui.disabledGui.addText("x1 y1 w448 h58 background353535")
 				winSetTransparent(225,ui.disabledGui)
 				ui.disabledGui.show("x1102 y754 w450 h60 noActivate")
+			}
 		}
 }
 
