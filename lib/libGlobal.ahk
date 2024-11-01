@@ -136,6 +136,7 @@ initVars(*) {
 	ui.autoclickerActive 	:= false
 	ui.fishCount 			:= 000
 	ui.castCount 			:= 000
+	ui.runCount				:= 0
 	tmp.h					:= 40
 	ui.currDrag 			:= 0
 	defaultValue 			:= 0
@@ -157,6 +158,14 @@ initVars(*) {
 	ui.lastMsg 				:= ""
 	ui.lastMode 			:= 0
 	ui.cycleStartTime		:= 0
+	ui.hookedX:=1090
+	ui.hookedY:=510
+	ui.hookedColor:=[0x1EA9C3,0x419AAC]
+	ui.reeledInCoord1:=[1026,635]
+	ui.reeledInCoord2:=[1047,635]
+	ui.reeledInCoord3:=[1026,656]
+	ui.reeledInCoord4:=[1047,656]
+	ui.reeledInCoord5:=[1036,644]
 }
 
 cfgWrite(*) {

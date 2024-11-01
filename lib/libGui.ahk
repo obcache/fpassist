@@ -220,10 +220,10 @@ createGui() {
 	ui.fishLogText.onEvent("DoubleClick",openFishPic)
 	openFishPic(listBox,val2,*) {
 		if inStr(listBox.text,"Screenshot:") {
-			run("msedge " substr(listBox.text,12))
+			run("msedge " strSplit(listBox.text,":")[4])
 		}
 	}
-	
+	 
 	ui.fishLogFooterOutline := ui.fishGui.addText("x1 y722 w298 h30 background" ui.bgColor[3])
 	ui.fishLogFooterOutline2 := ui.fishGui.addText("x2 y723 w296 h28 background" ui.bgColor[1])
 	ui.fishLogFooterOutline3 := ui.fishGui.addText("x3 y724 w294 h26 background" ui.bgColor[4])
@@ -280,7 +280,13 @@ goFS(*) {
 	guiVis(ui.fishGui,false)
 	ui.fishGuiFS.show()
 	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
-
+	ui.hookedX:=3050
+	ui.hookedY:=1040
+	ui.reeledInCoord1:=[2944,1250]
+	ui.reeledInCoord2:=[2944,1280]
+	ui.reeledInCoord3:=[2984,1250]
+	ui.reeledInCoord4:=[2984,1280]
+	ui.reeledInCoord5:=[2963,1265]
 	; ui.fishGuiBg := gui()
 	; ui.fishGuiBg.opt("-caption -border toolwindow alwaysOnTop owner" winGetId(ui.game))
 	; ui.fishGuiBg.backColor := 656565
@@ -290,6 +296,14 @@ goFS(*) {
 }
 
 noFS(*) {
+	reload()
+	ui.hookedX:=1090
+	ui.hookedY:=510
+	ui.reeledInCoord1:=[1026,635]
+	ui.reeledInCoord2:=[1047,635]
+	ui.reeledInCoord3:=[1026,656]
+	ui.reeledInCoord4:=[1047,656]
+	ui.reeledInCoord5:=[1036,644]
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
 	winMove(x+300,y+30,1280,720,ui.game)
 	guiVis(ui.fishGui,true)
@@ -319,17 +333,17 @@ createGuiFS(*) {
 	ui.fishGuiFS.setFont("s12")
 	ui.fsPanel := object()
 	ui.fsIcons := object()
-	ui.fsIcons.x := a_screenWidth*.85+5
-	ui.fsIcons.y := a_screenHeight*.5+40
-	ui.fsIcons.w := 50
-	ui.fsIcons.h := 50
+	ui.fsIcons.x := (a_screenWidth*.845)
+	ui.fsIcons.y := (a_screenHeight*.43)
+	ui.fsIcons.w := 100
+	ui.fsIcons.h := 100
 	ui.fsPanel.x := 50
 	ui.fsPanel.y := 230
 	ui.fsPanel.w := 60
 	ui.fsPanel.h := 20
 	ui.castIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
-	ui.retrieveIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y+ui.fsIcons.h+20 " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
-	ui.reelIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y+(ui.fsIcons.h*2)+40 " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
+	ui.retrieveIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y+ui.fsIcons.h+40 " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
+	ui.reelIcon := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y+(ui.fsIcons.h*2)+80 " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
 	ui.castButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
 	ui.castButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x+2 " y" ui.fsPanel.y+2 " w" ui.fsPanel.w-4 " h" ui.fsPanel.h-4 " background" ui.trimDarkColor[1])
 	ui.castButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x+4 " y" ui.fsPanel.y " w" ui.fsPanel.w-4 " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Cast")
@@ -556,7 +570,7 @@ if (visible) {
 			}
 			ui.notifyGui.hide()
 			winActivate(ui.game)
-			setTimer () => detectPrompts(1),-3000
+			setTimer () => detectPrompts(1),-6000
 	}
 }
 

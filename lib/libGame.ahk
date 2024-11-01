@@ -9,30 +9,32 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) { 
-		ui.cancelOperation := false
-		autoFishStart()
+	ui.cancelOperation := false
+	setTime () => autoFishStart(ui.runCount+=1),-100
+	return
 }
 
 singleCast(*) {
- 	ui.cancelOperation := false
-	panelMode("off")
+ 	ui.cancelOperation := true
+	ui.autoFish := false
 	autoFishStop()
-	autoFishStart("cast")
+	ui.mode:=1
+	setTimer () => autoFishStart(ui.runCount+=1,"cast"),-100
+	return
 }
 
 singleReel(*) {
 	ui.cancelOperation := false
-	panelMode("off")
-	autoFishStop()
-	autoFishStart("reelStop")
-	autoFishStop()
+	ui.mode:=4
+	setTimer () => autoFishStart(ui.runCount+=1,"reelStop"),-100
+	return
 }
 
 singleRetrieve(*) {
 	ui.cancelOperation := false
-	panelMode("off")
 	autoFishStop()
-	autoFishStart("retrieve")
+	ui.mode:=2
+	setTimer () => autoFishStart(ui.runCount+=1,"retrieve"),-100
 }
 
 castLengthChanged(*) {
@@ -90,21 +92,23 @@ rodsIn(*) {
 }
 
 toggleEnabled(*) {
-		(ui.enabled := !ui.enabled) ? toggleOn() : toggleOff()
+		(ui.enabled := !ui.enabled && !ui.fullscreen) ? toggleOn() : toggleOff()
 		toggleOn(*) {
 			ui.enableButtonToggle.value := "./img/toggle_on.png"
 			ui.disabledGui.destroy()
 		}
 		toggleOff(*) {
 			ui.enableButtonToggle.value := "./img/toggle_off.png"
-			ui.disabledGui := gui()
-			ui.disabledGui.opt("-caption -border toolWindow owner" ui.fishGui.hwnd)
-			ui.disabledGui.backColor := ui.bgColor[3]
-			ui.disabledGui.addText("x1 y1 w448 h58 background353535")
-			winSetTransparent(225,ui.disabledGui)
-			ui.disabledGui.show("x1102 y754 w450 h60 noActivate")
+			
+				ui.disabledGui := gui()
+				ui.disabledGui.opt("-caption -border toolWindow owner" ui.fishGui.hwnd)
+				ui.disabledGui.backColor := ui.bgColor[3]
+				ui.disabledGui.addText("x1 y1 w448 h58 background353535")
+				winSetTransparent(225,ui.disabledGui)
+				ui.disabledGui.show("x1102 y754 w450 h60 noActivate")
 		}
 }
+
 
 updateControls(*) {
 	try 
@@ -264,7 +268,4 @@ cancelEditProfileName(*) {
 	ui.profileDeleteButton.opt("-hidden")
 	
 }
-
-setTimer () => detectPrompts(),-6000
-setTimer () => detectPrompts(),-10000
 
