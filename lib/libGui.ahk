@@ -218,12 +218,15 @@ createGui() {
 	ui.fishLogText := ui.fishGui.addListbox("readOnly x3 y35 w294 h683 -wrap 0x2000 0x100 -E0x200 background" ui.bgColor[4],ui.fishLogArr)
 	ui.fishLogText.setFont("s11 q5 c" ui.fontColor[2])
 	ui.fishLogText.onEvent("DoubleClick",openFishPic)
-	openFishPic(listBox,val2,*) {
+	openFishPic(listBox:=ui.fishLogText,val2:="",*) {
+		;test := "[01:01:11] Screenshot: E:\Documents\Resources\AutoHotKey\__fpassist\fishPics\20241101053936.png"
 		if inStr(listBox.text,"Screenshot:") {
-			run("msedge " strSplit(listBox.text,":")[4])
+			run('cmd /c ""C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe ' strSplit(listBox.text,":")[4] ":" strSplit(listbox.text,":")[5] '"')
+		;if inStr(test,"Screenshot:") {
+			;run('cmd /c ""C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' strSplit(test,":")[4] ":" strSplit(test,":")[5] '"')
 		}
 	}
-	 
+	;openFishPic()
 	ui.fishLogFooterOutline := ui.fishGui.addText("x1 y722 w298 h30 background" ui.bgColor[3])
 	ui.fishLogFooterOutline2 := ui.fishGui.addText("x2 y723 w296 h28 background" ui.bgColor[1])
 	ui.fishLogFooterOutline3 := ui.fishGui.addText("x3 y724 w294 h26 background" ui.bgColor[4])
@@ -275,6 +278,7 @@ createGui() {
 
 
 goFS(*) {
+	setTimer(detectPrompts,0)
 	ui.fullscreen := true
 	guiVis(ui.fishGuiFS,true)
 	guiVis(ui.fishGui,false)
@@ -298,7 +302,7 @@ goFS(*) {
 }
 
 noFS(*) {
-	reload()
+	;reload()
 	ui.hookedX:=1090
 	ui.hookedY:=510
 	ui.reeledInCoord1:=[1026,635]
@@ -307,7 +311,8 @@ noFS(*) {
 	ui.reeledInCoord4:=[1047,656]
 	ui.reeledInCoord5:=[1036,644]
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
-	winMove(x+300,y+30,1280,720,ui.game)
+	;winMove(x+300,y+30,1280,720,ui.game)
+	winMove(x+300,y+30,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
 	guiVis(ui.fishGui,true)
 	ui.noFSbutton.opt("hidden")
 	guiVis(ui.fishGuiFS,false)
