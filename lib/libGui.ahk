@@ -392,7 +392,7 @@ createGuiFS(*) {
 	ui.FishCaughtLabelFS.setFont("s54","Calibri")
 	ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("hidden right x" fishGuiFSx-90-30 " y" fishGuiFSy+20+40 " w200 h90 backgroundTrans c" ui.trimFontColor[6],"Count")
 	ui.FishCaughtLabel2FS.setFont("s60","Calibri")
-	ui.fishLogFS := ui.fishGuiFS.addText("x95 y350 w360 h450 backgroundTrans c" ui.fontColor[3],"")
+	ui.fishLogFS := ui.fishGuiFS.addText("hiddenx95 y350 w360 h450 backgroundTrans c" ui.fontColor[3],"")
 	ui.fishLogFS.setFont("s16")
 	ui.fishGuiFS.setFont("s12")
 	ui.fsPanel := object()

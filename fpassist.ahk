@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.1.7"
+A_FileVersion := "1.3.1.8"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -40,7 +40,7 @@ winActivate(ui.game)
 
 ;winGetPos(&tX,&tY,&tW,&tH,ui.game)
 ;mouseMove(tW/2,tH/2)
-setTimer () => detectPrompts(1),10000
+;setTimer () => detectPrompts(1),10000
 onExit(exitFunc)
 
 hotIfWinActive(ui.game)
@@ -230,13 +230,13 @@ autoFishStart(runCount,mode:="cast",*) {
 	ui.bigFishCaughtLabel2.opt("-hidden")
 	resetKeyStates()
 	while ui.autoFish {
-		detectPrompts(1)
+		;detectPrompts(1)
 		(sleep500(2,0)) ? exit : 0
 		switch ui.mode {
 			case "cast":
 				if !reeledIn() {
 					reelIn()
-					sleep(3000)
+				sleep(3000)
 				} 
 				if reeledIn()
 					cast(1)
@@ -491,10 +491,9 @@ boatRotation(*) {
 
 retrieve(*) {
 	panelMode("retrieve")
-	ui.cancelOperation := true	
-	if !ui.autoFish || ui.mode != "retrieve"
-		return
 	modeHeader("Retrieve")
+	if ui.mode != "retrieve"
+		return
 	if ui.floatEnabled.value {
 		log("Watch: Monitoring Bait",1)
 		ui.retrieveButton.text := "Watch"
@@ -521,16 +520,12 @@ retrieve(*) {
 		mechanic.repeats := 0
 		mechanic.current := ""
 		mechanic.number := 0
-		
-		ui.cancelOperation:=false
-		if !ui.autoFish || ui.mode != "retrieve"
-			return
-		if ui.runCount > this.runCount
+		if ui.mode != "retrieve"
 			return
 
 		log("Retrieve: Starting",1,"Retrieve: Started")
 		
-		while ui.runCount == this.runCount && !ui.cancelOperation && !reeledIn() && ui.mode == "retrieve" {
+		while !reeledIn() && ui.mode == "retrieve" {
 			if isHooked() { 
 				winActivate(ui.game)
 				landFish()
@@ -692,8 +687,9 @@ flashRetrieve(*) {
 }
 landFish(*) {
 	setTimer(isHooked,0)
-	modeHeader("Land Fish")
+	modeHeader("STARTED: Land Fish")
 	panelMode("land")
+	log("Landing Fish")
 	sendNice("{RButton down}")
 	sleep500()
 	sendNice("{space Down}")
