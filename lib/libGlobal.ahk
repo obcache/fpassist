@@ -385,7 +385,8 @@ install() {
 				dirCreate(installDir "\logs")
 			}
 			fileInstall("./Img/fp_splash.png",installDir "/img/fp_splash.png",1)
-			fileInstall("./Img/button_search.png",installDir "/img/button_search.png",1) 
+			fileInstall("./Img/button_search.png",installDir "/img/button_search.png",1)
+			fileInstall("./Img/button_popout.png",installDir "/img/button_popout.png",1) 
 			fileInstall("./Img/button_nofs.png",installDir "/img/button_nofs.png",1) 
 			fileInstall("./Img/button_fs.png",installDir "/img/button_fs.png",1) 
 			fileInstall("./Img/button_close.png",installDir "/Img/button_close.png",true)
