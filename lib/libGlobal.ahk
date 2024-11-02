@@ -385,6 +385,7 @@ install() {
 				dirCreate(installDir "\logs")
 			}
 			fileInstall("./Img/fp_splash.png",installDir "/img/fp_splash.png",1)
+			fileInstall("./Img/button_search.png",installDir "/img/button_search.png",1) 
 			fileInstall("./Img/button_nofs.png",installDir "/img/button_nofs.png",1) 
 			fileInstall("./Img/button_fs.png",installDir "/img/button_fs.png",1) 
 			fileInstall("./Img/button_close.png",installDir "/Img/button_close.png",true)
@@ -489,17 +490,43 @@ exitFunc(*) {
 log(msg,debug:=0,msgHistory:=msg) {
 	if debug > cfg.debug
 		return
-	if ui.fullscreen {
-		try {
+	; ui.logLV.add(,msg,msg)
+	; if ui.fullscreen {
+		; try {
+			; ui.fishLogStr := ""
+			; loop ui.fishLogArr.length+1 {
+				; ui.fishLogStr .= ui.fishLogArr[a_index+1] "`n"
+				; ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
+			; }
+		; }
+	; } else {
+		; if ui.lastMsg {
+			; ui.fishStatusText.text := msg
+			; ui.fishLogArr.push(
+				; (ui.lastMsg=="Ready") 
+					; ? "——————————————————————————————————————" 
+					; : formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+			; ui.fishLogArr.removeAt(1)
+			; ui.fishLogText.delete()
+			; ui.fishLogText.add(ui.fishLogArr)
+		; }
+	; }
+	
+	
+	try {
 			ui.fishLogStr := ""
 			loop ui.fishLogArr.length+1 {
 				ui.fishLogStr .= ui.fishLogArr[a_index+1] "`n"
 				ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
 			}
-		}
-	} else {
-		if ui.lastMsg {
+	}
+	
+	if ui.lastMsg {
 			ui.fishStatusText.text := msg
+			ui.logLV.insert(1,,
+				(ui.lastMsg=="Ready")
+					? "_________________________________________________________________________"
+					: formatTime(,"[hh:mm:ss] ") ui.lastMsg)
 			ui.fishLogArr.push(
 				(ui.lastMsg=="Ready") 
 					? "——————————————————————————————————————" 
@@ -507,8 +534,8 @@ log(msg,debug:=0,msgHistory:=msg) {
 			ui.fishLogArr.removeAt(1)
 			ui.fishLogText.delete()
 			ui.fishLogText.add(ui.fishLogArr)
-		}
 	}
+	
 	ui.lastMsg := msgHistory
 }
 

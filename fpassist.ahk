@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.1.5"
+A_FileVersion := "1.3.1.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -37,6 +37,7 @@ startGame()
 createGui()
 createGuiFS()
 winActivate(ui.game)
+
 ;winGetPos(&tX,&tY,&tW,&tH,ui.game)
 ;mouseMove(tW/2,tH/2)
 setTimer () => detectPrompts(1),10000
@@ -163,7 +164,6 @@ autoFishStop(restart:="",*) {
 	setTimer(updateAfkTime,0)
 	ui.retrieveButton.text := "Retrie&ve"
 	ui.mode				:= "off"
-	ui.cancelOperation 	:= true
 	ui.autoFish 		:= false
 
 	send("{space up}")
@@ -171,6 +171,9 @@ autoFishStop(restart:="",*) {
 	send("{lbutton up}")
 	send("{rbutton up}")
 	 
+	ui.FishCaughtFS.opt("+hidden")
+	ui.fishCaughtLabelFS.opt("+hidden")
+	ui.fishCaughtLabel2FS.opt("+hidden")
 	ui.fishLogAfkTime.opt("+hidden")
 	ui.fishLogAfkTimeLabel.opt("+hidden")
 	ui.fishLogAfkTimeLabel2.opt("+hidden")
@@ -190,6 +193,7 @@ autoFishStop(restart:="",*) {
 		ui.fishLogAfkTime.text := "00:00:00" 
 	}
 }
+
 ^+r:: {
 	autoFishRestart()
 }
@@ -215,6 +219,9 @@ autoFishStart(runCount,mode:="cast",*) {
 	ui.reeledIn:=reeledIn()
 	ui.cycleAFK := false
 	panelMode("afk")
+	ui.FishCaughtFS.opt("-hidden")
+	ui.fishCaughtLabelFS.opt("-hidden")
+	ui.fishCaughtLabel2FS.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
@@ -1079,3 +1086,5 @@ hotIfWinActive(ui.game)
 	}
 
 hotIf()
+
+

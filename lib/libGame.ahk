@@ -155,6 +155,7 @@ profileLArrowClicked(*) {
 		cfg.profileSelected := cfg.profileName.Length
 	
 	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	ui.profileSelectedFS.text := cfg.profileName[cfg.profileSelected]
 	for setting,default in cfg.profileSetting {
 		while cfg.%setting%.length < cfg.profileName.length
 			cfg.%setting%.push(default)
@@ -169,6 +170,7 @@ profileRArrowClicked(*) {
 	else
 		cfg.profileSelected := 1
 	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	ui.profileSelectedFS.text := cfg.profileName[cfg.profileSelected]
 	for setting,default in cfg.profileSetting {
 		while cfg.%setting%.length < cfg.profileName.length
 			cfg.%setting%.push(default)
