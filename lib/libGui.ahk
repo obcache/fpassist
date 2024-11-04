@@ -221,7 +221,7 @@ createGui() {
 	ui.fishLogViewerButton:=ui.fishGui.addPicture("x5 y3 w25 h25 background" ui.bgColor[2],"./img/button_popout.png")
 	ui.fishLogViewerButton.onEvent("click",launchLogViewer)
 		
-	launchLogViewer(*) {
+	launchLogViewer(fullscreen,*) {
 		static launchLogState:=false
 		(launchLogState:=!launchLogState) ? showLogScreen() : hideLogScreen()
 		
@@ -290,11 +290,9 @@ createGui() {
 }
 
 	openFishPic(listBox:=ui.fishLogText,val2:="",*) {
-	;test := "[01:01:11] Screenshot: E:\Documents\Resources\AutoHotKey\__fpassist\fishPics\20241101053936.png"
-		if inStr(listBox.text,"Screenshot:") {
-			run('cmd /c ""C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe ' strSplit(listBox.text,":")[4] ":" strSplit(listbox.text,":")[5] '"')
-	;if inStr(test,"Screenshot:") {
-		;run('cmd /c ""C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' strSplit(test,":")[4] ":" strSplit(test,":")[5] '"')
+		if inStr(listbox.text,"Screenshot:") {
+			splitPath(listbox.text,&logFilename,,,,)
+			run(a_scriptDir "/fishPics/" logFilename)
 		}
 	}
 
@@ -312,14 +310,21 @@ logViewer(*) {
 		ui.logGui:=gui()
 		ui.logGui.opt("-caption toolWindow owner" ui.fishGui.hwnd)
 		ui.logGui.backColor:="010203"
-		ui.logTitleBar := ui.logGui.addText("x0 y0 w540 h30 background" ui.bgColor[6])
+		ui.logTitleBar := ui.logGui.addText("x0 y0 w540 h30 background" ui.bgColor[5])
 		ui.logTitleBar.onEvent("click",wm_lbuttonDown_callback)
-		ui.logSaveBg := ui.logGui.addText("x540 y0 w30 h30 background" ui.bgColor[6])
+		ui.logTitleBarText := ui.logGui.addText("x7 y3 w520 h26 backgroundTrans c" ui.fontColor[4],"Fishing Log  (fpAssist v" a_fileVersion ")")
+		ui.logTitleBarText.setFont("s14 bold","calibri")
+		ui.logSaveBg := ui.logGui.addText("x540 y0 w30 h30 background" ui.bgColor[5])
 		ui.logSaveBg.onEvent("click",saveLog)
-		ui.logSave := ui.logGui.addPicture("x540 y4 w26 h26 backgroundTrans","./img/button_save.png")
-		ui.logClose := ui.logGui.addPicture("x570 y0 w30 h30 background" ui.bgColor[6],"./img/button_close.png")
+		ui.logSave := ui.logGui.addPicture("x542 y4 w26 h25 backgroundTrans","./img/button_save.png")
 		ui.logSave.onEvent("click",saveLog)
-
+		ui.logCloseBg := ui.logGui.addText("x570 y0 w30 h30 background" ui.bgColor[5])
+		ui.logCloseBg.onEvent("click",closeLog)
+		ui.logClose := ui.logGui.addPicture("x572 y3 w25 h25 background" ui.bgColor[5],"./img/button_cancel.png")
+		ui.logClose.onEvent("click",closeLog)
+		closeLog(*) {
+			ui.logGui.hide()
+		}
 		ui.logLV := ui.logGui.addListview("x0 y30 w600 h800 -hdr background" ui.bgColor[4] " c" ui.fontColor[3],["Activity"])
 		ui.logLV.setFont("s12","calibri")
 		ui.logLV.onEvent("DoubleClick",openFishPic)
@@ -344,7 +349,9 @@ goFS(*) {
 	ui.reeledInCoord3:=[2984,1250]
 	ui.reeledInCoord4:=[2984,1280]
 	ui.reeledInCoord5:=[2963,1265]
-	
+
+	showLog()
+	click()
 	; ui.fishGuiBg := gui()
 	; ui.fishGuiBg.opt("-caption -border toolwindow alwaysOnTop owner" winGetId(ui.game))
 	; ui.fishGuiBg.backColor := 656565
@@ -352,8 +359,26 @@ goFS(*) {
 	; winSetTransparent(150,ui.fishGuiBg)
 	; ui.fishGuiBg.show("x95 y350 w360 h450 noactivate")
 }
-
+	showLog(*)
+	{
+		guiVis(ui.logGui,true)
+		winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
+		highestMx:=0
+		rightMonitor:=1
+		loop monitorGetCount() {
+		this_monitor := a_index
+		monitorGetWorkArea(this_monitor,&mX,&mY,&mW,&mH)
+			if mX > highestMx {
+				highestMx:=mX
+				rightMonitor:=this_monitor
+			}
+		}
+		monitorGetWorkArea(rightMonitor,&mX,&mY,&mW,&mH)
+		ui.logGui.show("x" tX+tW " y" mY " w600 h" tH)
+	}
+	
 noFS(*) {
+	ui.fullscreen:=false
 	;reload()
 	ui.hookedX:=1090
 	ui.hookedY:=510
@@ -362,14 +387,19 @@ noFS(*) {
 	ui.reeledInCoord3:=[1026,656]
 	ui.reeledInCoord4:=[1047,656]
 	ui.reeledInCoord5:=[1036,644]
-	ui.fishGuiFS.hide()
+	;
+	guiVis(ui.fishGuiFS,false)
+	
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
 	;winMove(x+300,y+30,1280,720,ui.game)
 	winMove(x+300,y+30,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
 	guiVis(ui.fishGui,true)
+	ui.fishGui.show("w1584 h816")
 	ui.noFSbutton.opt("hidden")
+	try
+		ui.logGui.hide()
 	;winSetTransparent(0,ui.fishGuiFS)
-	
+	click()
 }
 
 
@@ -542,7 +572,7 @@ while tmp.h < 40 {
 	; ui.statAfkDurationLabelfS := ui.fishGuiFS.addText("xs-333 y+0 right section w100 r1 backgroundTrans c" ui.fontColor[3],"AFK Duration: ")
 	; ui.statAfkDurationFS := ui.fishGuiFS.addText("x+0 ys w60 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
 	
-	; ui.statReelSpeedLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Speed: ")
+; ui.statReelSpeedLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Speed: ")
 	; ui.statReelSpeedFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
 	
 ; ui.viewLogFS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
@@ -701,11 +731,10 @@ WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
 				if !ui.fullscreen {
 					try
 						winMove(x+(301*(a_screenDpi/96)),y+(31*(a_screenDpi/96)),,,ui.game)
-		
 					try
 						winMove(x+1101,y+753,,,ui.disabledGui) 
 					try
-						winMove(x+427,y+762,,,ui.editProfileGui)		
+						winMove(x+427,y+762,,,ui.editProfileGui)
 				} else {
 				winMove(0,0,a_screenWidth,a_screenHeight-30,ui.fishGui)
 				winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)

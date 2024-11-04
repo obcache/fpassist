@@ -15,18 +15,15 @@ startButtonClicked(*) {
 }
 
 singleCast(*) {
- 	ui.cancelOperation := true
-	ui.autoFish := false
-	autoFishStop()
-	ui.mode:=1
-	setTimer () => autoFishStart(ui.runCount+=1,"cast"),-100
+	ui.mode:="cast"
+	setTimer () => autoFishStart("cast"),-100
 	return
 }
 
 singleReel(*) {
 	ui.cancelOperation := false
 	ui.mode:=4
-	setTimer () => autoFishStart(ui.runCount+=1,"reelStop"),-100
+	setTimer () => autoFishStart("reelStop"),-100
 	return
 }
 
@@ -34,7 +31,7 @@ singleRetrieve(*) {
 	ui.cancelOperation := false
 	autoFishStop()
 	ui.mode:=2
-	setTimer () => autoFishStart(ui.runCount+=1,"retrieve"),-100
+	setTimer () => autoFishStart("retrieve"),-100
 }
 
 castLengthChanged(*) {
@@ -188,7 +185,7 @@ deleteProfileName(*) {
 			cfg.twitchFreq.removeAt(cfg.profileSelected)
 		try
 			cfg.stopFreq.removeAt(cfg.profileSelected)
-		try
+			try
 			cfg.dragLevel.removeAt(cfg.profileSelected)
 		try
 			cfg.reelSpeed.removeAt(cfg.profileSelected)

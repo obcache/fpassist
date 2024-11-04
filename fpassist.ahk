@@ -1,7 +1,9 @@
-A_FileVersion := "1.3.1.8"
+A_FileVersion := "1.3.2.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
+#maxThreadsPerHotkey 3
+
 persistent()	
 setWorkingDir(a_scriptDir)
 DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
@@ -38,9 +40,6 @@ createGui()
 createGuiFS()
 winActivate(ui.game)
 
-;winGetPos(&tX,&tY,&tW,&tH,ui.game)
-;mouseMove(tW/2,tH/2)
-;setTimer () => detectPrompts(1),10000
 onExit(exitFunc)
 
 hotIfWinActive(ui.game)
@@ -69,7 +68,7 @@ ui.fullscreen := false
 
 
 isEnabled(*) {
-		if ui.enabled && winActive(ui.game) 
+		if ui.enabled && winActive(ui.game) && !ui.fullscreen
 			return 1
 		else
 			return 0
@@ -83,20 +82,17 @@ isEnabledFS(*) {
 }
 
 hotifWinActive(ui.game)
-	hotKey("Home",appReload)
-hotIf()
-	
-hotIf(isEnabled)
-	hotkey(ui.reelKey,singleReel)
-	hotKey(ui.startKey,startHotkey)
+	hotKey(ui.exitKey,cleanExit)
+	hotKey(ui.reloadKey,appReload)
 	hotKey(ui.startKeyMouse,startHotkey)
 	hotKey(ui.stopKeyMouse,autoFishStop)
-	hotKey(ui.reloadKey,appReload)
-	hotKey(ui.castKey,singleCast)
-	hotKey(ui.retrieveKey,singleRetrieve)
-	hotkey(ui.cancelKey,autoFishStop)
-	hotKey(ui.exitKey,cleanExit)
+	hotkey("+" ui.cancelKey,autoFishStop)
+	hotkey("+" ui.reelKey,singleReel)
+	hotKey("+" ui.startKey,startHotkey)
+	hotKey("+" ui.castKey,singleCast)
+	hotKey("+" ui.retrieveKey,singleRetrieve)
 	hotKey("F11",toggleFS)
+	hotKey("Home",appReload)
 	hotKey("^End",rodsIn)
 	hotKey("^a",turnLeft)
 	hotKey("^d",turnRight)
@@ -106,20 +102,7 @@ hotIf(isEnabled)
 	~s:: {
 		setTimer(throttleForward,0)
 	}
-hotif()
-
-hotIf(isEnabledFS)
-	hotkey("+" ui.reelKey,singleReel)
-	hotKey("+" ui.startKey,startHotkey)
-	hotKey(ui.startKeyMouse,startHotkey)
-	hotKey(ui.stopKeyMouse,autoFishStop)
-	hotKey(ui.reloadKey,appReload)
-	hotKey("+" ui.castKey,singleCast)
-	hotKey("+" ui.retrieveKey,singleRetrieve)
-	hotkey("+" ui.cancelKey,autoFishStop)
-	hotKey(ui.exitKey,cleanExit)
-	hotKey("F11",toggleFS)
-hotif()
+hotIf()
 
 throttleForward(*) {
 	send("{w down}")
@@ -203,22 +186,21 @@ autoFishRestart(*) {
 }
 
 this:=object()
-autoFishStart(runCount,mode:="cast",*) {
-	this.runCount := runCount
+autoFishStart(mode:="cast",*) {
+	ui.autoFish:=true
 	ui.mode:=mode
+	ui.reeledIn:=reeledIn()
+	setTimer(updateAfkTime,1000)
+	log("STARTING: AFK",1,"STARTED: AFK")
+	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
 	if mode=="reelStop" {
 		reelIn(1)
 		return
 	}
-	
-
-	log("STARTING: AFK",1,"STARTED: AFK")
-	setTimer(updateAfkTime,1000)
-	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
-	ui.autoFish 				:= true
-	ui.reeledIn:=reeledIn()
-	ui.cycleAFK := false
 	panelMode("afk")
+	panelMode("cast")
+	resetKeyStates()
+
 	ui.FishCaughtFS.opt("-hidden")
 	ui.fishCaughtLabelFS.opt("-hidden")
 	ui.fishCaughtLabel2FS.opt("-hidden")
@@ -228,18 +210,19 @@ autoFishStart(runCount,mode:="cast",*) {
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
-	resetKeyStates()
-	while ui.autoFish {
+
+	while ui.autoFish && ui.mode!="off" && !isHooked() {
 		;detectPrompts(1)
 		(sleep500(2,0)) ? exit : 0
 		switch ui.mode {
 			case "cast":
-				if !reeledIn() {
-					reelIn()
-				sleep(3000)
-				} 
-				if reeledIn()
+				if reeledIn() {
 					cast(1)
+				} else {
+					ui.mode:="reel"
+					reelIn(1)
+					continue
+				} 
 				ui.mode:="retrieve"
 			case "retrieve":
 				if !reeledIn()
@@ -295,8 +278,6 @@ checkPixel(x,y,targetColor) {
 
 
 calibrate(*) {
-	if ui.runCount > this.runCount
-	return
 	modeHeader("Calibrate")
 	if !ui.autoFish
 		return
@@ -315,14 +296,12 @@ calibrate(*) {
 	}
 	if !ui.autoFish
 		return
-	if ui.runCount > this.runCount
-		return
+
 	
 	log("Calibrate: Reel Speed",1)
 	if !ui.autoFish
 		return
-	if ui.runCount > this.runCount
-		return
+
 	loop 6 {
 		winWait("ahk_exe fishingPlanet.exe")
 		sendNice("{click wheelDown}")
@@ -330,8 +309,7 @@ calibrate(*) {
 	}	 
 	if !ui.autoFish
 		return
-	if ui.runCount > this.runCount
-		return
+
 	loop cfg.reelSpeed[cfg.profileSelected] {
 		sendNice("{click wheelUp}") 
 		sleep(50)
@@ -342,35 +320,24 @@ calibrate(*) {
 }
 
 cast(isAFK:=true,*) {
-	panelMode("cast")
-	if !ui.autoFish || ui.mode != "cast"
+	if !ui.autoFish || ui.mode!="Cast"
 		return
-	if ui.runCount > this.runCount
-		return
-	if cfg.boatEnabled[cfg.profileSelected] {
-		log("Boat: Cast Rod #1",1)
-		modeHeader("Boat")
-		ui.castButton.text:="Boat"
-		boatRotation()	
-		ui.castButton.text:="Cast"
-		return
-	}
+
+
 	sleep(1500)
-	if !ui.autoFish
-		return
-	if ui.runCount > this.runCount
-		return
-	modeHeader("Cast")
+
+
 	log("Cast: Preparing",1,"Cast: Prepared")
 	ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
-	if !ui.autoFish || ui.mode != "cast"
+	if !ui.autoFish || ui.mode!="Cast"
 		return
-	sleep(4500)
-	;sendIfWinActive("{backspace}",ui.game,true)
+	sleep500(5)
+	if !ui.autoFish || ui.mode!="Cast"
+		return
+	sleep500(5)
+	
 	errorLevel := sleep500(6)
-	if !ui.autoFish || ui.mode != "cast"
-		return
-	if ui.runCount > this.runCount
+	if !ui.autoFish || ui.mode!="Cast"
 		return
 
 	loop 10 {
@@ -383,7 +350,7 @@ cast(isAFK:=true,*) {
 		if timeout == 30 {
 			log("Retrieve: Timed Out Reeling In",2)
 			log("Retrieve: Stopping AFK",2)
-			autoFishStop()
+			setTimer () => autoFishStop(),-100
 			return
 		}
 	}
@@ -398,8 +365,7 @@ cast(isAFK:=true,*) {
 	;setTimer(calibrate,-100)
 	if !ui.autoFish || ui.mode != "cast"
 		return
-	if ui.runCount > this.runCount
-		return
+
 
 	log("Wait: Lure In-Flight",1)
 	loop cfg.castTime[cfg.profileSelected] {
@@ -408,8 +374,7 @@ cast(isAFK:=true,*) {
 	log("Wait: Lure Sinking",1)
 	if !ui.autoFish || ui.mode != "cast"
 		return
-	if ui.runCount > this.runCount
-		return
+
 
 	loop cfg.sinkTime[cfg.profileSelected] {
 		sleep500(2)
@@ -420,8 +385,8 @@ cast(isAFK:=true,*) {
 	sendNice("{space up}")
 	sleep(150)
 	;setTimer () => reelIn(),-30000
-	if !ui.autoFish || ui.mode != "cast"
-		return
+	setTimer () => retrieve(1),-100
+	
 }
 
 boatRotation(*) {
@@ -477,7 +442,7 @@ boatRotation(*) {
 		log("Boat: Picking up Rod 2",1)
 		send("{shift down}{1}{shift up}")
 		sleep(2000)
-		while ui.autoFish && !isHooked() && ui.runCount == this.runCount {
+		while ui.autoFish && !isHooked() {
 			sleep(500)
 			if a_index > 40
 				break
@@ -1032,7 +997,7 @@ modeHeader(mode,debugLevel:=1) {
 
 
 	log("STARTING: " strUpper(ui.mode),debugLevel,"STARTED: " strUpper(ui.mode))
-	log("Ready",debugLevel,"••••••••••••••••••••••••••••••••••••••")
+	log("Ready",debugLevel,"••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
 	ui.lastMode := ui.mode
 }
 
