@@ -206,8 +206,19 @@ createGui() {
 	ui.fishLogHeaderOutline3 := ui.fishGui.addText("x3 y3 w294 h26 background" ui.bgColor[2])
 	ui.fishLogOutline := ui.fishGui.addText("x1 y32 w298 h687 background" ui.bgColor[3])
 	ui.fishLogOutline2 := ui.fishGui.addText("x2 y33 w296 h685 background" ui.bgColor[4])
-	ui.fishLogHeaderText := ui.fishGui.addText("x40 y3 w300 h28 c" ui.fontColor[5] " backgroundTrans","Activity")
+	ui.fishLogHeaderText := ui.fishGui.addText("x38 y3 w300 h28 c" ui.fontColor[5] " backgroundTrans","Activity")
 	ui.fishLogHeaderText.setFont("s14 q5 c" ui.fontColor[2],"Bold")
+	
+	ui.fishPicFolder := ui.fishGui.addPicture("x160 y0 w30 h30 backgroundTrans","./img/button_folder.png")
+	ui.fishPicFolderLabel := ui.fishGui.addText("x135 y4 w26 h26 backgroundTrans c" ui.fontColor[2],"Fish")
+	ui.fishPicFolderLabel.setFont("s10 q5","calibri")
+	ui.fishPicFolderLabel2 := ui.fishGui.addText("x135 y13 w26 h26 backgroundTrans c" ui.fontColor[2],"Pics")
+	ui.fishPicFolderLabel2.setFont("s10 q5","calibri")
+	ui.fishPicFolder.onEvent("click",openFishPicFolder)
+	openFishPicFolder(*) {
+		folderPath:=a_MyDocuments "/fpassist/fishPics/"
+		run("c:\windows\explorer.exe " a_scriptDir "\fishPics")
+	}
 	ui.fishLogCountLabel := ui.fishGui.addText("x212 y4 w40 h25 backgroundTrans right c" ui.fontColor[2]," Fish")
 	ui.fishLogCountLabel.setFont("s10 q5","Helvetica")
 	ui.fishLogCountLabel2 := ui.fishGui.addText("x212 y12 w40 h25 backgroundTrans right c" ui.fontColor[2],"Count")
