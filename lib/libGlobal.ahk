@@ -406,6 +406,8 @@ install() {
 			fileInstall("./Img/button_edit.png",installDir "/img/button_edit.png",1)
 			fileInstall("./img/button_arrowLeft.png",installDir "/img/button_arrowLeft.png",1)
 			fileInstall("./img/button_arrowRight.png",installDir "/img/button_arrowRight.png",1)
+			fileInstall("./img/button_arrowLeft_knot.png",installDir "/img/button_arrowLeft_knot.png",1)
+			fileInstall("./img/button_arrowRight_knot.png",installDir "/img/button_arrowRight_knot.png",1)
 			fileInstall("./img/icon_cast.png",installDir "/img/icon_cast.png",1)
 			fileInstall("./img/icon_cast_on.png",installDir "/img/icon_cast_on.png",1)
 			fileInstall("./img/icon_retrieve_on.png",installDir "/img/icon_retrieve_on.png",1)

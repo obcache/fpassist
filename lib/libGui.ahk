@@ -216,7 +216,7 @@ createGui() {
 	ui.fishPicFolderLabel2.setFont("s10 q5","Helvetica")
 	
 	
-	ui.fishPicFolder := ui.fishGui.addPicture("x188 y3 w26 h26 backgroundTrans","./img/button_folder.png")
+	ui.fishPicFolder := ui.fishGui.addPicture("x188 y3 w24 h26 backgroundTrans","./img/button_folder.png")
 	ui.fishPicFolderLabel := ui.fishGui.addText("x155 y5 w46 h26 backgroundTrans c" ui.fontColor[2],"Catch")
 	ui.fishPicFolderLabel.setFont("s9 q5","Helvetica")
 	ui.fishPicFolderLabel2 := ui.fishGui.addText("x146 y13 w46 h26 backgroundTrans c" ui.fontColor[2],"Photos")
