@@ -206,31 +206,36 @@ createGui() {
 	ui.fishLogHeaderOutline3 := ui.fishGui.addText("x3 y3 w294 h26 background" ui.bgColor[2])
 	ui.fishLogOutline := ui.fishGui.addText("x1 y32 w298 h687 background" ui.bgColor[3])
 	ui.fishLogOutline2 := ui.fishGui.addText("x2 y33 w296 h685 background" ui.bgColor[4])
-	ui.fishLogHeaderText := ui.fishGui.addText("x38 y3 w300 h28 c" ui.fontColor[5] " backgroundTrans","Activity")
-	ui.fishLogHeaderText.setFont("s14 q5 c" ui.fontColor[2],"Bold")
+	ui.fishLogHeaderText := ui.fishGui.addText("x5 y3 w300 h28 c" ui.fontColor[5] " backgroundTrans","Activity")
+	ui.fishLogHeaderText.setFont("s17 q5 c" ui.fontColor[2],"Impact")
+	ui.fishLogViewerButton:=ui.fishGui.addPicture("x119 y5 w22 h22 background" ui.bgColor[2],"./img/button_popout.png")
+	ui.fishLogViewerButton.onEvent("click",launchLogViewer)
+	ui.fishPicFolderLabel := ui.fishGui.addText("x83 y5 w46 h26 backgroundTrans c" ui.fontColor[2],"Activity")
+	ui.fishPicFolderLabel.setFont("s9 q5","Helvetica")
+	ui.fishPicFolderLabel2 := ui.fishGui.addText("x76 y13 w46 h26 backgroundTrans c" ui.fontColor[2],"Monitor")
+	ui.fishPicFolderLabel2.setFont("s10 q5","Helvetica")
 	
-	ui.fishPicFolder := ui.fishGui.addPicture("x160 y0 w30 h30 backgroundTrans","./img/button_folder.png")
-	ui.fishPicFolderLabel := ui.fishGui.addText("x135 y4 w26 h26 backgroundTrans c" ui.fontColor[2],"Fish")
-	ui.fishPicFolderLabel.setFont("s10 q5","calibri")
-	ui.fishPicFolderLabel2 := ui.fishGui.addText("x135 y13 w26 h26 backgroundTrans c" ui.fontColor[2],"Pics")
-	ui.fishPicFolderLabel2.setFont("s10 q5","calibri")
+	
+	ui.fishPicFolder := ui.fishGui.addPicture("x188 y3 w26 h26 backgroundTrans","./img/button_folder.png")
+	ui.fishPicFolderLabel := ui.fishGui.addText("x155 y5 w46 h26 backgroundTrans c" ui.fontColor[2],"Catch")
+	ui.fishPicFolderLabel.setFont("s9 q5","Helvetica")
+	ui.fishPicFolderLabel2 := ui.fishGui.addText("x146 y13 w46 h26 backgroundTrans c" ui.fontColor[2],"Photos")
+	ui.fishPicFolderLabel2.setFont("s10 q5","Helvetica")
 	ui.fishPicFolder.onEvent("click",openFishPicFolder)
 	openFishPicFolder(*) {
 		folderPath:=a_MyDocuments "/fpassist/fishPics/"
 		run("c:\windows\explorer.exe " a_scriptDir "\fishPics")
 	}
-	ui.fishLogCountLabel := ui.fishGui.addText("x212 y4 w40 h25 backgroundTrans right c" ui.fontColor[2]," Fish")
-	ui.fishLogCountLabel.setFont("s10 q5","Helvetica")
-	ui.fishLogCountLabel2 := ui.fishGui.addText("x212 y12 w40 h25 backgroundTrans right c" ui.fontColor[2],"Count")
+	ui.fishLogCountLabel := ui.fishGui.addText("x213 y5 w40 h25 backgroundTrans right c" ui.fontColor[2]," Fish")
+	ui.fishLogCountLabel.setFont("s9 q5","Helvetica")
+	ui.fishLogCountLabel2 := ui.fishGui.addText("x213 y13 w40 h25 backgroundTrans right c" ui.fontColor[2],"Count")
 	ui.fishLogCountLabel2.setFont("s10 q5","Helvetica")
-	ui.fishLogCount := ui.fishGui.addText("x255 y2 w40 h30 backgroundTrans c" ui.fontColor[2],"000")
+	ui.fishLogCount := ui.fishGui.addText("x254 y2 w40 h30 backgroundTrans c" ui.fontColor[2],"000")
 	ui.fishLogCount.setFont("s18 q5","Impact") 
 	ui.fishLog := ui.fishGui.addText("x2 y34 w296 h680 background" ui.bgColor[1])
 	ui.fishLogText := ui.fishGui.addListbox("readOnly x3 y35 w294 h683 -wrap 0x2000 0x100 -E0x200 background" ui.bgColor[4],ui.fishLogArr)
 	ui.fishLogText.setFont("s11 q5 c" ui.fontColor[2])
 	ui.fishLogText.onEvent("DoubleClick",openFishPic)
-	ui.fishLogViewerButton:=ui.fishGui.addPicture("x5 y3 w25 h25 background" ui.bgColor[2],"./img/button_popout.png")
-	ui.fishLogViewerButton.onEvent("click",launchLogViewer)
 		
 	launchLogViewer(fullscreen,*) {
 		static launchLogState:=false
@@ -266,7 +271,7 @@ createGui() {
 	ui.fishLogAfkTimeLabel.setFont("s16 q5","Arial")
 	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x751 y707 w80 h40 c" ui.trimFontColor[6] " backgroundTrans","Timer")
 	ui.fishLogAfkTimeLabel2.setFont("s19 q5","Arial")
-	ui.fishLogAfkTime := ui.fishGui.addText("hidden 835 y688 w200 h60 c" ui.trimFontColor[6] " backgroundTrans","00:00:00")
+	ui.fishLogAfkTime := ui.fishGui.addText("hidden x835 y688 w200 h60 c" ui.trimFontColor[6] " backgroundTrans","00:00:00")
 	ui.fishLogAfkTime.setFont("s35 q5","Arial")
 	ui.bigFishCaught := ui.fishGui.addText("hidden x1160 y666 w160 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}","000"))
 	ui.bigFishCaught.setFont("s54 q5")
@@ -297,7 +302,15 @@ createGui() {
 	ui.fishGui.addText("x0 y0 w1583 h1 background" ui.bgColor[3])
 	ui.fishGui.show("x" x-300 " y" y+-30 " w1584 h816 noActivate")
 	ui.fishLogAfkTime.text := "00:00:00"
+	ui.disabledGui := gui()
+	ui.disabledGui.opt("-caption -border toolWindow owner" ui.fishGui.hwnd)
+	ui.disabledGui.backColor := ui.bgColor[3]
+	ui.disabledGui.addText("x1 y1 w448 h58 background353535")
+	guiVis(ui.disabledGui,false)
+	ui.disabledGui.show("x1102 y754 w450 h60 noActivate")
 	loadScreen(false)	
+	
+	
 }
 
 	openFishPic(listBox:=ui.fishLogText,val2:="",*) {
@@ -336,9 +349,10 @@ logViewer(*) {
 		closeLog(*) {
 			ui.logGui.hide()
 		}
-		ui.logLV := ui.logGui.addListview("x0 y30 w600 h800 -hdr background" ui.bgColor[4] " c" ui.fontColor[3],["Activity"])
+		ui.logLV := ui.logGui.addListview("x0 y30 w600 h795 -hdr background" ui.bgColor[4] " c" ui.fontColor[3],["Activity"])
 		ui.logLV.setFont("s12","calibri")
 		ui.logLV.onEvent("DoubleClick",openFishPic)
+
 		guiVis(ui.logGui,false)
 		winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
 		ui.logGui.show("x" tX+tW " y" tY " w600 h780")
@@ -449,10 +463,11 @@ createGuiFS(*) {
 	
 	;ui.fishGuiFsBg.show("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20)
 	;ui.iconFsBg := ui.fishGuiFS.addText("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20 " background" ui.bgColor[2])
-	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+10 " y" ui.fsIcons.y-40 " w30 h32 backgroundTrans","./img/button_arrowLeft.png")
-	ui.profileSelectedFS := ui.fishGuiFS.addText("x" ui.fsIcons.x+38 " y" ui.fsIcons.y-39 " w" ui.fsIcons.w*3+60 " h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
+	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x-35 " y" ui.fsIcons.y-45 " w30 h40 backgroundTrans","./img/button_arrowLeft_knot.png")
+	ui.profileSelectedFsBorder := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y-45 " w" ui.fsIcons.w*3+130 " h40 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
+	ui.profileSelectedFS := ui.fishGuiFS.addText("x" ui.fsIcons.x+10 " y" ui.fsIcons.y-40 " w" ui.fsIcons.w*3+114 " h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
 	ui.profileSelectedFS.setFont("s19")
-	ui.profileNextFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3+95) " y" ui.fsIcons.y-40 " w30 h32 backgroundTrans","./img/button_arrowRight.png")
+	ui.profileNextFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3+135) " y" ui.fsIcons.y-45 " w32 h40 backgroundTrans","./img/button_arrowRight_knot.png")
 	ui.profilePrevFS.onEvent("click",profileLArrowClicked)
 	ui.profileNextFS.onEvent("click",profileRArrowClicked)
 	ui.castIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")

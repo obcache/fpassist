@@ -9,29 +9,27 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) { 
-	ui.cancelOperation := false
-	setTime () => autoFishStart(ui.runCount+=1),-100
+	autoFishStart()
 	return
 }
 
+stopButtonClicked(*) {
+	autoFishStop()
+}
+
 singleCast(*) {
-	ui.mode:="cast"
 	setTimer () => autoFishStart("cast"),-100
 	return
 }
 
 singleReel(*) {
-	ui.cancelOperation := false
-	ui.mode:=4
 	setTimer () => autoFishStart("reelStop"),-100
 	return
 }
 
 singleRetrieve(*) {
-	ui.cancelOperation := false
-	autoFishStop()
-	ui.mode:=2
 	setTimer () => autoFishStart("retrieve"),-100
+	return
 }
 
 castLengthChanged(*) {
@@ -95,7 +93,7 @@ toggleEnabled(*) {
 				ui.toggleEnabledFS.value:="./img/toggle_on.png"
 			} else {
 				ui.enableButtonToggle.value := "./img/toggle_on.png"
-				ui.disabledGui.destroy()
+				guiVis(ui.disabledGui,true)
 			}
 		}
 		toggleOff(*) {
@@ -103,12 +101,7 @@ toggleEnabled(*) {
 				ui.toggleEnabledFS.value:="./img/toggle_off.png"
 			} else {
 				ui.enableButtonToggle.value := "./img/toggle_off.png"
-				ui.disabledGui := gui()
-				ui.disabledGui.opt("-caption -border toolWindow owner" ui.fishGui.hwnd)
-				ui.disabledGui.backColor := ui.bgColor[3]
-				ui.disabledGui.addText("x1 y1 w448 h58 background353535")
-				winSetTransparent(225,ui.disabledGui)
-				ui.disabledGui.show("x1102 y754 w450 h60 noActivate")
+				guiVis(ui.disabledGui,false)
 			}
 		}
 }

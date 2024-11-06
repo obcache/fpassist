@@ -19,7 +19,7 @@ panelMode(mode) {
 	ui.retrieveIconFS.value:="./img/icon_retrieve.png"
 	ui.reelIconFS.value:="./img/icon_reel.png"
 
-if ui.autoFish
+	if ui.autoFish
 		startButtonOn()
 	switch mode {
 		case "cast":
@@ -27,8 +27,12 @@ if ui.autoFish
 				ui.castIconFS.value:="./img/icon_cast_on.png"
 			}
 			castButtonOn()
+			startButtonOn()
+			cancelButtonOn()
 		case "land":
 			retrieveButtonOn()
+			startButtonOn()
+			cancelButtonOn()
 			ui.reelIconFS.value:="./img/icon_reel_on.png"
 			flashretrieve()
 			setTimer(flashretrieve,1500)
@@ -36,11 +40,15 @@ if ui.autoFish
 			try {
 				ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
 			}
+			startButtonOn()
+			cancelButtonOn()
 			retrieveButtonOn()
 		case "reel":
 			try {
 				ui.reelIconFS.value:="./img/icon_reel_on.png"
 			}	
+			startButtonOn()
+			cancelButtonOn()
 			reelButtonOn()
 		case "afk":
 			startButtonOn()
@@ -523,12 +531,13 @@ log(msg,debug:=0,msgHistory:=msg) {
 			}
 	}
 	
+	ui.logLV.insert(1,,
+	(msg=="Ready")
+		? substr("_________________________________________________________________________",1,70)
+		: formatTime(,"[hh:mm:ss] ") msg)
 	if ui.lastMsg {
 			ui.fishStatusText.text := msg
-			ui.logLV.insert(1,,
-				(ui.lastMsg=="Ready")
-					? "_________________________________________________________________________"
-					: formatTime(,"[hh:mm:ss] ") ui.lastMsg)
+
 			ui.fishLogArr.push(
 				(ui.lastMsg=="Ready") 
 					? "——————————————————————————————————————" 
