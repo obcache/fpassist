@@ -394,6 +394,7 @@ install() {
 			}
 			fileInstall("./Img/fp_splash.png",installDir "/img/fp_splash.png",1)
 			fileInstall("./img/button_folder.png",installDir "/img/button_folder.png",1)
+			fileInstall("./img/profileFS_border.png",installDir "/img/profileFS_border.png",1)
 			fileInstall("./Img/button_search.png",installDir "/img/button_search.png",1)
 			fileInstall("./Img/button_popout.png",installDir "/img/button_popout.png",1) 
 			fileInstall("./Img/button_nofs.png",installDir "/img/button_nofs.png",1) 
