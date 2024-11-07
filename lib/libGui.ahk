@@ -17,10 +17,12 @@ createGui() {
 	ui.fishGui.backColor := ui.bgColor[4]
 	ui.fishGui.color := ui.fontColor[2]
 	winSetTransColor("010203",ui.fishGui.hwnd)
+	ui.fishGui.addText("x0 y0 w1583 h816 background" ui.bgColor[6])
+	ui.fishGui.addText("x1 y2 w1581 h814 background" ui.bgColor[1])
 	ui.appFrame := ui.fishGui.addText("x300 y32 w1281 h720 c" ui.fontColor[3] " background" ui.bgColor[3])
 	ui.appFrame2 := ui.fishGui.addText("x301 y33 w1279 h718 c" ui.fontColor[1] " background" ui.bgColor[2])
 	ui.fpBg := ui.fishGui.addText("x302 y34 w1277 h716 c010203 background010203")
-	ui.titleBarOutline := ui.fishGui.addText("x299 y0 w1282 h30 background" ui.bgColor[1])
+	ui.titleBarOutline := ui.fishGui.addText("x299 y2 w1282 h30 background" ui.bgColor[1])
 	ui.titleBarOutline2 := ui.fishGui.addText("x300 y1 w1281 h30 background" ui.bgColor[3])
 	ui.titleBarOutline3 := ui.fishGui.addText("x301 y2 w1279 h28 background" ui.bgColor[1])
 	ui.titleBarOutline4 := ui.fishGui.addText("x302 y3 w1277 h26 background" ui.bgColor[2])
@@ -86,19 +88,20 @@ createGui() {
 	slider("castTime",,236,755,20,50,"0-6",1,1,"center","Cast","vertical","b")
 	slider("sinkTime",,263,755,20,50,"0-20",1,1,"center","Sink","vertical","b")
 	slider("recastTime",,157,778,80,15,"1-20",1,1,"center","Recast",,"b","11")
-	slider("reelFreq",,0,0,0,0,"0-10",1,10,"center","Reel")
+	slider("reelFreq",,1900,0,0,0,"0-10",1,10,"center","Reel")
 	ui.reelFreq.value := 10
 	ui.reelFreq.opt("hidden")
-	ui.BoatEnabled := ui.fishGui.addCheckBox("x100 y797 w10 center h15")
+
+	ui.BoatEnabled := ui.fishGui.addCheckBox(" x100 y797 w10 h15",cfg.boatEnabled[cfg.profileSelected])
 	ui.BoatEnabled.onEvent("click",toggledBoat)
-	ui.BoatEnabledLabel := ui.fishGui.addText("x75 y797 w40 h15 backgroundTrans c" ui.fontColor[4],"Boat")
-	ui.BoatEnabledLabel.setFont("s8")	
-	
+	ui.BoatEnabledLabel := ui.fishGui.addText("x75 y797 w30 h15 backgroundTrans c" ui.fontColor[4],"Boat")
+	ui.BoatEnabledLabel.setFont("s8")
+
 	ui.floatEnabled := ui.fishGui.addCheckBox("x116 y797 w10 center h15",cfg.floatEnabled[cfg.profileSelected])
 	ui.floatEnabled.onEvent("click",toggledFloat)
-	ui.floatEnabledLabel := ui.fishGui.addText("x130 y797 w30 h15 backgroundTrans c" ui.fontColor[4],"Float")
+	ui.floatEnabledLabel := ui.fishGui.addText("x130 y797 w30 h15 c" ui.fontColor[4],"Float")
 	ui.floatEnabledLabel.setFont("s8")
-
+	
 	; ui.bgModeEnabled := ui.fishGui.addCheckBox("x381 y757 w12 h12 right")
 	; ui.bgModeEnabledLabel := ui.fishGui.addText("x328 y758 w50 h12 right backgroundTrans c" ui.fontColor[4],"Bg Mode")
 	; ui.bgModeEnabled.onEvent("click",bgModeChanged)
@@ -201,11 +204,11 @@ createGui() {
 	ui.enableButtonHotkey.setFont("s6","Small Fonts")
 	ui.enableButtonToggle.onEvent("click",toggleEnabled)
 	
-	ui.fishLogHeaderOutline := ui.fishGui.addText("x1 y1 w298 h30 background" ui.bgColor[3])
-	ui.fishLogHeaderOutline2 := ui.fishGui.addText("x2 y2 w296 h28 background" ui.bgColor[1])
-	ui.fishLogHeaderOutline3 := ui.fishGui.addText("x3 y3 w294 h26 background" ui.bgColor[2])
-	ui.fishLogOutline := ui.fishGui.addText("x1 y32 w298 h687 background" ui.bgColor[3])
-	ui.fishLogOutline2 := ui.fishGui.addText("x2 y33 w296 h685 background" ui.bgColor[4])
+	ui.fishLogHeaderOutline := ui.fishGui.addText("x2 y1 w297 h30 background" ui.bgColor[3])
+	ui.fishLogHeaderOutline2 := ui.fishGui.addText("x3 y2 w295 h28 background" ui.bgColor[1])
+	ui.fishLogHeaderOutline3 := ui.fishGui.addText("x5 y3 w292 h26 background" ui.bgColor[2])
+	ui.fishLogOutline := ui.fishGui.addText("x2 y32 w297 h689 background" ui.bgColor[3])
+	ui.fishLogOutline2 := ui.fishGui.addText("x3 y33 w295 h687 background" ui.bgColor[4])
 	ui.fishLogHeaderText := ui.fishGui.addText("x5 y3 w300 h28 c" ui.fontColor[5] " backgroundTrans","Activity")
 	ui.fishLogHeaderText.setFont("s17 q5 c" ui.fontColor[2],"Impact")
 	ui.fishLogViewerButton:=ui.fishGui.addPicture("x119 y5 w22 h22 background" ui.bgColor[2],"./img/button_popout.png")
@@ -232,8 +235,8 @@ createGui() {
 	ui.fishLogCountLabel2.setFont("s10 q5","Helvetica")
 	ui.fishLogCount := ui.fishGui.addText("x254 y2 w40 h30 backgroundTrans c" ui.fontColor[2],"000")
 	ui.fishLogCount.setFont("s18 q5","Impact") 
-	ui.fishLog := ui.fishGui.addText("x2 y34 w296 h680 background" ui.bgColor[1])
-	ui.fishLogText := ui.fishGui.addListbox("readOnly x3 y35 w294 h683 -wrap 0x2000 0x100 -E0x200 background" ui.bgColor[4],ui.fishLogArr)
+	ui.fishLog := ui.fishGui.addText("x4 y34 w292 h680 background" ui.bgColor[1])
+	ui.fishLogText := ui.fishGui.addListbox("readOnly x4 y31 w292 h688 -wrap 0x2000 0x100 -E0x200 background" ui.bgColor[4],ui.fishLogArr)
 	ui.fishLogText.setFont("s11 q5 c" ui.fontColor[2])
 	ui.fishLogText.onEvent("DoubleClick",openFishPic)
 		
@@ -244,7 +247,7 @@ createGui() {
 		showLogScreen(*) {
 			guiVis(ui.logGui,true)
 			winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
-			ui.logGui.show("x" tX+tW " y" tY " w600 h" tH)
+			ui.logGui.show("x" tX+tW+1 " y" tY " w600 h" tH)
 		}
 		hideLogScreen(*) {
 			guiVis(ui.logGui,false)
@@ -289,18 +292,18 @@ createGui() {
 	sleep(500)
 	ui.profileIcon.focus()
 	statPanel()
-	while ui.fishLogArr.length < 41 {
+	while ui.fishLogArr.length < 43 {
 		ui.fishLogArr.push("")
 		ui.fishLogText.delete()
 		ui.fishLogText.add(ui.fishLogArr)
-		ui.fishLogText.add([""])
+		;ui.fishLogText.add([""])
 	}
 
 	updateControls()
-	ui.fishGui.addText("x0 y814 w1583 h1 background" ui.bgColor[3])
-	ui.fishGui.addText("x1582 y0 w1 h814 background" ui.bgColor[3])
-	ui.fishGui.addText("x0 y0 w1583 h1 background" ui.bgColor[3])
-	ui.fishGui.show("x" x-300 " y" y+-30 " w1584 h816 noActivate")
+	ui.fishGui.addText("x1 y814 w1581 h1 background" ui.bgColor[6])
+	ui.fishGui.addText("x1580 y1 w1 h751 background" ui.bgColor[3])
+	ui.fishGui.addText("x1 y1 w1580 h1 background" ui.bgColor[3])
+	ui.fishGui.show("x" x-300 " y" y+-30 " w1583 h815 noActivate")
 	ui.fishLogAfkTime.text := "00:00:00"
 	ui.disabledGui := gui()
 	ui.disabledGui.opt("-caption -border toolWindow owner" ui.fishGui.hwnd)
@@ -310,7 +313,7 @@ createGui() {
 	ui.disabledGui.show("x1102 y754 w450 h60 noActivate")
 	loadScreen(false)	
 	
-	
+		
 }
 
 	openFishPic(listBox:=ui.fishLogText,val2:="",*) {
@@ -333,7 +336,8 @@ saveLog(*) {
 logViewer(*) {
 		ui.logGui:=gui()
 		ui.logGui.opt("-caption toolWindow owner" ui.fishGui.hwnd)
-		ui.logGui.backColor:="010203"
+		ui.logGui.backColor:=ui.bgColor[6]
+		ui.logGui.addText("x1 y1 w598 h820 background" ui.bgColor[1])
 		ui.logTitleBar := ui.logGui.addText("x0 y0 w540 h30 background" ui.bgColor[5])
 		ui.logTitleBar.onEvent("click",wm_lbuttonDown_callback)
 		ui.logTitleBarText := ui.logGui.addText("x7 y3 w520 h26 backgroundTrans c" ui.fontColor[4],"Fishing Log  (fpAssist v" a_fileVersion ")")
@@ -349,13 +353,18 @@ logViewer(*) {
 		closeLog(*) {
 			ui.logGui.hide()
 		}
-		ui.logLV := ui.logGui.addListview("x0 y30 w600 h795 -hdr background" ui.bgColor[4] " c" ui.fontColor[3],["Activity"])
-		ui.logLV.setFont("s12","calibri")
+		ui.logLV := ui.logGui.addListview("x0 y30 w598 h785 -hdr background" ui.bgColor[4] " c" ui.fontColor[1],["Activity"])
+		ui.logLV.setFont("s10 c" ui.fontColor[4],)
+		ui.logLV.modifyCol(1,580)
 		ui.logLV.onEvent("DoubleClick",openFishPic)
+		; ui.logFooterOutline := ui.logGui.addText("x1 y785 w598 h28 background" ui.bgColor[3])
+		; ui.logFooterOutline2 := ui.logGui.addText("x2 y786 w596 h28 background" ui.bgColor[1])
+		; ui.logFooterOutline3 := ui.logGui.addText("x3 y787 w594 h26 background" ui.bgColor[4])
+		; ui.logFooter := ui.logGui.addText("x3 y787 w594 h26 background" ui.bgColor[5]) ;61823A
 
 		guiVis(ui.logGui,false)
 		winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
-		ui.logGui.show("x" tX+tW " y" tY " w600 h780")
+		ui.logGui.show("x" tX+tW+8 " y" tY " w600 h840")
 	}
 	;ui.logClose.onEvent("click",launchLogViewer)
 
@@ -399,7 +408,7 @@ goFS(*) {
 			}
 		}
 		monitorGetWorkArea(rightMonitor,&mX,&mY,&mW,&mH)
-		ui.logGui.show("x" tX+tW " y" mY " w600 h" tH)
+		ui.logGui.show("x" tX+tW " y" mY " w600")
 	}
 	
 noFS(*) {

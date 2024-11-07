@@ -14,7 +14,7 @@ if (InStr(A_LineFile,A_ScriptFullPath))
 slider(name := random(1,999999),gui := ui.fishGui,x := 0,y := 0,w := 100,h := 20,range := 0-10,tickInterval := 1,default := 1,align := "center",label := "",orient := "",labelAlign := "r",fontSize := "9") {
 	ui.sliderList.push(name)
 	cfg.%name% := strSplit(iniRead(cfg.file,"Game",name,"1,1,1,1,1"),",")
-	ui.%name% := gui.addSlider("section v" name " x" x " y" y " w" w " h" h " tickInterval" tickInterval " " orient " range" range " " align " toolTip")
+	ui.%name% := gui.addSlider("section v" name " x" x " y" y " w" w " h" h " background" ui.bgColor[1] " tickInterval" tickInterval " " orient " range" range " " align " toolTip")
 	while cfg.profileSelected > cfg.%name%.length {
 		cfg.%name%.push(ui.%name%.value)
 	}

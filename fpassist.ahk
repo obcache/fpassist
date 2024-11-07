@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.2.6"
+A_FileVersion := "1.3.2.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -53,10 +53,10 @@ toggleReelFS(*) {
 	startReelFS()
 	
 	startReelFS(*) {
-		send("{space down}")
+		sendNice("{space down}")
 	}
 	stopReelFS(*) {
-		send("{space up}")
+		sendNice("{space up}")
 	}
 }
 
@@ -101,21 +101,21 @@ hotifWinActive(ui.game)
 hotIf()
 
 throttleForward(*) {
-	send("{w down}")
+	sendNice("{w down}")
 	sleep(750)
-	send("{w up}")
+	sendNice("{w up}")
 	sleep(500)
-	send("{s down}")
+	sendNice("{s down}")
 	sleep(750)
-	send("{s up}")
+	sendNice("{s up}")
 	sleep(500)
 }
 
 turnLeft(*) {
-	send("{a down}")
+	sendNice("{a down}")
 }
 turnRight(*) {
-	send("{d down}")
+	sendNice("{d down}")
 }
 toggleFS(*) {
 	(ui.isFS := !ui.isFS) ? goFS() : noFS()
@@ -147,10 +147,10 @@ autoFishStop(restart:="",*) {
 	setTimer(updateAfkTime,0)
 	ui.retrieveButton.text := "Retrie&ve"
 
-	send("{space up}")
-	send("{lshift up}")
-	send("{lbutton up}")
-	send("{rbutton up}")
+	sendNice("{space up}")
+	sendNice("{lshift up}")
+	sendNice("{lbutton up}")
+	sendNice("{rbutton up}")
 	 
 	ui.FishCaughtFS.opt("+hidden")
 	ui.fishCaughtLabelFS.opt("+hidden")
@@ -248,7 +248,7 @@ autoFishStart(mode:="",*) {
 	analyzeCatch()
 	sleep500(3)
 	checkKeepnet()
-	send("{LButton Up}{RButton Up}{space up}")
+	sendNice("{LButton Up}{RButton Up}{space up}")
 	ui.cycleAFK := true
 	panelMode("off")
 	log("AFK: Stopped",1)
@@ -389,45 +389,45 @@ cast(*) {
 }
 
 boatRotation(*) {
-	send("{1}")
+	sendNice("{1}")
 	sleep(2500)
-	send("{space down}")
+	sendNice("{space down}")
 	sleep(2000)
-	send("{space up}")
+	sendNice("{space up}")
 	sleep(8000)
 
-	send("{space}")
+	sendNice("{space}")
 	sleep(1500)
 	loop 12 
-		send("{-}")
+		sendNice("{-}")
 	loop cfg.dragLevel[cfg.profileSelected]
-		send("{+}")
+		sendNice("{+}")
 	sleep(1500)
 	log("Boat: Place Rod 1 in Holder",1)
-	send("{shift down}{1 down}")
+	sendNice("{shift down}{1 down}")
 	sleep(100)
-	send("{1 up}{shift up}")
+	sendNice("{1 up}{shift up}")
 	sleep(2000)
 	log("Boat: Switch to Rod 2",1)
-	send("{2}")
+	sendNice("{2}")
 	sleep(4500)
 	log("Boat: Cast Rod 2",1)
-	send("{space down}")
+	sendNice("{space down}")
 	sleep(2000)
-	send("{space up}")
+	sendNice("{space up}")
 	sleep(8000)
 	log("Boat: Closing Bail on Rod 2",1)
-	send("{space}")
+	sendNice("{space}")
 	sleep(1500)
 	log("Boat: Setting Drag on Rod 2",1)
 	loop 12 
-		send("{WheelDown}")
+		sendNice("{WheelDown}")
 	loop cfg.dragLevel[cfg.profileSelected]
-		send("{WheelUp}")
+		sendNice("{WheelUp}")
 	sleep(1500)
 
 	while ui.autoFish {
-		send("{shift down}{1}{shift up}")
+		sendNice("{shift down}{1}{shift up}")
 		sleep(2000)
 		while ui.autoFish && !isHooked() {
 			sleep(500)
@@ -435,11 +435,12 @@ boatRotation(*) {
 				break
 		}
 		if isHooked() {
+			sleep(1500)
 			landFish()
 			return
 		}
 		log("Boat: Picking up Rod 2",1)
-		send("{shift down}{1}{shift up}")
+		sendNice("{shift down}{1}{shift up}")
 		sleep(2000)
 		while ui.autoFish && !isHooked() {
 			sleep(500)
@@ -447,6 +448,7 @@ boatRotation(*) {
 				break
 		}
 		if isHooked() {
+			sleep(1500)
 			landFish()
 			return
 		}
@@ -472,6 +474,7 @@ retrieve(*) {
 			if isHooked() { 
 				winActivate(ui.game)
 				ui.retrieveButton.text := "Retrie&ve"
+				sleep(1500)
 				landFish()
 				return
 			} else
@@ -493,6 +496,7 @@ retrieve(*) {
 		while !reeledIn() && ui.mode == "retrieve" {
 			if isHooked() { 
 				winActivate(ui.game)
+				sleep(1500)
 				landFish()
 				return
 			}
@@ -516,6 +520,7 @@ retrieve(*) {
 						log("Retrieve: Twitch",1)
 							loop round(random(1,3)) {
 								if isHooked() {
+									sleep(1500)
 									landFish()
 									return
 								}
@@ -616,7 +621,7 @@ reelIn(*) {
 		return
 	sleep(1500)
 	loop 10 {
-		send("{l}")
+		sendNice("{l}")
 		sleep(200)
 	}		
 
@@ -733,9 +738,9 @@ checkKeepnet(*) {
 	&& round(thisColor) <= round(0xFFC300)+5000 {
 		autoFishStop()
 		log("Keepnet: Full",0)
-		send("{t down}")
+		sendNice("{t down}")
 		sleep500(1)
-		send("{t up}")
+		sendNice("{t up}")
 		sleep500(3)
 		mouseMove(620,590)
 		sleep500(1)
@@ -823,7 +828,7 @@ detectPrompts(logWork := false) {
 			(round(pixelGetColor(1396,77) > round(0xC1C2C2)-10000) &&
 			round(pixelGetColor(1396,77) < round(0xC1C2C2)+10000)) {
 				log("Detected: Ad Window",1)
-				send("{escape}")
+				sendNice("{escape}")
 				ui.popupFound := true
 		}
 		ui.adcloseButton := object()
@@ -836,10 +841,10 @@ detectPrompts(logWork := false) {
 		|| tmp.detectAdPixel == "0xFCFCFC"
 		|| tmp.detectAdPixel == "0xE1E1E0" {
 				log("Detected: Ad Window",1)
-				send("{escape down}")
+				sendNice("{escape down}")
 				log("Closing: Ad Window",1)
 				sleep(100)
-				send("{escape up}")
+				sendNice("{escape up}")
 				ui.popupFound := true
 		}
 			
@@ -932,23 +937,20 @@ if payload=="" {
 	} else { 
 		if winActive(gameWin) {
 			sendIfWinActive(payload,gameWin:=ui.game,true)
-			if tmp.beenPaused {
-				log("Game: Resuming",1,"Game: Resumed") 
-				tmp.beenPaused:=false
-			}
 		} else { 
-			tmp.beenPaused := true
 			log("Game: Pausing",1,"Game: Paused")
-			loop {
+			while !winActive(ui.game) {
 				sleep500(2)
 			}
+			log("Game: Resuming",1,"Game: Resumed") 
+			sendIfWinActive(payload,gameWin:=ui.game,true)
 		}
 	}
 }
 resetKeystates(*) {
-	send("{space up}")
-	send("{lbutton up}")
-	send("{rbutton up}")
+	sendNice("{space up}")
+	sendNice("{lbutton up}")
+	sendNice("{rbutton up}")
 }
 
 
@@ -1032,14 +1034,14 @@ hotIfWinActive(ui.game)
 		cfg.currentRod += 1
 		if cfg.currentRod > cfg.rodCount
 			cfg.currentRod := 1
-		send("{cfg.currentRod}")
+		sendNice("{cfg.currentRod}")
 	}
 	
 	^WheelUp:: {
 		cfg.currentRod -= 1
 		if cfg.currentRod < 1 
 			cfg.currentRod := cfg.rodCount
-		send("{cfg.currentRod}")
+		sendNice("{cfg.currentRod}")
 	}
 
 hotIf()

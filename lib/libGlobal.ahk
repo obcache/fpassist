@@ -540,7 +540,7 @@ log(msg,debug:=0,msgHistory:=msg) {
 		: formatTime(,"[hh:mm:ss] ") msg)
 	if ui.lastMsg {
 			ui.fishStatusText.text := msg
-
+			;ui.logFooter.text := msg
 			ui.fishLogArr.push(
 				(ui.lastMsg=="Ready") 
 					? "——————————————————————————————————————" 
@@ -548,6 +548,13 @@ log(msg,debug:=0,msgHistory:=msg) {
 			ui.fishLogArr.removeAt(1)
 			ui.fishLogText.delete()
 			ui.fishLogText.add(ui.fishLogArr)
+			ui.logLV.delete()
+			
+			for row in ui.fishLogArr {
+				if a_index > 5
+					ui.logLV.add(,substr(row,1,40))
+			}
+			ui.logLV.add(,substr(formatTime(,"[hh:mm:ss] ") msg,1,40))
 	}
 	
 	ui.lastMsg := msgHistory
