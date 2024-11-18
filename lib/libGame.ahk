@@ -9,25 +9,34 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) { 
+	if !ui.enabled
+		exit
 	autoFishStart()
 	return
 }
 
 stopButtonClicked(*) {
+	killAfk()
 	autoFishStop()
 }
 
 singleCast(*) {
+	if !ui.enabled
+		exit
 	setTimer () => autoFishStart("cast"),-100
 	return
 }
 
 singleReel(*) {
+	if !ui.enabled
+		exit
 	setTimer () => autoFishStart("reelStop"),-100
 	return
 }
 
 singleRetrieve(*) {
+	if !ui.enabled
+		exit
 	setTimer () => autoFishStart("retrieve"),-100
 	return
 }
@@ -91,7 +100,13 @@ toggleEnabled(*) {
 		toggleOn(*) {
 			if ui.fullscreen {
 				ui.toggleEnabledFS.value:="./img/toggle_on.png"
+				ui.toggleEnabledFSLabel.opt("hidden")
+				ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
+				ui.toggleEnabledFS.redraw()
+				for this_obj in ui.fsObjects 
+					this_obj.opt("-hidden")			
 			} else {
+			
 				ui.enableButtonToggle.value := "./img/toggle_on.png"
 				guiVis(ui.disabledGui,true)
 			}
@@ -99,6 +114,13 @@ toggleEnabled(*) {
 		toggleOff(*) {
 			if ui.fullscreen {
 				ui.toggleEnabledFS.value:="./img/toggle_off.png"
+				ui.toggleEnabledFSLabel.opt("-hidden")
+				for this_obj in ui.fsObjects 
+					this_obj.opt("hidden")
+				ui.toggleEnabledFS.move(a_screenWidth-50,,,)
+				ui.toggleEnabledFS.redraw()
+				killAfk()
+				;msgbox('here')
 			} else {
 				ui.enableButtonToggle.value := "./img/toggle_off.png"
 				guiVis(ui.disabledGui,false)

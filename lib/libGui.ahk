@@ -319,7 +319,7 @@ createGui() {
 	openFishPic(listBox:=ui.fishLogText,val2:="",*) {
 		if inStr(listbox.text,"Screenshot:") {
 			splitPath(listbox.text,&logFilename,,,,)
-			run(a_scriptDir "/fishPics/" logFilename)
+			run('"c:\windows\msedge.exe"' '"' a_scriptDir "/fishPics/" logFilename '"')
 		}
 	}
 
@@ -482,7 +482,11 @@ createGuiFS(*) {
 	ui.castIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
 	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsIcons.w+30 " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
 	ui.reelIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+((ui.fsIcons.w+30)*2) " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
+	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" a_screenwidth-60 " y" ui.fsIcons.y-27 " w60 backgroundTrans center","Caps`nLock`n`n`n`n'n`n`n`n`n`n`nfpAssist")
+	ui.toggleEnabledFSLabel.setFont("s10 cWhite Bold","Small Fonts")
 	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3)+90 " y" ui.fsIcons.y+5 " w40 h" ui.fsIcons.h-15 " backgroundTrans","./img/toggle_ON.png")
+	ui.fsObjects:=[ui.profilePrevFS,ui.profileSelectedFsBorder,ui.profileSelectedFS,ui.profileNextFS,ui.profilePrevFS,ui.castIconFS,ui.reelIconFS,ui.retrieveIconFS]
+	
 	; ui.castButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
 	; ui.castButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x+2 " y" ui.fsPanel.y+2 " w" ui.fsPanel.w-4 " h" ui.fsPanel.h-4 " background" ui.trimDarkColor[1])
 	; ui.castButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x+4 " y" ui.fsPanel.y " w" ui.fsPanel.w-4 " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Cast")
