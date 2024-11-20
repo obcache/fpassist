@@ -180,8 +180,8 @@ createGui() {
 	ui.cancelButton.setFont("s14 bold","Trebuchet MS")
 	ui.cancelButtonHotkey := ui.fishGui.addText("x+-121 ys-2 w40 h20 c" ui.trimDarkFontColor[2] " backgroundTrans","[Q]")
 	ui.cancelButtonHotkey.setFont("s9","Palatino Linotype")
-	ui.cancelButtonBg.onEvent("click",autoFishStop)
-	ui.cancelButton.onEvent("click",autoFishStop)
+	ui.cancelButtonBg.onEvent("click",stopAfk)
+	ui.cancelButton.onEvent("click",stopAfk)
 	drawButton(1457,753,94,19)
 	ui.reloadButtonBg := ui.fishGui.addText("x1458 y755 w92 h15 background" ui.trimDarkColor[1])
 	ui.reloadButton := ui.fishGui.addText("section x1469 center y751 w85 h19 c" ui.trimDarkFontColor[1] " backgroundTrans","Reload")
@@ -225,9 +225,12 @@ createGui() {
 	ui.fishPicFolderLabel2 := ui.fishGui.addText("x146 y13 w46 h26 backgroundTrans c" ui.fontColor[2],"Photos")
 	ui.fishPicFolderLabel2.setFont("s10 q5","Helvetica")
 	ui.fishPicFolder.onEvent("click",openFishPicFolder)
+	;msgBox('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' a_scriptDir '\fishPics"')
+	;run('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' a_scriptDir '\fishPics"')
 	openFishPicFolder(*) {
 		folderPath:=a_MyDocuments "/fpassist/fishPics/"
-		run("c:\windows\explorer.exe " a_scriptDir "\fishPics")
+		run('"C:\windows\explorer.exe" "' a_scriptDir '\fishPics"')
+		
 	}
 	ui.fishLogCountLabel := ui.fishGui.addText("x213 y5 w40 h25 backgroundTrans right c" ui.fontColor[2]," Fish")
 	ui.fishLogCountLabel.setFont("s9 q5","Helvetica")
@@ -316,13 +319,13 @@ createGui() {
 		
 }
 
-	openFishPic(listBox:=ui.fishLogText,val2:="",*) {
-		if inStr(listbox.text,"Screenshot:") {
-			splitPath(listbox.text,&logFilename,,,,)
-			run('"c:\windows\msedge.exe"' '"' a_scriptDir "/fishPics/" logFilename '"')
-		}
+openFishPic(listBox:=ui.fishLogText,val2:="",*) {
+	if inStr(listbox.text,"Screenshot:") {
+		catchPhoto:=subStr(listbox.text,13)
+		;msgBox('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' a_scriptDir '\fishPics\' logFilename '"')
+		run('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' catchPhoto '"')
 	}
-
+}
 
 saveLog(*) {
 			;msgBox('here')
@@ -393,8 +396,7 @@ goFS(*) {
 	; winSetTransparent(150,ui.fishGuiBg)
 	; ui.fishGuiBg.show("x95 y350 w360 h450 noactivate")
 }
-	showLog(*)
-	{
+	showLog(*) {
 		guiVis(ui.logGui,true)
 		winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
 		highestMx:=0
@@ -413,7 +415,7 @@ goFS(*) {
 	
 noFS(*) {
 	ui.fullscreen:=false
-	;reload()
+	
 	ui.hookedX:=1090
 	ui.hookedY:=510
 	ui.reeledInCoord1:=[1026,635]
@@ -421,7 +423,7 @@ noFS(*) {
 	ui.reeledInCoord3:=[1026,656]
 	ui.reeledInCoord4:=[1047,656]
 	ui.reeledInCoord5:=[1036,644]
-	;
+	
 	guiVis(ui.fishGuiFS,false)
 	
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
@@ -472,11 +474,11 @@ createGuiFS(*) {
 	
 	;ui.fishGuiFsBg.show("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20)
 	;ui.iconFsBg := ui.fishGuiFS.addText("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20 " background" ui.bgColor[2])
-	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x-35 " y" ui.fsIcons.y-45 " w30 h40 backgroundTrans","./img/button_arrowLeft_knot.png")
+	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x-35 " y" ui.fsIcons.y-44 " w30 h38 backgroundTrans","./img/button_arrowLeft_knot.png")
 	ui.profileSelectedFsBorder := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y-45 " w" ui.fsIcons.w*3+130 " h40 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
 	ui.profileSelectedFS := ui.fishGuiFS.addText("x" ui.fsIcons.x+10 " y" ui.fsIcons.y-40 " w" ui.fsIcons.w*3+114 " h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
 	ui.profileSelectedFS.setFont("s19")
-	ui.profileNextFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3+135) " y" ui.fsIcons.y-45 " w32 h40 backgroundTrans","./img/button_arrowRight_knot.png")
+	ui.profileNextFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3+135) " y" ui.fsIcons.y-44 " w32 h38 backgroundTrans","./img/button_arrowRight_knot.png")
 	ui.profilePrevFS.onEvent("click",profileLArrowClicked)
 	ui.profileNextFS.onEvent("click",profileRArrowClicked)
 	ui.castIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
@@ -612,7 +614,7 @@ while tmp.h < 40 {
 	; ui.statAfkDurationFS := ui.fishGuiFS.addText("x+0 ys w60 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
 	
 ; ui.statReelSpeedLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Speed: ")
-	; ui.statReelSpeedFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
+; ui.statReelSpeedFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
 	
 ; ui.viewLogFS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
 	; ui.viewLogFS.setFont("s9 underline")
@@ -808,6 +810,16 @@ startButtonOff(*) {
 	ui.startButton.redraw()
 }
 
+startButtonDim(*) {
+	ui.startButtonBg.opt("background" ui.trimColor[1])
+	ui.startButtonBg.redraw()
+	ui.startButton.setFont("c" ui.trimFontColor[1])
+	ui.startButton.redraw()
+	ui.startButtonHotkey.setFont("c" ui.trimFontColor[1])
+	ui.startButton.redraw()
+	cancelButtonOn()
+}
+
 startButtonOn(*) {
 	ui.startButtonBg.opt("background" ui.trimColor[1])
 	ui.startButtonBg.redraw()
@@ -832,7 +844,7 @@ castButtonOff(*) {
 	ui.castButtonBg.opt("background" ui.trimDarkColor[1])
 	ui.castButtonBg.redraw()
 	ui.castButton.setFont("c" ui.trimDarkFontColor[1])
-	ui.castButtonBg.redraw()
+	ui.castButton.redraw()
 	ui.castButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
 	ui.castButtonHotkey.redraw()
 }

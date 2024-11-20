@@ -8,37 +8,47 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 	Return
 }
 
-startButtonClicked(*) { 
-	if !ui.enabled
-		exit
-	autoFishStart()
-	return
+startButtonClicked(*) {
+	panelMode("off")
+	ui.autoFish:=true
+	ui.mode:="cast"
+	if ui.enabled {
+		startAfk()
+		singleCast()
+	}	
 }
 
 stopButtonClicked(*) {
+	panelMode("off")
+	ui.autoFish:=false
+	ui.mode:="off"
 	killAfk()
-	autoFishStop()
+	sleep(1000)
+	killAfk()
 }
 
 singleCast(*) {
-	if !ui.enabled
-		exit
-	setTimer () => autoFishStart("cast"),-100
-	return
+	panelMode("off")
+	ui.autoFish:=true
+	ui.mode:="cast"
+	if ui.enabled
+		cast()
 }
 
 singleReel(*) {
-	if !ui.enabled
-		exit
-	setTimer () => autoFishStart("reelStop"),-100
-	return
+	panelMode("off")
+	ui.autoFish:=true
+	ui.mode:="reel"
+	if ui.enabled
+		reelIn()
 }
 
 singleRetrieve(*) {
-	if !ui.enabled
-		exit
-	setTimer () => autoFishStart("retrieve"),-100
-	return
+	panelMode("off")
+	ui.autoFish:=true
+	ui.mode:="retrieve"
+	if ui.enabled
+		retrieve()
 }
 
 castLengthChanged(*) {
@@ -98,33 +108,31 @@ rodsIn(*) {
 toggleEnabled(*) {
 		(ui.enabled := !ui.enabled) ? toggleOn() : toggleOff()
 		toggleOn(*) {
-			if ui.fullscreen {
 				ui.toggleEnabledFS.value:="./img/toggle_on.png"
 				ui.toggleEnabledFSLabel.opt("hidden")
 				ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
 				ui.toggleEnabledFS.redraw()
 				for this_obj in ui.fsObjects 
 					this_obj.opt("-hidden")			
-			} else {
-			
 				ui.enableButtonToggle.value := "./img/toggle_on.png"
-				guiVis(ui.disabledGui,true)
-			}
+				
+					guiVis(ui.disabledGui,false)
+	
 		}
 		toggleOff(*) {
-			if ui.fullscreen {
 				ui.toggleEnabledFS.value:="./img/toggle_off.png"
 				ui.toggleEnabledFSLabel.opt("-hidden")
 				for this_obj in ui.fsObjects 
 					this_obj.opt("hidden")
 				ui.toggleEnabledFS.move(a_screenWidth-50,,,)
 				ui.toggleEnabledFS.redraw()
+				ui.enableButtonToggle.value := "./img/toggle_off.png"
+				if !ui.fullscreen {
+					guiVis(ui.disabledGui,true)
+					winSetTransparent(180,ui.disabledGui)
+				}
 				killAfk()
 				;msgbox('here')
-			} else {
-				ui.enableButtonToggle.value := "./img/toggle_off.png"
-				guiVis(ui.disabledGui,false)
-			}
 		}
 }
 

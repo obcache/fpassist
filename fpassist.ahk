@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.2.9"
+A_FileVersion := "1.3.3.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -44,9 +44,9 @@ winActivate(ui.game)
 onExit(exitFunc)
 
 hotIfWinActive(ui.game)
-	~LCtrl:: {
-		winActivate(ui.fishGui)
-	}
+	; ~LCtrl:: {
+		; winActivate(ui.fishGui)
+	; }
 	
 	hotkey("CapsLock",toggleEnabled)
 hotIf()
@@ -92,8 +92,8 @@ hotif(isHot)
 	hotKey(ui.exitKey,cleanExit)
 	hotKey(ui.reloadKey,appReload)
 	hotKey(ui.startKeyMouse,startButtonClicked)
-	hotKey(ui.stopKeyMouse,autoFishStop)
-	hotkey("+" ui.cancelKey,autoFishStop)
+	hotKey(ui.stopKeyMouse,stopAfk)
+	hotkey("+" ui.cancelKey,stopAfk)
 	hotkey("+" ui.reelKey,singleReel)
 	hotKey("+" ui.startKey,startButtonClicked)
 	hotKey("+" ui.castKey,singleCast)
@@ -159,7 +159,7 @@ toggleFS(*) {
 }
 
 stopBgMode(*) {
-	autoFishStop()
+	stopAfk()
 	winActivate(ui.game)
 	winWait(ui.game)
 }
@@ -171,7 +171,7 @@ modeChanged(*) {
 	panelMode(ui.mode)
 }
 	
-autoFishStop(restart:="",*) {
+stopAfk(restart:="",*) {
 	if !ui.enabled
 		exit
 	ui.mode:="off"
@@ -205,7 +205,7 @@ autoFishStop(restart:="",*) {
 	 fileAppend(ui.statSessionStartTime.text "," ui.statAfkStartTime.text "," ui.statAfkDuration.text "," ui.statFishCount.text "," ui.statCastCount.text "," ui.statCastLength.text "," ui.statDragLevel.text "," ui.statReelSpeed.text "`n", a_scriptDir "/logs/current_log.txt")
 	
 	if restart=="restart" {
-		setTimer () => autoFishStart("restart")
+		setTimer () => startAfk("restart")
 	} else {
 		ui.secondsElapsed := 0
 		ui.fishLogAfkTime.text := "00:00:00" 
@@ -217,19 +217,16 @@ autoFishStop(restart:="",*) {
 }
 
 autoFishRestart(*) {
-	autoFishStop("restart")
+	killAfk()
+	startAfk()
 }
 
 killAfk(*) {
-	log("AFK: Stopped")
 
-	ui.autoFish:=false
-	panelMode("off")
-	ui.mode:="off"
 	setTimer(updateAfkTime,0)
-	setTimer(isHooked,0)
-	setTimer(autoFishStart,0)
-	setTimer(retrieve,0)
+	;setTimer(isHooked,0)
+	;setTimer(startAfk,0)
+	;setTimer(retrieve,0)
 	setTimer(flashRetrieve,0)
 	ui.FishCaughtFS.opt("hidden")
 	ui.fishCaughtLabelFS.opt("hidden")
@@ -240,33 +237,25 @@ killAfk(*) {
 	ui.bigFishCaught.opt("hidden")
 	ui.bigFishCaughtLabel.opt("hidden")
 	ui.bigFishCaughtLabel2.opt("hidden")
-	exit
+	log("AFK: Stopped")
+
+	ui.autoFish:=false
+	panelMode("off")
+	ui.mode:="off"
+	
+	return
 }
 
 this:=object()
-autoFishStart(mode:="",*) {
-	switch mode {
-		case "": 
-			mode:="cast"
-		case "off":
-			;autoFishStop()
-			return		
-		}
+startAfk(mode:="cast",*) {
 	ui.mode:=mode
 	ui.autoFish:=true
 	if !ui.enabled
-		exit
+		killAfk()
 	setTimer(updateAfkTime,1000)
-	log("AFK: STARTED",1)
+	log("AFK: Started")
 	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
-	if mode=="reelStop" {
-		if !ui.enabled
-			exit
-		reelIn(1)
-		return
-	}
 	panelMode("cast")
-	
 	ui.FishCaughtFS.opt("-hidden")
 	ui.fishCaughtLabelFS.opt("-hidden")
 	ui.fishCaughtLabel2FS.opt("-hidden")
@@ -277,48 +266,83 @@ autoFishStart(mode:="",*) {
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
 
-	while ui.autoFish && ui.mode!="off" && !isHooked() {
-		;detectPrompts(1)
-		if !ui.enabled
+	while ui.enabled && ui.mode!="off" {
+		detectPrompts(1)
+		
+		if !ui.enabled {
+			killAfk()
 			exit
+		}
+			
+		if isHooked() {
+			landFish()
+			return
+		}
+		
 		(sleep500(2,0)) ? exit : 0
 		
-		switch ui.mode {
-			case "cast":
-				if !ui.enabled
-					exit
-				if reeledIn() {
-					cast()
-				} else {
-					ui.castButtonBg.opt("background" ui.bgColor[6])
-					ui.castButtonBg.redraw()
-					reelButtonOn()
-					reelIn(1)
-					if !ui.enabled
-						exit
-					ui.castButtonBg.opt("background" ui.bgColor[5])
-					ui.castButtonBg.redraw()
-					ui.mode:="retrieve"
-					cast()
-				} 
-				ui.mode:="retrieve"
-			case "retrieve":
-				if !ui.enabled
-					exit
-				if !reeledIn()
-					retrieve(1)		
-				ui.mode:="reel"
-			case "restart":
-				setTimer () => autoFishRestart(),-100
-				return
-			case "reel":
-				if !ui.enabled
-					exit
-				if !reeledIn()
-					reelIn(1)				
-				ui.mode:="cast" 
+		
+		if !reeledIn() {
+			ui.castButtonBg.opt("background" ui.bgColor[6])
+			ui.castButtonBg.redraw()
+			ui.castButton.setFont("c" ui.trimFontColor[1])
+			ui.castButton.redraw()
+			reelButtonOn()
+			reelIn()
+		
+			if !ui.enabled
+				killAfk()
+		
+			ui.castButtonBg.opt("background" ui.bgColor[5])
+			ui.castButtonBg.redraw()
+			ui.castButton.setFont("c" ui.trimDarkFontColor[1])
+			ui.castButton.redraw()
 		}
+		
+		if reeledIn()
+			cast()
+		
+		if !reeledIn() {
+			;msgBox('retrieve')
+			retrieve()
+		}
+			
 	}
+		; switch ui.mode {
+			; case "cast":
+				; if !ui.enabled
+					; exit
+				; if reeledIn() {
+					; cast()
+				; } else {
+					; ui.castButtonBg.opt("background" ui.bgColor[6])
+					; ui.castButtonBg.redraw()
+					; reelButtonOn()
+					; reelIn(1)
+					; if !ui.enabled
+						; exit
+					; ui.castButtonBg.opt("background" ui.bgColor[5])
+					; ui.castButtonBg.redraw()
+					; ui.mode:="retrieve"
+					; cast()
+				; } 
+				; ui.mode:="retrieve"
+			; case "retrieve":
+				; if !ui.enabled
+					; exit
+				; if !reeledIn()
+					; retrieve(1)		
+				; ui.mode:="reel"
+			; case "restart":
+				; setTimer () => autoFishRestart(),-100
+				; return
+			; case "reel":
+				; if !ui.enabled
+					; exit
+				; if !reeledIn()
+					; reelIn(1)				
+				; ui.mode:="cast" 
+
 	sleep500(3)
 	if !ui.enabled
 		exit
@@ -420,44 +444,38 @@ calibrate(*) {
 }
 
 cast(*) {
-	if !ui.enabled
-		exit
 	sleep(1500)
-	if !ui.autoFish || ui.mode!="Cast"
-		return
-	log("Cast: Preparing",1,"Cast: Prepared")
+	if !ui.enabled {
+		killAfk()
+		exit
+	}	
+	log("Cast: Prepared")
 	ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
-	if !ui.autoFish || ui.mode!="Cast"
-		return
-	if !ui.enabled
+	if !ui.enabled {
+		killAfk()
 		exit
-	sleep500(5)
-	if !ui.autoFish || ui.mode!="Cast"
-		return
-	if !ui.enabled
-		exit
-	sleep500(5)
+	}
 	
 	errorLevel := sleep500(6)
-	if !ui.autoFish || ui.mode!="Cast"
-		return
-
-	loop 10 {
-		if !ui.enabled
-			exit
-		if !reeledIn() {
-			sleep500(2)
-		} else {
-			break 
-		}
-		timeout := a_index
-		if timeout == 30 {
-			log("Retrieve: Timed Out Reeling In",2)
-			log("Retrieve: Stopping AFK",2)
-			setTimer () => autoFishStop(),-100
-			return
-		}
+	if !ui.enabled {
+		killAfk()
+		exit
 	}
+	; loop 10 {
+		; if !ui.enabled
+			; killAfk()
+		; if !reeledIn() {
+			; sleep500(2)
+		; } else {
+			; break 
+		; }
+		; timeout := a_index
+		; if timeout == 30 {
+			; log("Retrieve: Timed Out Reeling In",2)
+			; log("Retrieve: Stopping AFK",2)
+			; killAfk()
+		; }
+	; }
 	log("Cast: Drawing Back Rod",1)
 	sendNice("{space down}")
 	(cfg.profileSelected <= cfg.castLength.length)  
@@ -466,26 +484,29 @@ cast(*) {
 	sendNice("{space up}")
 	log("Cast: Releasing Cast",1)
 	;calibrate()
-	if !ui.autoFish || ui.mode != "cast"
-		return
-	if !ui.enabled
+	if !ui.enabled {
+		killAfk()
 		exit
+	}
 	setTimer(calibrate,-100)
 	log("Wait: Lure In-Flight",1)
 	loop cfg.castTime[cfg.profileSelected] {
-		if !ui.enabled
+		if !ui.enabled {
+			killAfk()
 			exit
-		sleep500(2)
+		}		
+	sleep500(2)
 	}
 	log("Wait: Lure Sinking",1)
-	if !ui.autoFish || ui.mode != "cast"
-		return
-	if !ui.enabled
+	if !ui.enabled {
+		killAfk()
 		exit
-
+	}
 	loop cfg.sinkTime[cfg.profileSelected] {
-		if !ui.enabled
+		if !ui.enabled {
+			killAfk()
 			exit
+		}
 		sleep500(2)
 	}
 	log("Cast: Closing Bail")
@@ -494,7 +515,7 @@ cast(*) {
 	sendNice("{space up}")
 	sleep(150)
 	;setTimer () => reelIn(),-30000
-	setTimer () => retrieve(1),-100
+	;setTimer () => retrieve(1),-100
 	
 }
 
@@ -566,43 +587,32 @@ boatRotation(*) {
 }
 
 retrieve(*) {
+	ui.mode:="retrieve"
 	if !ui.enabled
 		exit
-	panelMode("retrieve")
-	log("Starting: Retrieve")
-	;modeHeader("Retrieve")
 	if ui.mode != "retrieve"
 		return
+	panelMode("retrieve")
+	log("Started: Retrieve")
+	;modeHeader("Retrieve")
 	if ui.floatEnabled.value {
 		log("Watch: Monitoring Bait",1)
 		ui.retrieveButton.text := "Watch"
 		while !reeledIn() {
 			if !ui.enabled
-				exit
-			if !ui.floatEnabled.value && a_index > cfg.recastTime[cfg.profileSelected]*2*60 {
-				log("Cast: Stale",1)
-				log("Cast: Recasting",1)
-				if !ui.enabled
-					exit
-				reelIn()
-				return
-			}
+				killAfk()
 			if isHooked() { 
-				if !ui.enabled
-					exit
-				winActivate(ui.game)
 				ui.retrieveButton.text := "Retrie&ve"
+				winActivate(ui.game)
 				sleep(1500)
-				if !ui.enabled
-					exit
 				landFish()
-				return
+				
 			} else
-				if !ui.enabled
-					exit
-				sleep500()
-		} else
-			return
+				sleep(500)
+			if !ui.enabled
+				exit
+
+		}
 	} else {
 		mechanic.names:=["twitchFreq","stopFreq","reelFreq"]
 		mechanic.count := 0
@@ -610,14 +620,10 @@ retrieve(*) {
 		mechanic.repeats := 0
 		mechanic.current := ""
 		mechanic.number := 0
-		if ui.mode != "retrieve"
-			return
-
 		log("Retrieve: Starting",1,"Retrieve: Started")
-		
-		while !reeledIn() && ui.mode == "retrieve" {
+		while !reeledIn() {
 			if !ui.enabled
-				exit
+				killAfk()
 			if isHooked() { 
 				winActivate(ui.game)
 				sleep(1500)
@@ -635,7 +641,7 @@ retrieve(*) {
 				mechanic.repeats := 0
 			}
 			if !ui.enabled
-				exit
+				killAfk()
 			mechanic.last := mechanic.number
 			
 			
@@ -783,7 +789,7 @@ landFish(*) {
 	sendNice("{RButton down}")
 	sleep500()
 	sendNice("{space Down}")
-	while !reeledIn() && ui.autoFish {
+	while ui.enabled && !reeledIn()  {
 		sendNice("{RButton Down}")
 		loop round(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2))
 			sleep500(2)
@@ -791,6 +797,7 @@ landFish(*) {
 		loop round((4-cfg.landAggro[cfg.profileSelected])/2)
 			sleep500()
 	}
+	
 	sendNice("{space Up}")
 	setTimer(flashRetrieve,0)
 	ui.reelIconFS.value:="./img/icon_reel.png"
@@ -861,7 +868,7 @@ checkKeepnet(*) {
 	thisColor := pixelGetColor(59,120)
 	if round(thisColor) >= round(0xFFC300)-5000
 	&& round(thisColor) <= round(0xFFC300)+5000 {
-		autoFishStop()
+		stopAfk()
 		log("Keepnet: Full",0)
 		sendNice("{t down}")
 		sleep500(1)
@@ -881,7 +888,7 @@ checkKeepnet(*) {
 			sleep500(1)
 			sendNice("{LButton Up}")
 			mouseMove(tmpX,tmpY)
-			setTimer(autoFishStart,-100)
+			setTimer(startAfk,-100)
 			return 1
 		} 
 		} else {
@@ -1034,7 +1041,7 @@ detectPrompts(logWork := false) {
 
 sleep500(loopCount := 1,stopOnReel := false) {
 	errorLevel := 0
-	while a_index <= loopCount && !reeledIn() {
+	while a_index <= loopCount {
 		; if isHooked() {
 			; landFish()
 			; return 1
