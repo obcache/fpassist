@@ -14,25 +14,31 @@ startButtonClicked(*) {
 	ui.mode:="cast"
 	if ui.enabled {
 		startAfk()
-		singleCast()
+		;singleCast()
 	}	
 }
 
 stopButtonClicked(*) {
-	panelMode("off")
-	ui.autoFish:=false
-	ui.mode:="off"
-	killAfk()
+	ui.toggleEnabledFS.move(a_screenWidth-50,,,)
+	ui.toggleEnabledFS.redraw()
+	ui.enableButtonToggle.value := "./img/toggle_off.png"
+	if !ui.fullscreen {
+		guiVis(ui.disabledGui,true)
+		winSetTransparent(180,ui.disabledGui)
+	}
 	sleep(1000)
-	killAfk()
+	killAfk() 
+	exit
 }
 
 singleCast(*) {
 	panelMode("off")
 	ui.autoFish:=true
 	ui.mode:="cast"
-	if ui.enabled
+	if ui.enabled {
 		cast()
+		setTimer(startAfk,-100)
+	}
 }
 
 singleReel(*) {

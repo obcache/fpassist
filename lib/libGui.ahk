@@ -101,12 +101,6 @@ createGui() {
 	ui.floatEnabled.onEvent("click",toggledFloat)
 	ui.floatEnabledLabel := ui.fishGui.addText("x130 y797 w30 h15 c" ui.fontColor[4],"Float")
 	ui.floatEnabledLabel.setFont("s8")
-	
-	; ui.bgModeEnabled := ui.fishGui.addCheckBox("x381 y757 w12 h12 right")
-	; ui.bgModeEnabledLabel := ui.fishGui.addText("x328 y758 w50 h12 right backgroundTrans c" ui.fontColor[4],"Bg Mode")
-	; ui.bgModeEnabled.onEvent("click",bgModeChanged)
-	; ui.bgModeEnabledLabel.setFont("s6","Small Fonts")
-	
 	toggledFloat(*) {
 		while cfg.floatEnabled.length < cfg.profileSelected
 			cfg.floatEnabled.push(false)
@@ -125,12 +119,6 @@ createGui() {
 			cfg.bgModeEnabled.push(ui.bgModeEnabled.value)
 		cfg.bgModeEnabled[cfg.profileSelected] := ui.bgModeEnabled.value
 	}
-
-
-
-	
-
-	;drawButton(1101,753,121,60)
 	cp := object()
 	cp.x := 1103
 	cp.y := 755
@@ -153,9 +141,8 @@ createGui() {
 	ui.castButtonBg := ui.fishGui.addText("x1226 y755 w101 h25 background" ui.trimDarkColor[1])
 	ui.castButton := ui.fishGui.addText("section x1230 center y755 w96 h26 c" ui.trimDarkFontColor[1] " backgroundTrans","&Cast")
 	ui.castButton.setFont("s14 bold","Trebuchet MS")
-		ui.castButtonHotkey := ui.fishGui.addText("x+-99 ys-2 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[C]")
+	ui.castButtonHotkey := ui.fishGui.addText("x+-99 ys-2 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[C]")
 	ui.castButtonHotkey.setFont("s9","Palatino Linotype")	
-	;ui.castButtonStatus := ui.fishGui.addPicture("x1310 y760 w26 h14 backgroundTrans","./img/play_ani_0.png")
 	ui.castButton.onEvent("click",singleCast)
 	ui.castButtonBg.onEvent("click",singleCast)
 	drawButton(1224,784,105,29)
@@ -225,8 +212,6 @@ createGui() {
 	ui.fishPicFolderLabel2 := ui.fishGui.addText("x146 y13 w46 h26 backgroundTrans c" ui.fontColor[2],"Photos")
 	ui.fishPicFolderLabel2.setFont("s10 q5","Helvetica")
 	ui.fishPicFolder.onEvent("click",openFishPicFolder)
-	;msgBox('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' a_scriptDir '\fishPics"')
-	;run('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' a_scriptDir '\fishPics"')
 	openFishPicFolder(*) {
 		folderPath:=a_MyDocuments "/fpassist/fishPics/"
 		run('"C:\windows\explorer.exe" "' a_scriptDir '\fishPics"')
@@ -261,18 +246,12 @@ createGui() {
 	
 
 	logViewer()
-	;openFishPic()
 	ui.fishLogFooterOutline := ui.fishGui.addText("x1 y722 w298 h30 background" ui.bgColor[3])
 	ui.fishLogFooterOutline2 := ui.fishGui.addText("x2 y723 w296 h28 background" ui.bgColor[1])
 	ui.fishLogFooterOutline3 := ui.fishGui.addText("x3 y724 w294 h26 background" ui.bgColor[4])
 	ui.fishLogFooter := ui.fishGui.addText("x3 y724 w294 h25 background" ui.bgColor[5]) ;61823A
 	ui.fishStatusText := ui.fishGui.addText("section x5 y723 w290 h25 center c" ui.fontColor[6] " backgroundTrans","Ready")
 	ui.fishStatusText.setFont("s16 bold","Miriam Fixed")
-	;ui.fishLogTimerOutline := ui.fishGui.addText("x1047 y710 w268 h40 background" ui.bgColor[3])
-	;ui.fishLogTimerOutline2 := ui.fishGui.addText("x1048 y711 w266 h38 background" ui.bgColor[1])
-	;ui.fishLogTimerOutline3 := ui.fishGui.addText("x1049 y712 w264 h36 background" ui.bgColor[2])
-	;ui.fishLogTimer := ui.fishGui.addText("x1050 y713 w263 h35 background3F3F3F") ;61823A
-	;ui.timerAnim := ui.fishGui.addText("x1047 y710 w268 h40 background010203")
 	ui.fishLogAfkTimeLabel := ui.fishGui.addText("hidden section right x751 y695 w80 h40 c" ui.trimFontColor[6] " backgroundTrans","AFK")
 	ui.fishLogAfkTimeLabel.setFont("s16 q5","Arial")
 	ui.fishLogAfkTimeLabel2 := ui.fishGui.addText("hidden section right x751 y707 w80 h40 c" ui.trimFontColor[6] " backgroundTrans","Timer")
@@ -299,7 +278,6 @@ createGui() {
 		ui.fishLogArr.push("")
 		ui.fishLogText.delete()
 		ui.fishLogText.add(ui.fishLogArr)
-		;ui.fishLogText.add([""])
 	}
 
 	updateControls()
@@ -322,13 +300,11 @@ createGui() {
 openFishPic(listBox:=ui.fishLogText,val2:="",*) {
 	if inStr(listbox.text,"Screenshot:") {
 		catchPhoto:=subStr(listbox.text,13)
-		;msgBox('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' a_scriptDir '\fishPics\' logFilename '"')
 		run('"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" "' catchPhoto '"')
 	}
 }
 
 saveLog(*) {
-			;msgBox('here')
 			logFilename := "log_" formatTime(,"yyyyMMddhhmmss") ".txt"
 			loop ui.logLV.getCount() {
 				fileAppend(ui.LogLV.getText(a_index) "`n","./logs/" logFilename)
@@ -340,7 +316,7 @@ logViewer(*) {
 		ui.logGui:=gui()
 		ui.logGui.opt("-caption toolWindow owner" ui.fishGui.hwnd)
 		ui.logGui.backColor:=ui.bgColor[6]
-		ui.logGui.addText("x1 y1 w598 h820 background" ui.bgColor[1])
+		ui.logGui.addText("x1 y1 w598 h840 background" ui.bgColor[1])
 		ui.logTitleBar := ui.logGui.addText("x0 y0 w540 h30 background" ui.bgColor[5])
 		ui.logTitleBar.onEvent("click",wm_lbuttonDown_callback)
 		ui.logTitleBarText := ui.logGui.addText("x7 y3 w520 h26 backgroundTrans c" ui.fontColor[4],"Fishing Log  (fpAssist v" a_fileVersion ")")
@@ -356,26 +332,21 @@ logViewer(*) {
 		closeLog(*) {
 			ui.logGui.hide()
 		}
-		ui.logLV := ui.logGui.addListview("x0 y30 w598 h785 -hdr background" ui.bgColor[4] " c" ui.fontColor[1],["Activity"])
+		ui.logLV := ui.logGui.addListview("x0 y30 w600 h805 -hdr background" ui.bgColor[4] " c" ui.fontColor[1],["Activity"])
 		ui.logLV.setFont("s10 c" ui.fontColor[4],)
 		ui.logLV.modifyCol(1,580)
 		ui.logLV.onEvent("DoubleClick",openFishPic)
-		; ui.logFooterOutline := ui.logGui.addText("x1 y785 w598 h28 background" ui.bgColor[3])
-		; ui.logFooterOutline2 := ui.logGui.addText("x2 y786 w596 h28 background" ui.bgColor[1])
-		; ui.logFooterOutline3 := ui.logGui.addText("x3 y787 w594 h26 background" ui.bgColor[4])
-		; ui.logFooter := ui.logGui.addText("x3 y787 w594 h26 background" ui.bgColor[5]) ;61823A
 
 		guiVis(ui.logGui,false)
 		winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
-		ui.logGui.show("x" tX+tW+8 " y" tY " w600 h840")
+		ui.logGui.show("x" tX+tW+8 " y" tY " w600 h835")
 	}
-	;ui.logClose.onEvent("click",launchLogViewer)
 
 goFS(*) {
-	setTimer(detectPrompts,0)
 	ui.fullscreen := true
 	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
 	guiVis(ui.fishGui,false)
+	guiVis(ui.fishGuiFS,true)
 	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
 	; winSetTransparent(160,ui.fishGuiFsBg)
 	ui.hookedX:=3060																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
@@ -389,12 +360,6 @@ goFS(*) {
 
 	showLog()
 	click()
-	; ui.fishGuiBg := gui()
-	; ui.fishGuiBg.opt("-caption -border toolwindow alwaysOnTop owner" winGetId(ui.game))
-	; ui.fishGuiBg.backColor := 656565
-	; ui.fishGuiBg.addText("x0 y0 w500 h500 background656565")
-	; winSetTransparent(150,ui.fishGuiBg)
-	; ui.fishGuiBg.show("x95 y350 w360 h450 noactivate")
 }
 	showLog(*) {
 		guiVis(ui.logGui,true)
@@ -427,23 +392,17 @@ noFS(*) {
 	guiVis(ui.fishGuiFS,false)
 	
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
-	;winMove(x+300,y+30,1280,720,ui.game)
 	winMove(x+300,y+30,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
 	guiVis(ui.fishGui,true)
 	ui.fishGui.show("w1584 h816")
 	ui.noFSbutton.opt("hidden")
 	try
 		ui.logGui.hide()
-	;winSetTransparent(0,ui.fishGuiFS)
 	click()
 }
 
 
 createGuiFS(*) {
-	; ui.fishGuiFsBg:=gui()
-	; ui.fishGUiFsBg.opt("-caption toolWindow owner" ui.fishGui.hwnd)
-	; ui.fishGuiFsBg.backColor:="353535"
-	; winSetTransparent(0,ui.fishGuiFsBg)
 	fishGuiFSx := a_screenWidth-800
 	fishGuiFSy := a_screenHeight-30-200-184
 	ui.fishGuiFS := gui()
@@ -472,8 +431,6 @@ createGuiFS(*) {
 	ui.fsPanel.w := 60
 	ui.fsPanel.h := 20
 	
-	;ui.fishGuiFsBg.show("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20)
-	;ui.iconFsBg := ui.fishGuiFS.addText("x" ui.fsIcons.x-20 " y" ui.fsIcons.y-10 " w" ((ui.fsIcons.w*3)+80+120) " h" ui.fsIcons.h+20 " background" ui.bgColor[2])
 	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x-35 " y" ui.fsIcons.y-44 " w30 h38 backgroundTrans","./img/button_arrowLeft_knot.png")
 	ui.profileSelectedFsBorder := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y-45 " w" ui.fsIcons.w*3+130 " h40 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
 	ui.profileSelectedFS := ui.fishGuiFS.addText("x" ui.fsIcons.x+10 " y" ui.fsIcons.y-40 " w" ui.fsIcons.w*3+114 " h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
@@ -484,30 +441,15 @@ createGuiFS(*) {
 	ui.castIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
 	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsIcons.w+30 " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
 	ui.reelIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+((ui.fsIcons.w+30)*2) " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
-	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" a_screenwidth-60 " y" ui.fsIcons.y-27 " w60 backgroundTrans center","Caps`nLock`n`n`n`n'n`n`n`n`n`n`nfpAssist")
+	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" a_screenwidth-60 " y" ui.fsIcons.y-27 " w60 backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
 	ui.toggleEnabledFSLabel.setFont("s10 cWhite Bold","Small Fonts")
 	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3)+90 " y" ui.fsIcons.y+5 " w40 h" ui.fsIcons.h-15 " backgroundTrans","./img/toggle_ON.png")
 	ui.fsObjects:=[ui.profilePrevFS,ui.profileSelectedFsBorder,ui.profileSelectedFS,ui.profileNextFS,ui.profilePrevFS,ui.castIconFS,ui.reelIconFS,ui.retrieveIconFS]
-	
-	; ui.castButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
-	; ui.castButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x+2 " y" ui.fsPanel.y+2 " w" ui.fsPanel.w-4 " h" ui.fsPanel.h-4 " background" ui.trimDarkColor[1])
-	; ui.castButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x+4 " y" ui.fsPanel.y " w" ui.fsPanel.w-4 " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Cast")
-	; ui.retrieveButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
-	; ui.retrieveButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.trimDarkColor[1])
-	; ui.retrieveButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Retrieve")
-	; ui.reelButtonFSOutline := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.bgColor[4])
-	; ui.reelButtonFSBg := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " background" ui.trimDarkColor[1])
-	; ui.reelButtonFS := ui.fishGuiFS.addText("x" ui.fsPanel.x " y" ui.fsPanel.y " w" ui.fsPanel.w " h" ui.fsPanel.h " backgroundTrans c" ui.trimDarkFontColor[1],"Reel")
-	;guivis(ui.fishGuiFS,false)
-	;winSetTransparent(0,ui.fishGuiFS)
-
-
 }
 
 drawButton(x,y,w,h) {
 		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
 		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background" ui.bgColor[4])
-		;ui.fishGui.addText("x" x+2 " y" y+2 " w" w-4 " h" h-4 " background" ui.bgColor[1])
 }
 
 statPanel(*) {
@@ -573,63 +515,6 @@ while tmp.h < 40 {
 		sleep(1)
 	}
 } 
-
-
-; statPanelFS(*) {
-	; ui.sessionStartTimeFS := a_now
-; ui.afkStartTimeFS := a_now
-	
-	; ui.statCoordFS := map("x",664,"y",753,"w",435,"h",60)
-	; x := ui.statCoord["x"] + 8
-	; y := ui.statCoord["y"] + 4
-	; w := ui.statCoord["w"]
-	; h := ui.statCoord["h"]
-
-
-
-	; ui.statPanelBgFS := ui.fishGuiFS.addText("x" ui.statCoordFS["x"] " y" ui.statCoordFS["y"] " w" ui.statCoordfS["w"] " h" ui.statCoordFS["h"] " background" ui.bgColor[3])
-	; ui.statPanelOutlineFS := ui.fishGuiFS.addText("x" ui.statCoordfS["x"]+1 " y" ui.statCoordFS["y"]+1 " w" ui.statCoordfS["w"]-2 " h" ui.statCoordFS["h"]-2 " background111111")
-	; ui.statPanelOutline2FS := ui.fishGuiFS.addText("x" ui.statCoordFS["x"]+2 " y" ui.statCoordFS["y"]+2 " w" ui.statCoordFS["w"]-4 " h" ui.statCoordfS["h"]-4 " background" ui.bgColor[1])
-	;msgBox(ui.statCoord["w"])
-	
-; ui.statSessionStartTimeLabelFS := ui.fishGuiFS.addText("x" 7+x " y" 5+y " right section w100 r1 backgroundTrans c" ui.fontColor[3],"Session: ")
-	; ui.statSessionStartTimeFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
-	
-	; ui.statCastLengthLabelFS := ui.fishGuiFS.addText("x+30 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Cast: ")
-	; ui.statCastLengthFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.castLength[cfg.profileSelected])
-	
-; ui.statFishCountLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Fish Count: ")
-; ui.statFishCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.fishLogCount.text)
-	
-	; ui.statAfkStartTimeLabelFS := ui.fishGuiFS.addText("xs-333 y+0 right section w100 r1 backgroundTrans c" ui.fontColor[3],"AutoFish: ")
-	; ui.statAfkStartTimeFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],formatTime(,"yyyyMMdd HH:mm:ss"))
-	
-	; ui.statDragLevelLabelFS := ui.fishGuiFS.addText("x+30 ys right section w63 r1 backgroundTrans c" ui.fontColor[3],"Drag: ")
-	; ui.statDragLevelFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.dragLevel[cfg.profileSelected])
-	
-	; ui.statCastCountLabelfS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"Cast Count: ")
-	; ui.statCastCountFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3], ui.castCount)
-	
-	; ui.statAfkDurationLabelfS := ui.fishGuiFS.addText("xs-333 y+0 right section w100 r1 backgroundTrans c" ui.fontColor[3],"AFK Duration: ")
-	; ui.statAfkDurationFS := ui.fishGuiFS.addText("x+0 ys w60 r1 background" ui.bgColor[1] " c" ui.fontColor[3],"")
-	
-; ui.statReelSpeedLabelFS := ui.fishGuiFS.addText("x+10 ys right section w100 r1 backgroundTrans c" ui.fontColor[3],"Speed: ")
-; ui.statReelSpeedFS := ui.fishGuiFS.addText("x+0 ys w60 r1 backgroundTrans c" ui.fontColor[3],cfg.reelSpeed[cfg.profileSelected])
-	
-; ui.viewLogFS := ui.fishGuiFS.addText("x+10 ys right section w55 r1 backgroundTrans c" ui.fontColor[3],"View Log")
-	; ui.viewLogFS.setFont("s9 underline")
-	; ui.viewLogFS.onEvent("click",viewLog)
-	
-; viewLog(*) {
-		; run("notepad.exe " a_scriptDir "/logs/current_log.txt")
-	; }
-	
-
-	
-; }
-
-
-
 startupProgress(*) {
 	try {
 		ui.loadingProgress.value += 1
@@ -651,7 +536,6 @@ startupProgress0(*) {
 			setTimer(startupProgress0,0)
 		}
 	}
-	
 }
 startupProgress2(*) {
 	try {
@@ -662,7 +546,6 @@ startupProgress2(*) {
 			setTimer(startupProgress2,0)
 		}
 	}
-	
 }
 loadScreen(visible := true,NotifyMsg := "...Loading...",Duration := 10) {
 if (visible) {
@@ -673,12 +556,7 @@ if (visible) {
 		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
 		ui.notifyGui.BackColor := ui.bgColor[3] ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
-		;if a_isCompiled 
 		ui.notifyGui.addPicture("x0 y0 w1582 h812","./img/fp_splash.png")
-		; else
-			; ui.notifyGui.addPicture("x0 y0 w1580 h780","./img/fp_splash.png")
-		;ui.notifyGui.AddText("x" (1580/2)-100 " y" (810/2) " c252525 center BackgroundTrans","Please Wait")  ; XX & YY serve to 00auto-size the window.
-		;ui.notifyGUi.addText("xs+1 y+1 w302 h22 background959595")
 		ui.loadingProgress := ui.notifyGui.addProgress("smooth x2 y757 w1580 h57 c202020 background404040")
 		ui.loadingProgress.value := 0
 		if winExist(ui.game) {
@@ -694,9 +572,7 @@ if (visible) {
 			setTimer(startupProgress0,200)
 		}
 
-		;setTimer(loadingProgressStep,100)
 		ui.notifyGui.AddText("xs hidden")
-
 		ui.notifyGui.show("x0 y0 w1584 h816 noActivate")
 		winGetPos(&x,&y,&w,&h,ui.notifyGui.hwnd)
 		drawOutline(ui.notifyGui,1,1,w-2,h-2,"454545","757575",1)
@@ -754,14 +630,9 @@ drawOutlineNamed(outLineName, guiName, X, Y, W, H, Color1 := "Black", Color2 := 
 
 
 onMessage(0x47,WM_WINDOWPOSCHANGED)
-; WM_LBUTTONDOWN(wparam,lparam,msg,hwnd) {
-	; if hwnd == wparam.hwnd
-		; postMessage("0xA1",2,,,"A")
-; }
 
 WM_LBUTTONDOWN_callback(this_control*) {
 	postMessage("0xA1",2,,,"A")
-	;WM_LBUTTONDOWN(0,0,0,this_control)
 }
 
 WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
@@ -811,15 +682,29 @@ startButtonOff(*) {
 }
 
 startButtonDim(*) {
-	ui.startButtonBg.opt("background" ui.trimColor[1])
+	ui.startButtonBg.opt("background" ui.trimColor[3])
 	ui.startButtonBg.redraw()
-	ui.startButton.setFont("c" ui.trimFontColor[1])
+	ui.startButton.setFont("c" ui.trimFontColor[3])
 	ui.startButton.redraw()
-	ui.startButtonHotkey.setFont("c" ui.trimFontColor[1])
+	ui.startButtonHotkey.setFont("c" ui.trimFontColor[3])
 	ui.startButton.redraw()
 	cancelButtonOn()
 }
 
+
+button(name,mode) {
+	switch mode {
+		case "on":
+			ui.%name%ButtonBg.opt("background" ui.trimColor[(name=="cancel") ? 2 : 1])
+			ui.%name%ButtonBg.redraw()
+			ui.%name%Button.setFont("c" ui.trimFontColor[(name=="cancel") ? 2 : 1])
+			ui.%name%Button.redraw()
+			ui.%name%ButtonHotkey.setFont("c" ui.trimFontColor[(name=="cancel") ? 2 : 1])
+			ui.%name%ButtonHotkey.redraw()
+		case "flash":
+	}
+}
+	
 startButtonOn(*) {
 	ui.startButtonBg.opt("background" ui.trimColor[1])
 	ui.startButtonBg.redraw()
@@ -831,13 +716,25 @@ startButtonOn(*) {
 }
 
 castButtonOn(*) {
+	startButtonOn()
+	try {
+		ui.castIconFS.value:="./img/icon_cast_on.png"
+	}
 	ui.castButtonBg.opt("background" ui.trimColor[1])
 	ui.castButtonBg.redraw()
 	ui.castButton.setFont("c" ui.trimFontColor[1])
 	ui.castButton.redraw()
 	ui.castButtonHotkey.setFont("c" ui.trimFontColor[1])
 	ui.castButton.redraw()
-	cancelButtonOn()
+}
+castButtonDim(*) {
+	startButtonOn()
+	ui.castButtonBg.opt("background" ui.trimColor[3])
+	ui.castButtonBg.redraw()
+	ui.castButton.setFont("c" ui.trimFontColor[3])
+	ui.castButton.redraw()
+	ui.castButtonHotkey.setFont("c" ui.trimFontColor[3])
+	ui.castButton.redraw()
 }
 
 castButtonOff(*) {
@@ -886,3 +783,26 @@ retrieveButtonOff(*) {
 	ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
 	ui.retrieveButtonHotkey.redraw()
 }
+
+
+flashRetrieve(*) {
+	(tmp.retrieveFlashOn := !tmp.retrieveFlashOn)
+		? (ui.reelIconFS.value:="./img/icon_reel_flash.png",ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("c482a11"),ui.retrieveButtonHotkey.opt("c482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+		: (ui.reelIconFS.value:="./img/icon_reel_on.png",ui.retrieveButtonBg.opt("background" ui.trimDarkColor[3]),ui.retrieveButton.opt("c1f1105"),ui.retrieveButtonHotkey.opt("c1f1105"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+}
+
+flashButton(mode) {
+	(tmp.%mode%FlashOn := !tmp.%mode%FlashOn)
+		? (ui.%mode%ButtonBg.opt("background" ui.trimColor[3]),ui.%mode%Button.opt("c482a11"),ui.%mode%ButtonHotkey.opt("c482a11"),ui.%mode%ButtonBg.redraw(),ui.%mode%Button.redraw())
+		: (ui.%mode%ButtonBg.opt("background" ui.trimDarkColor[3]),ui.%mode%Button.opt("c1f1105"),ui.%mode%ButtonHotkey.opt("c1f1105"),ui.%mode%ButtonBg.redraw(),ui.%mode%Button.redraw())
+}
+
+flashCast(*) {
+	flashButton("cast")
+}
+
+flashCancel(*) {
+	flashButton("cancel")
+}
+
+

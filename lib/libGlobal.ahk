@@ -23,9 +23,6 @@ panelMode(mode) {
 		startButtonOn()
 	switch mode {
 		case "cast":
-			try {
-				ui.castIconFS.value:="./img/icon_cast_on.png"
-			}
 			castButtonOn()
 			startButtonOn()
 			cancelButtonOn()
@@ -189,16 +186,18 @@ cfgWrite(*) {
 	iniWrite(guiY,cfg.file,"System","GuiY")
 	iniWrite(guiW,cfg.file,"System","GuiW")
 	iniWrite(guiH,cfg.file,"System","GuiH")
+	iniWrite(ui.fullscreen,cfg.file,"Game","Fullscreen")
 }
 
 cfgLoad(*) {
 	for setting,default in cfg.profileSetting {
 		 cfg.%setting% := strSplit(iniRead(cfg.file,"Game",setting,default),",")
 	}
+	ui.fullscreen			:= iniRead(cfg.file,"Game","Fullscreen",0)
 	cfg.profileSelected 	:= iniRead(cfg.file,"Game","ProfileSelected",1)
 	cfg.debug 				:= iniRead(cfg.file,"System","Debug",2)
 	cfg.rodCount 			:= iniRead(cfg.file,"Game","RodCount",6)
-	cfg.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
+	ui.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
 }
 
 initTrayMenu(*) {
