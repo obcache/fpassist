@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.3.2"
+A_FileVersion := "1.3.3.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -470,18 +470,23 @@ retrieve(*) {
 	if ui.floatEnabled.value {
 		log("Watch: Monitoring Bait",1)
 		ui.retrieveButton.text := "Watch"
-		while !reeledIn() {
+		while !reeledIn() && !(ui.isHooked := isHooked()) {
 			errorLevel:=(ui.enabled) ? 0 : killAfk()	
-			if isHooked() { 
+			
+			if !ui.isHooked { 
+				sleep(500)
+			} else {
 				ui.retrieveButton.text := "Retrie&ve"
 				winActivate(ui.game)
-				sleep(1500)
-				landFish()
-				
-			} else
 				sleep(500)
-			if !ui.enabled {
-				killAfk()
+					errorLevel:=(ui.enabled) ? 0 : killAfk()	
+				sleep(500)
+					errorLevel:=(ui.enabled) ? 0 : killAfk()	
+				sleep(500)
+					errorLevel:=(ui.enabled) ? 0 : killAfk()	
+				landFish()
+				ui.isHooked:=false
+				return
 			}
 		}
 	} else {
