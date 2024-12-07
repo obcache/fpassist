@@ -9,12 +9,8 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 
-panelMode(mode) {
-	startButtonOff()
-	castButtonOff()
-	retrieveButtonOff()
-	reelButtonOff()
-	cancelButtonOff()
+mode(mode) {
+	ui.mode:=mode
 	ui.castIconFS.value:="./img/icon_cast.png"
 	ui.retrieveIconFS.value:="./img/icon_retrieve.png"
 	ui.reelIconFS.value:="./img/icon_reel.png"
@@ -23,33 +19,54 @@ panelMode(mode) {
 		startButtonOn()
 	switch mode {
 		case "cast":
+			reelButtonOff()
+			retrieveButtonOff()
+			ui.retrieveButton.text:="Retrieve"
 			castButtonOn()
 			startButtonOn()
 			cancelButtonOn()
+		
 		case "land":
+			reelButtonOff()
+			castButtonOff()
+			ui.retrieveButton.text:="Landing"
 			retrieveButtonOn()
 			startButtonOn()
 			cancelButtonOn()
 			ui.reelIconFS.value:="./img/icon_reel_on.png"
 			flashretrieve()
 			setTimer(flashretrieve,1500)
+
 		case "retrieve":
+			reelButtonOff()
+			castButtonOff()
 			try {
 				ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
 			}
 			startButtonOn()
 			cancelButtonOn()
 			retrieveButtonOn()
+		
 		case "reel":
+			retrieveButtonOff()
+			ui.retrieveButton.text:="Retrieve"
 			try {
 				ui.reelIconFS.value:="./img/icon_reel_on.png"
 			}	
 			startButtonOn()
 			cancelButtonOn()
 			reelButtonOn()
+		
 		case "afk":
 			startButtonOn()
+		
 		case "off":
+			ui.autoFish:=false
+			cancelButtonOff()
+			startButtonOff()
+			retrieveButtonOff()
+			castButtonOff()
+			reelButtonOff()
 			return
 	}
 	cancelButtonOn()
@@ -114,7 +131,7 @@ initVars(*) {
 		cfg.profileSetting["twitchFreq"] := "1"
 		cfg.profileSetting["stopFreq"] := "1"
 		cfg.profileSetting["reelFreq"] := "1"
-		cfg.profileSetting["BoatEnabled"] := "0"
+		cfg.profileSetting["rodHolderEnabled"] := "0"
 		cfg.profileSetting["floatEnabled"] := "0"
 		cfg.profileSetting["bgModeEnabled"] := "0"
 		cfg.profileSetting["recastTime"] := "5"
@@ -152,6 +169,7 @@ initVars(*) {
 	ui.exitKey 				:= "F4"
 	ui.retrieveKey 			:= "v"
 	ui.flashlight 			:= "+F"
+	ui.rodHolderNumber		:= 1
 	ui.startKeyMouse 		:= "!LButton"
 	ui.stopKeyMouse 		:= "!RButton"
 	ui.lastMsg 				:= ""

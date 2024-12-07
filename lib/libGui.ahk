@@ -70,7 +70,7 @@ createGui() {
 	ui.castLength.onEvent("change",castLengthChanged)
 	ui.castLengthLabel := ui.fishGui.addText("xs-3 y+1 w40 h13 right backgroundTrans","Cast")
 	ui.castLengthLabel.setFont("s8 c" ui.fontColor[4])
-	ui.castLengthLabel2 := ui.fishGui.addText("xs-3 y+-4 w40 h20 right backgroundTrans","Adjust")
+	ui.castLengthLabel2 := ui.fishGui.addText("xs-3 y+-4 w40 h20 right backgroundTrans","Length")
 	ui.castLengthLabel2.setFont("s8 c" ui.fontColor[4])
 	ui.castLengthText := ui.fishGui.addText("x+0 ys+14 left w70 h32 backgroundTrans c" ui.fontColor[3])
 	while cfg.profileSelected > cfg.castLength.Length
@@ -82,36 +82,46 @@ createGui() {
 	
 	slider("reelSpeed",,6,755,20,50,"1-4",1,1,"left","Reel","vertical","b")
 	slider("dragLevel",,33,755,20,50,"1-12",1,1,"center","Drag","vertical","b")
-	slider("landAggro",,291,756,50,15,"0-4",1,1,"center","Land Aggro",,)
-	slider("twitchFreq",,291,772,50,15,"0-10",1,1,"center","Twitch")
-	slider("stopFreq",,291,790,50,15,"0-10",1,1,"center","Stop && Go")
-	slider("castTime",,236,755,20,50,"0-6",1,1,"center","Cast","vertical","b")
-	slider("sinkTime",,263,755,20,50,"0-20",1,1,"center","Sink","vertical","b")
-	slider("recastTime",,157,778,80,15,"1-20",1,1,"center","Recast",,"b","11")
+	slider("landAggro",,290,756,50,15,"0-4",1,1,"center","Land Aggro",,)
+	slider("twitchFreq",,290,772,50,15,"0-10",1,1,"center","Twitch")
+	slider("stopFreq",,290,790,50,15,"0-10",1,1,"center","Stop && Go")
+	slider("castTime",,238,755,20,50,"0-6",1,1,"center","Cast","vertical","b")
+	slider("sinkTime",,265,755,20,50,"0-20",1,1,"center","Sink","vertical","b")
+	slider("recastTime",,100,795,135,13,"1-20",1,1,"center","Recast",,"l","11")
 	slider("reelFreq",,1900,0,0,0,"0-10",1,10,"center","Reel")
 	ui.reelFreq.value := 10
 	ui.reelFreq.opt("hidden")
 
-	ui.BoatEnabled := ui.fishGui.addCheckBox(" x100 y797 w10 h15",cfg.boatEnabled[cfg.profileSelected])
-	ui.BoatEnabled.onEvent("click",toggledBoat)
-	ui.BoatEnabledLabel := ui.fishGui.addText("x75 y797 w30 h15 backgroundTrans c" ui.fontColor[4],"Boat")
-	ui.BoatEnabledLabel.setFont("s8")
+	while cfg.rodHolderEnabled.length < cfg.profileSelected
+		cfg.rodHolderEnabled.push(false)
+		
+	ui.rodHolderEnabled := ui.fishGui.addCheckBox("x223 y773 w10 h15 ",cfg.rodHolderEnabled[cfg.profileSelected])
+	ui.rodHolderEnabled.onEvent("click",toggleRoldHolder)
+	ui.rodHolderEnabledLabel := ui.fishGui.addText("right x160 y775 w60 h15 backgroundTrans c" ui.fontColor[4],"Rod Stand")
+	ui.rodHolderEnabledLabel.setFont("s7","small fonts")
 
-	ui.floatEnabled := ui.fishGui.addCheckBox("x116 y797 w10 center h15",cfg.floatEnabled[cfg.profileSelected])
-	ui.floatEnabled.onEvent("click",toggledFloat)
-	ui.floatEnabledLabel := ui.fishGui.addText("x130 y797 w30 h15 c" ui.fontColor[4],"Float")
-	ui.floatEnabledLabel.setFont("s8")
-	toggledFloat(*) {
+	ui.floatEnabled := ui.fishGui.addCheckBox("x223 y785 w10 h15",cfg.floatEnabled[cfg.profileSelected])
+	ui.floatEnabled.onEvent("click",toggleFloat)
+	ui.floatEnabledLabel := ui.fishGui.addText("right x160 y786 w60 h15 c" ui.fontColor[4],"Float/Bottom")
+	ui.floatEnabledLabel.setFont("s7","small fonts")
+	
+	toggleFloat(*) {
 		while cfg.floatEnabled.length < cfg.profileSelected
 			cfg.floatEnabled.push(false)
 		cfg.floatEnabled[cfg.profileSelected] := ui.floatEnabled.value
 		floatEnabledStr := ""
+		if ui.floatEnabled.value
+			ui.rodHolderEnabled.opt("-disabled")
+		else {
+			ui.rodHolderEnabled.value:=false
+			ui.rodHolderEnabled.opt("disabled")
+		}
 	}
 
-	toggledBoat(*) {
-		while cfg.BoatEnabled.length < cfg.profileSelected
-			cfg.BoatEnabled.push(false)
-		cfg.BoatEnabled[cfg.profileSelected] := ui.BoatEnabled.value
+	toggleRoldHolder(*) {
+		while cfg.rodHolderEnabled.length < cfg.profileSelected
+			cfg.rodHolderEnabled.push(false)
+		cfg.rodHolderEnabled[cfg.profileSelected] := ui.rodHolderEnabled.value
 	}
 	
 	bgModeChanged(*) {
@@ -143,24 +153,24 @@ createGui() {
 	ui.castButton.setFont("s14 bold","Trebuchet MS")
 	ui.castButtonHotkey := ui.fishGui.addText("x+-99 ys-2 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[C]")
 	ui.castButtonHotkey.setFont("s9","Palatino Linotype")	
-	ui.castButton.onEvent("click",singleCast)
-	ui.castButtonBg.onEvent("click",singleCast)
+	ui.castButton.onEvent("click",castButtonClicked)
+	ui.castButtonBg.onEvent("click",castButtonClicked)
 	drawButton(1224,784,105,29)
 	ui.reelButtonBg := ui.fishGui.addText("x1226 y786 w101 h25 background" ui.trimDarkColor[1])
 	ui.reelButton := ui.fishGui.addText("section x1226 center y786 w105 h26 c" ui.trimDarkFontColor[1] " backgroundTrans","&Reel")
 	ui.reelButton.setFont("s14 bold","Trebuchet MS")
 	ui.reelButtonHotkey := ui.fishGui.addText("x+-104 ys-2 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[R]")
 	ui.reelButtonHotkey.setFont("s9","Palatino Linotype")	
-	ui.reelButton.onEvent("click",singlereel)
-	ui.reelButtonBg.onEvent("click",singlereel)
+	ui.reelButton.onEvent("click",reelButtonClicked)
+	ui.reelButtonBg.onEvent("click",reelButtonClicked)
 	drawButton(1331,753,124,29)
 	ui.retrieveButtonBg := ui.fishGui.addText("x1333 y755 w120 h25 background" ui.trimDarkColor[1])
 	ui.retrieveButton := ui.fishGui.addText("section x1342 center y755 w113 h26 c" ui.trimDarkFontColor[1] " backgroundTrans","Retrie&ve")
 	ui.retrieveButton.setFont("s14 bold","Trebuchet MS")
 	ui.retrieveButtonHotkey := ui.fishGui.addText("x+-121 ys-2 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[V]")
 	ui.retrieveButtonHotkey.setFont("s9","Palatino Linotype")	
-	ui.retrieveButtonBg.onEvent("click",singleretrieve)
-	ui.retrieveButton.onEvent("click",singleretrieve)
+	ui.retrieveButtonBg.onEvent("click",retrieveButtonClicked)
+	ui.retrieveButton.onEvent("click",retrieveButtonClicked)
 	drawButton(1331,784,124,29)
 	ui.cancelButtonBg := ui.fishGui.addText("x1333 y786 w120 h25 background" ui.trimDarkColor[2]) 
 	ui.cancelButton := ui.fishGui.addText("section x1342 center y786 w113 h26 c" ui.trimDarkFontColor[2] " backgroundTrans","Cancel")
@@ -729,11 +739,11 @@ castButtonOn(*) {
 }
 castButtonDim(*) {
 	startButtonOn()
-	ui.castButtonBg.opt("background" ui.trimColor[3])
+	ui.castButtonBg.opt("background" ui.bgColor[4])
 	ui.castButtonBg.redraw()
-	ui.castButton.setFont("c" ui.trimFontColor[3])
+	ui.castButton.setFont("c" ui.trimFontColor[1])
 	ui.castButton.redraw()
-	ui.castButtonHotkey.setFont("c" ui.trimFontColor[3])
+	ui.castButtonHotkey.setFont("c" ui.trimFontColor[1])
 	ui.castButton.redraw()
 }
 

@@ -9,16 +9,13 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) {
-	panelMode("off")
-	ui.autoFish:=true
-	ui.mode:="cast"
-	if ui.enabled {
-		startAfk()
-		;singleCast()
-	}	
+	castButtonClicked()
 }
 
 stopButtonClicked(*) {
+	ui.autoFish:=false
+	ui.mode:="off"
+	mode(ui.mode)
 	ui.toggleEnabledFS.move(a_screenWidth-50,,,)
 	ui.toggleEnabledFS.redraw()
 	ui.enableButtonToggle.value := "./img/toggle_off.png"
@@ -31,30 +28,41 @@ stopButtonClicked(*) {
 	exit
 }
 
-singleCast(*) {
-	panelMode("off")
+castButtonClicked(*) {
+	
 	ui.autoFish:=true
 	ui.mode:="cast"
-	if ui.enabled {
-		cast()
-		setTimer(startAfk,-100)
-	}
+	mode(ui.mode)
+	ui.fishQ.push(ui.mode)
+	;showQ()
+	cast()
+	setTimer(startAfk,-100)
 }
 
-singleReel(*) {
-	panelMode("off")
+reelButtonClicked(*) {
 	ui.autoFish:=true
 	ui.mode:="reel"
-	if ui.enabled
-		reelIn()
+	mode(ui.mode)
+	ui.fishQ.push(ui.mode)
+	;showQ()
+	reelIn()
+	setTimer(startAfk,-100)
 }
 
-singleRetrieve(*) {
-	panelMode("off")
+showQ(*) {
+	ui.qui:=gui()
+	ui.qui.opt("toolWindow -caption -border owner" ui.fishGui.hwnd)
+	ui.qui.backColor:="454545"
+	ui.quiLb:=ui.qui.addListBox("",ui.fishQ)
+	ui.qui.show()
+}
+retrieveButtonClicked(*) {
 	ui.autoFish:=true
 	ui.mode:="retrieve"
-	if ui.enabled
-		retrieve()
+	mode(ui.mode)
+	ui.fishQ.push(ui.mode)
+	retrieve()
+	startAfk()
 }
 
 castLengthChanged(*) {
@@ -111,37 +119,37 @@ rodsIn(*) {
 	send("{LButton Up}")	
 }
 
+ui.enabled:=true
 toggleEnabled(*) {
 		(ui.enabled := !ui.enabled) ? toggleOn() : toggleOff()
-		toggleOn(*) {
-				ui.toggleEnabledFS.value:="./img/toggle_on.png"
-				ui.toggleEnabledFSLabel.opt("hidden")
-				ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
-				ui.toggleEnabledFS.redraw()
-				for this_obj in ui.fsObjects 
-					this_obj.opt("-hidden")			
-				ui.enableButtonToggle.value := "./img/toggle_on.png"
-				
-					guiVis(ui.disabledGui,false)
-	
-		}
-		toggleOff(*) {
-				ui.toggleEnabledFS.value:="./img/toggle_off.png"
-				ui.toggleEnabledFSLabel.opt("-hidden")
-				for this_obj in ui.fsObjects 
-					this_obj.opt("hidden")
-				ui.toggleEnabledFS.move(a_screenWidth-50,,,)
-				ui.toggleEnabledFS.redraw()
-				ui.enableButtonToggle.value := "./img/toggle_off.png"
-				if !ui.fullscreen {
-					guiVis(ui.disabledGui,true)
-					winSetTransparent(180,ui.disabledGui)
-				}
-				killAfk()
-				;msgbox('here')
-		}
 }
 
+
+toggleOn(*) {
+		ui.toggleEnabledFS.value:="./img/toggle_on.png"
+		ui.toggleEnabledFSLabel.opt("hidden")
+		ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
+		ui.toggleEnabledFS.redraw()
+		for this_obj in ui.fsObjects 
+			this_obj.opt("-hidden")			
+		ui.enableButtonToggle.value := "./img/toggle_on.png"
+		guiVis(ui.disabledGui,false)
+}
+	
+toggleOff(*) {
+	ui.toggleEnabledFS.value:="./img/toggle_off.png"
+	ui.toggleEnabledFSLabel.opt("-hidden")
+	for this_obj in ui.fsObjects 
+		this_obj.opt("hidden")
+	ui.toggleEnabledFS.move(a_screenWidth-50,,,)
+	ui.toggleEnabledFS.redraw()
+	ui.enableButtonToggle.value := "./img/toggle_off.png"
+	if !ui.fullscreen {
+		guiVis(ui.disabledGui,true)
+		winSetTransparent(180,ui.disabledGui)
+	}
+	killAfk()
+}
 
 updateControls(*) {
 	try 
@@ -157,7 +165,7 @@ updateControls(*) {
 	try 
 		ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
 	try
-		ui.BoatEnabled.value := cfg.BoatEnabled[cfg.profileSelected]
+		ui.rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
 	try
 		ui.floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
 	try
@@ -219,7 +227,7 @@ deleteProfileName(*) {
 		try
 			cfg.reelSpeed.removeAt(cfg.profileSelected)
 		try
-			cfg.BoatEnabled.removeAt(cfg.profileSelected)
+			cfg.rodHolderEnabled.removeAt(cfg.profileSelected)
 
 		if cfg.profileSelected > cfg.profileName.length {
 			cfg.profileSelected := 1
@@ -243,7 +251,7 @@ deleteProfileName(*) {
 		try
 			ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
 		try
-			ui.BoatEnabled.value := cfg.BoatEnabled[cfg.profileSelected]
+			ui.rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
 		try
 			ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
 	} else {

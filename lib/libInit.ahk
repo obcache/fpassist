@@ -39,7 +39,7 @@ startGame(*) {
 		sleep(1000)
 		if w == a_screenWidth && h == a_screenHeight {
 			winActivate("ahk_exe fishingPlanet.exe")
-			sendNice("{alt down}{enter}{alt up}")
+			send("{alt down}{enter}{alt up}")
 			sleep(500)
 			ui.loadingProgress.value += 2
 			ui.loadingProgress2.value += 2
