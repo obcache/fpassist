@@ -121,11 +121,14 @@ rodsIn(*) {
 
 ui.enabled:=true
 toggleEnabled(*) {
-		(ui.enabled := !ui.enabled) ? toggleOn() : toggleOff()
+		(ui.enabled := !ui.enabled) 
+			? toggleOn() 
+			: toggleOff()
 }
 
 
 toggleOn(*) {
+		setCapsLockState(true)
 		ui.toggleEnabledFS.value:="./img/toggle_on.png"
 		ui.toggleEnabledFSLabel.opt("hidden")
 		ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
@@ -137,6 +140,7 @@ toggleOn(*) {
 }
 	
 toggleOff(*) {
+	setCapsLockState(false)
 	ui.toggleEnabledFS.value:="./img/toggle_off.png"
 	ui.toggleEnabledFSLabel.opt("-hidden")
 	for this_obj in ui.fsObjects 

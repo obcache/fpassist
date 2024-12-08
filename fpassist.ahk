@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.3.4"
+A_FileVersion := "1.3.3.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -49,7 +49,7 @@ hotIfWinActive(ui.game)
 	; ~LCtrl:: {
 		; winActivate(ui.fishGui)
 	; }
-	
+		
 	hotkey("CapsLock",toggleEnabled)
 hotIf()
 
