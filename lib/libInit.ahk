@@ -12,6 +12,7 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 startGame(*) {
 	loadScreen()
 	if !winExist(ui.game) {
+	;msgbox(getGamePath())
 		run(getGamePath(),,"Hide")		
 		winWait(ui.game)
 		winMove(0,0,,,ui.game)

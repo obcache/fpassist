@@ -119,7 +119,7 @@ rodsIn(*) {
 	send("{LButton Up}")	
 }
 
-ui.enabled:=true
+
 toggleEnabled(*) {
 		(ui.enabled := !ui.enabled) 
 			? toggleOn() 
@@ -128,10 +128,10 @@ toggleEnabled(*) {
 
 
 toggleOn(*) {
-		setCapsLockState(true)
-		ui.toggleEnabledFS.value:="./img/toggle_on.png"
+		;setCapsLockState(true)
+		ui.toggleEnabledFS.value:="./img/toggle_horz_on.png"
 		ui.toggleEnabledFSLabel.opt("hidden")
-		ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
+		;ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
 		ui.toggleEnabledFS.redraw()
 		for this_obj in ui.fsObjects 
 			this_obj.opt("-hidden")			
@@ -140,19 +140,19 @@ toggleOn(*) {
 }
 	
 toggleOff(*) {
-	setCapsLockState(false)
-	ui.toggleEnabledFS.value:="./img/toggle_off.png"
+	;setCapsLockState(false)
+	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
 	ui.toggleEnabledFSLabel.opt("-hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
-	ui.toggleEnabledFS.move(a_screenWidth-50,,,)
+	;ui.toggleEnabledFS.move(a_screenWidth-50,,,)
 	ui.toggleEnabledFS.redraw()
 	ui.enableButtonToggle.value := "./img/toggle_off.png"
 	if !ui.fullscreen {
 		guiVis(ui.disabledGui,true)
-		winSetTransparent(180,ui.disabledGui)
+		winSetTransparent(180,ui.disabledGui)         
 	}
-	killAfk()
+	endAfk()
 }
 
 updateControls(*) {

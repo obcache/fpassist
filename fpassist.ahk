@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.3.5"
+A_FileVersion := "1.3.3.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -50,7 +50,7 @@ hotIfWinActive(ui.game)
 		; winActivate(ui.fishGui)
 	; }
 		
-	hotkey("CapsLock",toggleEnabled)
+	hotkey("~CapsLock",toggleEnabled)
 hotIf()
 
 ui.fullscreen := false
@@ -223,6 +223,22 @@ autoFishRestart(*) {
 	startAfk()
 }
 
+endAfk(*) {
+	ui.autoFish:=false
+	ui.enabled:=false
+	mode("off")
+	setTimer(updateAfkTime,0)
+	setTimer(flashCancel,0)
+	setTimer(flashRetrieve,0)
+	setTimer(flashCast,0)
+	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
+	ui.toggleEnabledFSLabel.opt("hidden")
+	for this_obj in ui.fsObjects 
+		this_obj.opt("hidden")
+	;toggleEnabled()
+	exit
+}
+
 killAfk(*) {
 	ui.autoFish:=false
 	ui.enabled:=false
@@ -231,11 +247,11 @@ killAfk(*) {
 	setTimer(flashCancel,0)
 	setTimer(flashRetrieve,0)
 	setTimer(flashCast,0)
-	ui.toggleEnabledFS.value:="./img/toggle_off.png"
+	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
 	ui.toggleEnabledFSLabel.opt("hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
-	ui.enabled:=true
+	toggleEnabled()
 	exit
 }
 
@@ -285,9 +301,8 @@ startAfk(this_mode:="cast",*) {
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
-
 	while ui.enabled  {
-		;detectPrompts()
+		detectPrompts()
 
 		(ui.enabled) ? 0 : killAfk()
 		ui.mode:="cast"
@@ -429,26 +444,28 @@ cast(*) {
 				errorLevel:=(ui.enabled) ? 0 : killAfk()	
 				sleep500(2)
 			}
-			
-			log("Cast: Closing Bail")
-			sendNice("{space down}")
-			sleep(500)
-			sendNice("{space up}")
-			sleep(150)
+			if !reeledIn() {
+				log("Cast: Closing Bail")
+				sendNice("{space down}")
+				sleep(500)
+				sendNice("{space up}")
+				sleep(150)
+			}
 		}
 	} else {
 		if !reeledIn() && ui.enabled && ui.autoFish {
 			castButtonDim()
 			reelButtonOn()
-		
 			reelIn()
-		
 			reelButtonOff()
 			castButtonOn()
+			sleep500(2)
 		}
 
-		sleep500(2)
-
+		if reeledIn()
+			sleep500(4)
+		else
+			return
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		
 		log("Cast: Prepared")
@@ -481,7 +498,7 @@ cast(*) {
 		sendNice("{space down}")
 		sleep(500)
 		sendNice("{space up}")
-		sleep(150)
+		sleep500(4)
 	}
 }
 
@@ -511,14 +528,9 @@ retrieve(*) {
 				sleep500(6)
 				rotateRodStands()
 				sleep500(8)
-				if isHooked() {
-					landFish()
-					return
-				}
 				sleep500(10)
 			}
-
-				
+	
 	case ui.floatEnabled.value:
 		log("Watch: Monitoring Bait",1)
 		ui.retrieveButton.text := "Watch"
@@ -571,7 +583,7 @@ retrieve(*) {
 						log("Retrieve: Twitch",1)
 							loop round(random(1,3)) {
 								if isHooked() {
-									sleep(1500)
+									sleep500(3)
 									landFish()
 									return
 								}
@@ -593,7 +605,7 @@ retrieve(*) {
 						sendNice("{space up}")
 						setKeyDelay(50)
 			}
-		sleep500(2)
+		;sleep500(2)
 		}	
 	}
 }
@@ -633,11 +645,11 @@ landFish(*) {
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		sendNice("{RButton Down}")
 		;loop round(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2))
-		sleep(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2)*500)
+		sleep(random((((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2)*500)*.6)
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 
 		sendNice("{RButton Up}")
-		sleep(((4-cfg.landAggro[cfg.profileSelected])/2)*500)
+		sleep((((4-cfg.landAggro[cfg.profileSelected])/2)*500)*2.5)
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 
 	}
@@ -653,15 +665,20 @@ landFish(*) {
 	ui.retrieveButton.redraw()
 	sleep(1500)
 	analyzeCatch()
-	sleep(1500)
 }	
 
 
 analyzeCatch(*) { 
 	send("{shift up}{ctrl up}{space up}{capslock up}")
 	sleep(1500)
-	if !fishCaught() {
-		return
+	loop 5 {
+		if fishCaught {	
+			sleep(3000)
+			break
+		} else {
+			log("Analyze: No Fish")
+			return
+		}
 	}
 	if !(DirExist("./fishPics"))
 		DirCreate("./fishPics")
@@ -700,7 +717,10 @@ ui.fishCaughtY:=575
 ui.fishCaughtColor:=[0xFFFFFF,0x797A7E]
 
 fishCaught(*) {
-	fishCaughtPixel := round(pixelGetColor(450,575))
+	fishCaughtPixelColor := pixelGetColor(450,575)
+	log("Analyze: Fish Caught[FFFFFF & 797A7E] :: Actual[" fishCaughtPixelColor "]")
+	fishCaughtPixel := round(fishCaughtPixelColor)
+	
 	log("Analyzing: Catch",1,"Analyzed: Catch")
 	if checkWhite := checkPixel(ui.fishCaughtX,ui.fishCaughtY,ui.fishCaughtColor[1]) || checkGrey := checkPixel(ui.fishCaughtX,ui.fishCaughtY,ui.fishCaughtColor[2]) {
 		return 1
@@ -920,6 +940,7 @@ sleep500(loopCount := 1,stopOnReel := false) {
 			killAfk()
 		if isHooked() {
 			landFish()
+			sleep(2000)
 			return
 		}	
 		sleep(500)

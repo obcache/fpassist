@@ -10,7 +10,7 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 
 
 mode(mode) {
-	ui.mode:=mode
+	ui.mode:=mode`	
 	ui.castIconFS.value:="./img/icon_cast.png"
 	ui.retrieveIconFS.value:="./img/icon_retrieve.png"
 	ui.reelIconFS.value:="./img/icon_reel.png"
@@ -436,6 +436,8 @@ install() {
 			fileInstall("./img/icon_reel.png",installDir "/img/icon_reel.png",1)			
 			fileInstall("./img/toggle_on.png",installDir "/img/toggle_on.png",1)
 			fileInstall("./img/toggle_off.png",installDir "/img/toggle_off.png",1)
+			fileInstall("./img/toggle_horz_on.png",installDir "/img/toggle_horz_on.png",1)
+			fileInstall("./img/toggle_horz_off.png",installDir "/img/toggle_horz_off.png",1)
 			fileInstall("./img/play_ani_1.png",installDir "/img/play_ani_1.png",1)
 			fileInstall("./img/play_ani_2.png",installDir "/img/play_ani_2.png",1)
 			fileInstall("./img/play_ani_3.png",installDir "/img/play_ani_3.png",1)
@@ -468,11 +470,11 @@ install() {
 }
 
 getGamePath(*) {
-	loop reg, "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache", "KVR" {
-		if inStr(regRead(),ui.gameExe)
-			if inStr(ui.gameExe := a_loopRegName,ui.gameExe) {
-				return subStr(a_loopRegName,1,strLen(a_loopRegName)-16)
-			}
+	loop reg, "HKEY_CURRENT_USER\Software\Microsoft\DirectX\UserGpuPreferences", "KVR" {
+		if inStr(a_loopRegName,ui.gameExe) {
+				;msgBox(ui.gameExe "`n" this_game:=subStr(a_loopRegName,1,strLen(a_loopRegName)-16))
+				return a_loopRegName
+		}
 	}	
 }
 
@@ -570,9 +572,9 @@ log(msg,debug:=0,msgHistory:=msg) {
 			
 			for row in ui.fishLogArr {
 				if a_index > 5
-					ui.logLV.add(,substr(row,1,40))
+					ui.logLV.add(,substr(row,1,120))
 			}
-			ui.logLV.add(,substr(formatTime(,"[hh:mm:ss] ") msg,1,40))
+			ui.logLV.add(,substr(formatTime(,"[hh:mm:ss] ") msg,1,120))
 	}
 	
 	ui.lastMsg := msgHistory
