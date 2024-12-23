@@ -392,6 +392,8 @@ startAfk(this_mode:="cast",*) {
 		(ui.enabled) ? 0 : killAfk()
 		ui.mode:="cast"
 		if reeledIn() {
+			send("{backspace}")
+			sleep500(2)
 			cast()
 		}
 		
