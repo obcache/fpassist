@@ -9,69 +9,6 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 
-mode(mode) {
-	ui.mode:=mode`	
-	ui.castIconFS.value:="./img/icon_cast.png"
-	ui.retrieveIconFS.value:="./img/icon_retrieve.png"
-	ui.reelIconFS.value:="./img/icon_reel.png"
-
-	if ui.autoFish
-		startButtonOn()
-	switch mode {
-		case "cast":
-			reelButtonOff()
-			retrieveButtonOff()
-			ui.retrieveButton.text:="Retrieve"
-			castButtonOn()
-			startButtonOn()
-			cancelButtonOn()
-		
-		case "land":
-			reelButtonOff()
-			castButtonOff()
-			ui.retrieveButton.text:="Landing"
-			retrieveButtonOn()
-			startButtonOn()
-			cancelButtonOn()
-			ui.reelIconFS.value:="./img/icon_reel_on.png"
-			flashretrieve()
-			setTimer(flashretrieve,1500)
-
-		case "retrieve":
-			reelButtonOff()
-			castButtonOff()
-			try {
-				ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
-			}
-			startButtonOn()
-			cancelButtonOn()
-			retrieveButtonOn()
-		
-		case "reel":
-			retrieveButtonOff()
-			ui.retrieveButton.text:="Retrieve"
-			try {
-				ui.reelIconFS.value:="./img/icon_reel_on.png"
-			}	
-			startButtonOn()
-			cancelButtonOn()
-			reelButtonOn()
-		
-		case "afk":
-			startButtonOn()
-		
-		case "off":
-			ui.autoFish:=false
-			cancelButtonOff()
-			startButtonOff()
-			retrieveButtonOff()
-			castButtonOff()
-			reelButtonOff()
-			return
-	}
-	cancelButtonOn()
-}
-
 osdNotify(msg) {
 	winGetPos(&x,&y,&w,&h,ui.fishGui)	
 	msgWidth := strLen(msg)*5

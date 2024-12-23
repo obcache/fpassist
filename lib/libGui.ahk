@@ -163,6 +163,8 @@ createGui() {
 	ui.reelButtonBg := ui.fishGui.addText("x1226 y786 w101 h25 background" ui.trimDarkColor[1])
 	ui.reelButton := ui.fishGui.addText("section x1226 center y787 w105 h26 c" ui.trimDarkFontColor[1] " backgroundTrans","&Reel")
 	ui.reelButton.setFont("s14 bold","Trebuchet MS")
+
+	
 	ui.reelButtonHotkey := ui.fishGui.addText("x+-17 ys+2 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[R]")
 	ui.reelButtonHotkey.setFont("s6","Small Fonts")	
 	ui.reelButton.onEvent("click",reelButtonClicked)

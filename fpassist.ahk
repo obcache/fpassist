@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.3.6"
+A_FileVersion := "1.3.3.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -55,6 +55,69 @@ hotIf()
 
 ui.fullscreen := false
 
+mode(mode) {
+	ui.mode:=mode	
+	ui.castIconFS.value:="./img/icon_cast.png"
+	ui.retrieveIconFS.value:="./img/icon_retrieve.png"
+	ui.reelIconFS.value:="./img/icon_reel.png"
+
+	switch mode {
+		case "cast":
+			reelButtonOff()
+			retrieveButtonOff()
+			ui.retrieveButton.text:="Retrieve"
+			castButtonOn()
+			startButtonOn()
+			cancelButtonOn()
+		
+		case "land":
+			reelButtonOff()
+			castButtonOff()
+			ui.retrieveButton.text:="Landing"
+			retrieveButtonOn()
+			startButtonOn()
+			cancelButtonOn()
+			ui.reelIconFS.value:="./img/icon_reel_on.png"
+			flashretrieve()
+			setTimer(flashretrieve,1500)
+
+		case "retrieve":
+			ui.retrieveButton.text:="Retrieve"
+			reelButtonOff()
+			castButtonOff()
+			try {
+				ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
+			}
+			startButtonOn()
+			cancelButtonOn()
+			retrieveButtonOn()
+		
+		case "reel":
+			ui.retrieveButton.text:="Retrieve"
+			try {
+				ui.reelIconFS.value:="./img/icon_reel_on.png"
+			}	
+			retrieveButtonOff()
+			startButtonOn()
+			cancelButtonOn()
+			reelButtonOn()
+		
+		case "afk":
+			startButtonOn()
+		
+		case "off":
+			ui.retrieveButton.text:="Retrieve"
+			cancelButtonOff()
+			startButtonOff()
+			retrieveButtonOff()
+			castButtonOff()
+			reelButtonOff()
+			ui.autoFish:=false
+			return
+	}
+	cancelButtonOn()
+}
+
 isEnabled(*) {
 		if ui.enabled && winActive(ui.game) && !ui.fullscreen
 			return 1
@@ -95,7 +158,29 @@ flashLightFlash(*) {
 	send("{f}")
 }
 
+shiftDown(*) {
+	ui.shiftHotkeyBg2.opt("backgroundFF8800")
+	ui.shiftHotkey.setFont("c" ui.fontColor[5])
+	ui.reelButtonHotkey.setFont("c" ui.trimFontColor[6])
+	ui.castButtonHotkey.setFont("c" ui.trimFontColor[6])
+	ui.retrieveButtonHotkey.setFont("c" ui.trimFontColor[6])
+	ui.cancelButtonHotkey.setFont("c" ui.trimFontColor[6])
+	ui.startButtonHotkey.setFont("c" ui.trimFontColor[6])
+	keywait("shift")
+	shiftUp()
+}
+shiftUp(*) {
+	ui.shiftHotkeyBg2.opt("background" ui.trimColor[1])
+	ui.startButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	ui.shiftHotkey.setFont("c" ui.trimFontColor[1])
+	ui.reelButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	ui.castButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	ui.retrieveButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	ui.cancelButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+}
 hotif(isHot)
+	hotkey("~shift",shiftDown)
+	;hotkey("~shift up",shiftUp)
 	hotkey("~f",stopFlashLightFlash)
 	hotkey("^+f",toggleFlashlightFlash)
 	hotKey(ui.exitKey,cleanExit)
@@ -394,6 +479,7 @@ ui.fishQ:=array()
 
 
 cast(*) {
+		mode("cast")
 	if ui.rodHolderEnabled.value {
 		rodCount:=4
 		loop rodCount {
@@ -531,20 +617,20 @@ retrieve(*) {
 				sleep500(10)
 			}
 	
-	case ui.floatEnabled.value:
-		log("Watch: Monitoring Bait",1)
-		ui.retrieveButton.text := "Watch"
-		while !reeledIn() {
-			errorLevel:=(ui.enabled) ? 0 : killAfk()	
-			sleep500(2)
-			if round(a_index) > round(ui.recastTime.value*60) {
-				log("Cast: Idle. Recasting")
-				reelIn()
-				return
+		case ui.floatEnabled.value:
+			log("Watch: Monitoring Bait",1)
+			ui.retrieveButton.text := "Watch"
+			while !reeledIn() {
+				errorLevel:=(ui.enabled) ? 0 : killAfk()	
+				sleep500(2)
+				if round(a_index) > round(ui.recastTime.value*60) {
+					log("Cast: Idle. Recasting")
+					reelIn()
+					return
+				}
 			}
-		}
-		ui.retrieveButton.text := "Retrie&ve"
-		return
+			ui.retrieveButton.text := "Retrie&ve"
+			return
 		
 		
 	case !ui.floatEnabled.value:
@@ -559,13 +645,20 @@ retrieve(*) {
 			errorLevel:=(ui.enabled) ? 0 : killAfk()	
 			if isHooked() { 
 				winActivate(ui.game)
-				sleep(1500)
+				sleep(500)
 				errorLevel:=(ui.enabled) ? 0 : killAfk()	
 				landFish()
 				return
 			}
 			
-			mechanic.number := round(random(1,3))
+			if ui.twitchFreq.value == 10 {
+				send("{space down}")
+				mechanic.number:=round(random(1,10))
+				if mechanic.number > 3
+					mechanic.number:=1
+			} else {
+				mechanic.number := round(random(1,3))
+			}
 			mechanic.strength := round(random(1,10))
 			if mechanic.number == mechanic.last {
 				mechanic.repeats += 1
@@ -581,17 +674,17 @@ retrieve(*) {
 							;do nothing
 						case 1:
 						log("Retrieve: Twitch",1)
-							loop round(random(1,3)) {
+							loop round(random(1,1)) {
 								if isHooked() {
-									sleep500(3)
+									sleep500(1)
 									landFish()
 									return
 								}
-								sendNice("{space down}")
+								;sendNice("{space down}")
 								sendNice("{RButton Down}")
-								sleep(300)
+								sleep(round(random(300,500)))
 								sendNice("{RButton Up}")
-								sendNice("{space up}")
+								;sendNice("{space up}")
 							}
 					case 2:
 						log("Retrieve: Pause",1)
@@ -600,11 +693,12 @@ retrieve(*) {
 					case 3:
 						log("Retrieve: Reel",1)
 						setKeyDelay(0)
-						sendNice("{space down}")
+						sendNice("{space down}")       
 						sleep500(3)
 						sendNice("{space up}")
 						setKeyDelay(50)
 			}
+			send("{space up}")
 		;sleep500(2)
 		}	
 	}
