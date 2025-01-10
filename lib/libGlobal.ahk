@@ -46,7 +46,7 @@ initVars(*) {
 	cfg.profile 			:= array()
 	ui.fishLogArr 			:= array()
 	ui.sliderList 			:= array()
-	
+	ui.mode					:= "off"
 	cfg.file 				:= a_appName ".ini"
 	cfg.installDir 			:= a_mydocuments "\" a_appName "\"
 	
@@ -112,14 +112,14 @@ initVars(*) {
 	ui.lastMsg 				:= ""
 	ui.lastMode 			:= 0
 	ui.cycleStartTime		:= 0
-	ui.hookedX:=1090
-	ui.hookedY:=510
+	ui.hookedXstd:=1090
+	ui.hookedYstd:=510
 	ui.hookedColor:=[0x1EA9C3,0x419AAC]
-	ui.reeledInCoord1:=[1026,635]
-	ui.reeledInCoord2:=[1047,635]
-	ui.reeledInCoord3:=[1026,656]
-	ui.reeledInCoord4:=[1047,656]
-	ui.reeledInCoord5:=[1036,644]
+	ui.reeledInCoord1std:=[1026,635]
+	ui.reeledInCoord2std:=[1047,635]
+	ui.reeledInCoord3std:=[1026,656]
+	ui.reeledInCoord4std:=[1047,656]
+	ui.reeledInCoord5std:=[1036,644]
 	setCapsLockState(false)
 }
 

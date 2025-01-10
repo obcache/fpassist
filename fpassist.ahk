@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.3.8"
+A_FileVersion := "1.3.3.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -19,6 +19,7 @@ initVars()
 #include <libMod>
 #include <libGui>
 #include <libGame>
+#include <libHotkeys>
 #include <Class_LV_Colors>
 
 verifyAdmin()		 
@@ -45,13 +46,7 @@ onExit(exitFunc)
 if ui.fullscreen
 	goFS()
 	
-hotIfWinActive(ui.game)
-	; ~LCtrl:: {
-		; winActivate(ui.fishGui)
-	; }
-		
-	hotkey("~CapsLock",toggleEnabled)
-hotIf()
+
 
 ui.fullscreen := false
 
@@ -178,76 +173,8 @@ shiftUp(*) {
 	ui.retrieveButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
 	ui.cancelButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
 }
-hotif(isHot)
-	hotkey("~shift",shiftDown)
-	;hotkey("~shift up",shiftUp)
-	hotkey("~f",stopFlashLightFlash)
-	hotkey("^+f",toggleFlashlightFlash)
-	hotKey(ui.exitKey,cleanExit)
-	hotKey(ui.reloadKey,appReload)
-	hotKey(ui.startKeyMouse,startButtonClicked)
-	hotKey(ui.stopKeyMouse,killAfk)
-	hotkey("+" ui.cancelKey,killAfk)
-	hotkey("+" ui.reelKey,reelButtonClicked)
-	hotKey("+" ui.startKey,startButtonClicked)
-	hotKey("+" ui.castKey,castButtonClicked)
-	hotKey("+" ui.retrieveKey,retrieveButtonClicked)
-	hotKey("F11",toggleFS)
-	hotKey("Home",appReload)
-	hotKey("^End",rodsIn)
-	hotKey("^a",turnLeft)
-	hotKey("^d",turnRight)
 
-	^+l:: {
-		ui.autoFish:=true
-		landFish()
-	}
-	
-	
-	^a:: {
-		setTimer(turnLeft,2500)
-	}
-	~a:: {
-		setTimer(turnLeft,0)
-	}
-	
-	^d:: {
-		setTimer(turnRight,2500)
-	}
-	~d:: {
-		setTimer(turnRight,0)
-	}
-	
-	^w:: {
-		setTimer(throttleForward,2500)
-	}
-	
-	~w:: {
-		setTimer(throttleForward,0)
-	}
-hotIf()
 
-throttleForward(*) {
-	sendNice("{w down}")
-	sleep(750)
-	sendNice("{w up}")
-	sleep(500)
-	sendNice("{s down}")
-	sleep(750)
-	sendNice("{s up}")
-	sleep(500)
-}
-
-turnLeft(*) {
-	sendNice("{a down}")
-	sleep500(3)
-	sendNice("{a up}")
-}
-turnRight(*) {
-	sendNice("{d down}")
-	sleep500(3)
-	sendNice("{d up}")
-}
 toggleFS(*) {
 	(ui.isFS := !ui.isFS) ? goFS() : noFS()
 }
@@ -387,10 +314,9 @@ startAfk(this_mode:="cast",*) {
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
 	while ui.enabled  {
-		detectPrompts()
+		;detectPrompts()
 
 		(ui.enabled) ? 0 : killAfk()
-		ui.mode:="cast"
 		if reeledIn() {
 			send("{backspace}")
 			sleep500(2)
@@ -421,7 +347,7 @@ isHooked(*) {
 	ui.isHooked := 0
 	errorLevel:=(ui.enabled) ? 0 : killAfk()	
 	for hookedColor in ui.hookedColor {
-		if (checkPixel(ui.hookedX,ui.hookedY,hookedColor)) {
+		if (checkPixel(ui.hookedX%(ui.fullscreen)?'fs':'std'%,ui.hookedY%(ui.fullscreen)?'fs':'std'%,hookedColor)) {
 			log("HOOKED!")
 			ui.isHooked := 1
 			setTimer(isHooked,0)
@@ -447,7 +373,7 @@ calibrate(*) {
 	loop 13 {
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		winWait("ahk_exe fishingplanet.exe")
-		sendNice("{-}")
+		sendNice("{NumpadSub}")
 		sleep(50)
 	}
 	if !ui.autoFish
@@ -455,7 +381,7 @@ calibrate(*) {
 	ui.currDrag := 0
 	loop cfg.dragLevel[cfg.profileSelected] {
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
-		sendNice("{+}")
+		sendNice("{NumpadAdd}")
 		sleep(100)
 	}
 	
@@ -806,6 +732,14 @@ analyzeCatch(*) {
 	sleep(1500)
 	sendNice("{space}")
 	sleep(1500)
+	send("{shift up}")
+	send("{lshift up}")
+	send("{rshift up}")
+	send("{ctrl up}")
+	send("{lctrl up}")
+	send("{rctrl up}")
+	send("{space up}")
+	
 }
 
 ui.fishCaughtX:=450
@@ -889,11 +823,11 @@ if payload=="" {
 }
 
 reeledIn(*) {
-	ui.checkReel1 := round(pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
-	ui.checkReel2 := round(pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2]))
-	ui.checkReel3 := round(pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2]))
-	ui.checkReel4 := round(pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2]))
-	ui.checkReel5 := round(pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2]))
+	ui.checkReel1 := round(pixelGetColor(ui.reeledInCoord1%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord1%(ui.fullscreen)?'fs':'std'%[2]))
+	ui.checkReel2 := round(pixelGetColor(ui.reeledInCoord2%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord2%(ui.fullscreen)?'fs':'std'%[2]))
+	ui.checkReel3 := round(pixelGetColor(ui.reeledInCoord3%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord3%(ui.fullscreen)?'fs':'std'%[2]))
+	ui.checkReel4 := round(pixelGetColor(ui.reeledInCoord4%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord4%(ui.fullscreen)?'fs':'std'%[2]))
+	ui.checkReel5 := round(pixelGetColor(ui.reeledInCoord5%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord5%(ui.fullscreen)?'fs':'std'%[2]))
 	
 	if (ui.checkReel1 >= 12250871
 		&& ui.checkReel2 >= 12250871
@@ -1100,45 +1034,4 @@ updateAfkTime(*) {
 		ui.playAniStep := 1
 	ui.startButtonStatus.value := "./img/play_ani_" ui.playAniStep ".png"
 }
-	
-hotIfWinActive(ui.game)
-	!+WheelUp:: {
-		if ui.currentRod  > 1
-			ui.currentRod -= 1
-		else
-			ui.currentRod := 7
-		sendIfWinActive("{" ui.currentRod "}",ui.game)
-	}
-	!+WheelDown:: {
-		if ui.currentRod < 7
-			ui.currentRod += 1
-		else 
-			ui.currentRod:=1
-		sendIfWinActive("{" ui.currentRod "}",ui.game)
-	}
-	!WheelUp:: {
-		sendIfWinActive("{LShift Down}",ui.game,true)
-		sleep(200)
-		sendIfWinActive("{2}",ui.game,true)
-		sleep(200)
-		sendIfWinActive("{LShift Up}",ui.game,true)
-	}
-	!WheelDown:: {
-		sendIfWinActive("{LShift Down}",ui.game,true)
-		sleep(200)
-		sendIfWinActive("{1}",ui.game,true)
-		sleep(200)
-		sendIfWinActive("{LShift Up}",ui.game,true)
-	}
-	!MButton:: {
-		sendIfWinActive("{LShift Down}",ui.game,true)
-		sleep(200)
-		sendIfWinActive("{3}",ui.game,true)
-		sleep(200)
-		sendIfWinActive("{LShift Up}",ui.game,true)
-	}
-
-
-hotIf()
-
 
