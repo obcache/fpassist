@@ -37,89 +37,92 @@ hotif(isHot)
 	hotKey("^d",turnRight)
 
 
+ui.toggleRightEnabled:=false
+ui.toggleLeftEnabled:=false
+ui.toggleForwardEnabled:=false
+ui.toggleBackwardEnabled:=false
+
+hotIfWinActive(ui.game)	
+	;Boat Steering
 	
-;Boat Steering
-	+left::
 	+a:: {
 		setTimer(turnLeft,3500)
 	}
-	; ~left::
-	; ~a:: {
-		; setTimer(turnLeft,0)
-	; }
-	+right::
+	
+	~a:: {
+		setTimer(turnLeft,0)
+	}
+
 	+d:: {
 		toggleRight()
 	}
-	; ~right::
-	; ~d:: {
-		; setTimer(turnRight,0)
-	; }
 	
-	^w:: {
+	~d:: {
+		 setTimer(turnRight,0)
+	}
+	
+	+w:: {
 		setTimer(throttleForward,2500)
 	}
 	
 	~w:: {
 		setTimer(throttleForward,0)
 	}
-	ui.toggleRightEnabled:=false
+
+
 	toggleRight(*) {
 		(ui.toggleRightEnabled:=!ui.toggleRightEnabled)
 		? setTimer(turnRight,4500)
 		: setTimer(turnRight,0)
 	}
-	ui.toggleLeftEnabled:=false
 	toggleLeft(*) {
 		(ui.toggleLeftEnabled:=!ui.toggleLeftEnabled)
 		? setTimer(turnLeft,4500)
 		: setTimer(turnLeft,0)
 	}
-	ui.toggleForwardEnabled:=false
 	toggleForward(*) {
 		(ui.toggleForwardEnabled:=!ui.toggleForwardEnabled)
 		? setTimer(throttleForward,2500)
 		: setTimer(throttleForward,0)
 	}
-	ui.toggleBackwardEnabled:=false
 	toggleBackward(*) {
 		(ui.toggleBackwardEnabled:=!ui.toggleBackwardEnabled)
 		? setTimer(throttleBackward,2500)
 		: setTimer(throttleBackward,0)
 	}
 	
-throttleForward(*) {
-		send("{w down}")
-		sleep(750)
-		send("{w up}")
-		sleep(500)
-		send("{s down}")
-		sleep(750)
-		send("{s up}")
-		sleep(500)
+	throttleForward(*) {
+		if ui.enabled {
+			send("{w down}")
+			sleep(750)
+			send("{w up}")
+			sleep(500)
+			send("{s down}")
+			sleep(750)
+			send("{s up}")
+			sleep(500)
+		}
 	}
 
-turnLeft(*) {
-		sendPlay("{d down}")
-		sleep(2500)
-		sendPlay("{d up}")
+	turnLeft(*) {
+		if ui.enabled {
+			sendEvent("{left down}")
+			sleep(2500)
+			sendEvent("{left up}")
+		}
 	}
 
-turnRight(*) {
-		sendEvent("{d down}")
-		sleep(2500)
-		sendEvent("{d up}")
+	turnRight(*) {
+		if ui.enabled {
+			sendEvent("{right down}")
+			sleep(2500)
+			sendEvent("{right up}")
+		}
 	}
-;END Boat Steering
-
-hotIf()
-
-hotIfWinActive(ui.game)
+	;END Boat Steering
+	
 	hotkey("~CapsLock",toggleEnabled)
-hotIf()
 
-
-hotIfWinActive(ui.game)
 	!+WheelUp:: {
 		if ui.currentRod  > 1
 			ui.currentRod -= 1

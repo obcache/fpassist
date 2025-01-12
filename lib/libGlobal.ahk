@@ -112,14 +112,21 @@ initVars(*) {
 	ui.lastMsg 				:= ""
 	ui.lastMode 			:= 0
 	ui.cycleStartTime		:= 0
-	ui.hookedXstd:=1090
+	ui.hookedXstd:=1090	
 	ui.hookedYstd:=510
-	ui.hookedColor:=[0x1EA9C3,0x419AAC]
+	ui.hookedColor:=[0x1DECFE,0x1EA9C3,0x419AAC]
 	ui.reeledInCoord1std:=[1026,635]
 	ui.reeledInCoord2std:=[1047,635]
 	ui.reeledInCoord3std:=[1026,656]
 	ui.reeledInCoord4std:=[1047,656]
 	ui.reeledInCoord5std:=[1036,644]
+	ui.hookedX:=ui.hookedXstd
+	ui.hookedY:=ui.hookedYstd
+	ui.reeledInCoord1:=ui.reeledInCoord1std
+	ui.reeledInCoord2:=ui.reeledInCoord2std
+	ui.reeledInCoord3:=ui.reeledInCoord3std
+	ui.reeledInCoord4:=ui.reeledInCoord4std
+	ui.reeledInCoord5:=ui.reeledInCoord5std
 	setCapsLockState(false)
 }
 

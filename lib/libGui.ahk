@@ -44,7 +44,7 @@ switch a_screenWidth {
 		ui.reeledInCoord3fs:=[1577,952]
 		ui.reeledInCoord4fs:=[1550,952]
 		ui.reeledInCoord5fs:=[1565,970]
-		ui.fsPanelOffset:=[-100,0]
+		ui.fsPanelOffset:=[-200,0]
 }
 
 createGui() {
@@ -439,7 +439,13 @@ goFS(*) {
 			ui.reeledInCoord5fs:=[1565,970]
 			ui.fsPanelOffset:=[-100,0]
 	}
-
+	ui.reeledInCoord1:=ui.reeledInCoord1fs
+	ui.reeledInCoord2:=ui.reeledInCoord2fs
+	ui.reeledInCoord3:=ui.reeledInCoord3fs
+	ui.reeledInCoord4:=ui.reeledInCoord4fs
+	ui.reeledInCoord5:=ui.reeledInCoord5fs
+	ui.hookedX:=ui.hookedXfs
+	ui.hookedY:=ui.hookedYfs
 	;createGuiFS()
 	showLog()
 	click()
@@ -469,14 +475,22 @@ showLog(*) {
 	
 noFS(*) {
 	ui.fullscreen:=false
-	
-	ui.hookedXstd:=1090
-	ui.hookedYstd:=510
+	                                                            
+	ui.hookedXstd:=1075
+	ui.hookedYstd:=508
 	ui.reeledInCoord1std:=[1026,635]
 	ui.reeledInCoord2std:=[1047,635]
 	ui.reeledInCoord3std:=[1026,656]
 	ui.reeledInCoord4std:=[1047,656]
 	ui.reeledInCoord5std:=[1036,644]
+	
+	ui.hookedX:=ui.hookedXstd
+	ui.hookedY:=ui.hookedYstd
+	ui.reeledInCoord1:=ui.reeledInCoord1std
+	ui.reeledInCoord2:=ui.reeledInCoord2std
+	ui.reeledInCoord3:=ui.reeledInCoord3std
+	ui.reeledInCoord4:=ui.reeledInCoord4std
+	ui.reeledInCoord5:=ui.reeledInCoord5std
 	
 	guiVis(ui.fishGuiFS,false)
 	
@@ -516,7 +530,7 @@ createGuiFS(*) {
 	ui.FishCaughtLabelFS.setFont("s54","Calibri")
 	ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("hidden right x" ui.fishGuiFSx-90-30 " y" ui.fishGuiFSy+20+40 " w200 h90 backgroundTrans c" ui.trimFontColor[6],"Count")
 	ui.FishCaughtLabel2FS.setFont("s60","Calibri")
-	ui.fishLogFS := ui.fishGuiFS.addText("hiddenx95 y350 w360 h450 backgroundTrans c" ui.fontColor[3],"")
+	ui.fishLogFS := ui.fishGuiFS.addText("hidden x95 y350 w360 h450 backgroundTrans c" ui.fontColor[3],"")
 	ui.fishLogFS.setFont("s16")
 	ui.fishGuiFS.setFont("s12")
 	ui.fsPanel := object()

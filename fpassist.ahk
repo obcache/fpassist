@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.3.9"
+A_FileVersion := "1.3.4.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -132,7 +132,7 @@ isHot(*) {
 		return 1
 	else
 		return 0
-	}
+}
 
 ui.flashLightEnabled:=false
 toggleFlashlightFlash(*) {
@@ -195,7 +195,6 @@ modeChanged(*) {
 stopAfk(restart:="",*) {
 	setTimer(flashCancel,1400)
 	mode("off")
-	ui.mode:="off"
 	ui.autoFish 		:= false
 
 	setTimer(updateAfkTime,0)
@@ -225,9 +224,7 @@ stopAfk(restart:="",*) {
 
 }
 
-^+r:: {
-	autoFishRestart()
-}
+
 
 autoFishRestart(*) {
 	killAfk()
@@ -347,10 +344,11 @@ isHooked(*) {
 	ui.isHooked := 0
 	errorLevel:=(ui.enabled) ? 0 : killAfk()	
 	for hookedColor in ui.hookedColor {
-		if (checkPixel(ui.hookedX%(ui.fullscreen)?'fs':'std'%,ui.hookedY%(ui.fullscreen)?'fs':'std'%,hookedColor)) {
+		;msgBox((ui.fullscreen)?'fs':'std')
+		if (checkPixel(ui.hookedX,ui.hookedY,hookedColor)) {
 			log("HOOKED!")
 			ui.isHooked := 1
-			setTimer(isHooked,0)
+			;setTimer(isHooked,0)
 			return ui.isHooked
 		}
 	}
@@ -550,12 +548,13 @@ retrieve(*) {
 			ui.retrieveButton.text := "Watch"
 			while !reeledIn() {
 				errorLevel:=(ui.enabled) ? 0 : killAfk()	
-				sleep500(2)
 				if round(a_index) > round(ui.recastTime.value*60) {
 					log("Cast: Idle. Recasting")
 					reelIn()
 					return
 				}
+				sleep500(1)
+
 			}
 			ui.retrieveButton.text := "Retrie&ve"
 			return
@@ -595,7 +594,11 @@ retrieve(*) {
 			}
 			errorLevel:=(ui.enabled) ? 0 : killAfk()	
 			mechanic.last := mechanic.number
-						
+			if isHooked() {
+				sleep500(1)
+				landFish()
+				return
+			}				
 			if mechanic.repeats < 2 && ui.%mechanic.names[mechanic.number]%.value >= round(random(1,10))		
 				switch mechanic.number {
 						case 0:
@@ -823,11 +826,11 @@ if payload=="" {
 }
 
 reeledIn(*) {
-	ui.checkReel1 := round(pixelGetColor(ui.reeledInCoord1%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord1%(ui.fullscreen)?'fs':'std'%[2]))
-	ui.checkReel2 := round(pixelGetColor(ui.reeledInCoord2%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord2%(ui.fullscreen)?'fs':'std'%[2]))
-	ui.checkReel3 := round(pixelGetColor(ui.reeledInCoord3%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord3%(ui.fullscreen)?'fs':'std'%[2]))
-	ui.checkReel4 := round(pixelGetColor(ui.reeledInCoord4%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord4%(ui.fullscreen)?'fs':'std'%[2]))
-	ui.checkReel5 := round(pixelGetColor(ui.reeledInCoord5%(ui.fullscreen)?'fs':'std'%[1],ui.reeledInCoord5%(ui.fullscreen)?'fs':'std'%[2]))
+	ui.checkReel1 := round(pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
+	ui.checkReel2 := round(pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2]))
+	ui.checkReel3 := round(pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2]))
+	ui.checkReel4 := round(pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2]))
+	ui.checkReel5 := round(pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2]))
 	
 	if (ui.checkReel1 >= 12250871
 		&& ui.checkReel2 >= 12250871
@@ -964,13 +967,13 @@ detectPrompts(*) {
 sleep500(loopCount := 1,stopOnReel := false) {
 	errorLevel := 0
 	while a_index <= loopCount {
-		if !ui.mode
+		if !ui.mode || ui.mode=="off" || !ui.enabled {
 			ui.mode:="off"
-		if !ui.enabled || ui.mode=="off"
 			killAfk()
+		}
 		if isHooked() {
 			landFish()
-			sleep(2000)
+			sleep(1400)
 			return
 		}	
 		sleep(500)
