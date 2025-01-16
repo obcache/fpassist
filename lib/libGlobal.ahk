@@ -58,6 +58,7 @@ initVars(*) {
 	;cfg.profileDefaults 	:= {"NewProfile","1900","1","1","1","1","1","1","1","0","0","0"]
 
 	cfg.profileSetting := map()
+		
 		cfg.profileSetting["profileName"] := "NewProfile"
 		cfg.profileSetting["castLength"] := "1900"
 		cfg.profileSetting["castTime"] := "1"

@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.4.3"
+A_FileVersion := "1.3.4.4"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -256,11 +256,21 @@ killAfk(*) {
 	setTimer(flashCancel,0)
 	setTimer(flashRetrieve,0)
 	setTimer(flashCast,0)
+	setTimer(turnLeft,0)
+	setTimer(turnRight,0)
+	setTimer(throttleForward,0)
 	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
 	ui.toggleEnabledFSLabel.opt("hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
-	toggleEnabled()
+	;toggleEnabled()
+	send("{shift up}")
+	send("{lshift up}")
+	send("{rshift up}")
+	send("{ctrl up}")
+	send("{lctrl up}")
+	send("{rctrl up}")
+	send("{space up}")
 	exit
 }
 

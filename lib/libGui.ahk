@@ -401,9 +401,8 @@ logViewer(*) {
 
 goFS(*) {
 	ui.fullscreen := true
-
-	guiVis(ui.fishGui,false)
 	guiVis(ui.fishGuiFS,true)
+	guiVis(ui.fishGui,false)
 	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
 	; winSetTransparent(160,ui.fishGuiFsBg)
 	switch a_screenWidth {
@@ -471,7 +470,8 @@ showLog(*) {
 		monitorGetWorkArea(rightMonitor,&mX,&mY,&mW,&mH)
 		ui.logGui.show("x" tX+tW " y" highestMy)
 		guiVis(ui.logGui,true)
-	}
+		guiVis(ui.fishGui,false)
+}
 	
 noFS(*) {
 	ui.fullscreen:=false
@@ -566,7 +566,7 @@ createGuiFS(*) {
 ; try
 		; ui.profileSelectedFS.destroy()
 	ui.profileSelectedFS := ui.fishGuiFS.addText("x" ui.fsIcons.x+10+ui.fsPanelOffset[1] " y" ui.fsIcons.y-40 " w" ui.fsIcons.w*3+134 " h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
-	; ui.profileSelectedFS.setFont("s19")
+	 ui.profileSelectedFS.setFont("s19")
 	
 	ui.profileNextFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3+155)+ui.fsPanelOffset[1] " y" ui.fsIcons.y-44 " w32 h38 backgroundTrans","./img/button_arrowRight_knot.png")
 	ui.profilePrevFS.onEvent("click",profileLArrowClicked)
@@ -593,7 +593,10 @@ drawButton(x,y,w,h) {
 		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background" ui.bgColor[4])
 }
 
-
+hotIfWinActive(ui.game)
+XButton2::LAlt
+xbutton1::LCtrl
+hotIf()
 
 statPanel(*) {
 	ui.sessionStartTime := a_now

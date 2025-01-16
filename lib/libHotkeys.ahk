@@ -44,30 +44,41 @@ ui.toggleBackwardEnabled:=false
 
 hotIfWinActive(ui.game)	
 	;Boat Steering
-	
+	XButton2::LAlt
+	XButton1::LCtrl
 	+a:: {
-		setTimer(turnLeft,3500)
+		setTimer(turnLeft,4000)
+		turnLeft()
 	}
 	
 	~a:: {
 		setTimer(turnLeft,0)
+		setTimer(turnRight,0)
+		setTimer(throttleForward,0)
 	}
 
 	+d:: {
-		toggleRight()
+		setTimer(turnRight,4000)
+		turnRight()
 	}
 	
 	~d:: {
-		 setTimer(turnRight,0)
+		setTimer(turnLeft,0)
+		setTimer(turnRight,0)
+		setTimer(throttleForward,0)
 	}
 	
 	+w:: {
 		setTimer(throttleForward,2500)
+		throttleForward()
 	}
 	
 	~w:: {
+		setTimer(turnLeft,0)
+		setTimer(turnRight,0)
 		setTimer(throttleForward,0)
 	}
+
 
 
 	toggleRight(*) {
