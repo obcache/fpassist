@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.4.4"
+A_FileVersion := "1.3.4.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -161,7 +161,7 @@ shiftDown(*) {
 	ui.retrieveButtonHotkey.setFont("c" ui.trimFontColor[6])
 	ui.cancelButtonHotkey.setFont("c" ui.trimFontColor[6])
 	ui.startButtonHotkey.setFont("c" ui.trimFontColor[6])
-	keywait("shift")
+	keywait("LShift")
 	shiftUp()
 }
 shiftUp(*) {
@@ -172,6 +172,7 @@ shiftUp(*) {
 	ui.castButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
 	ui.retrieveButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
 	ui.cancelButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	send("{LShift Up}")
 }
 
 
@@ -704,7 +705,7 @@ landFish(*) {
 
 
 analyzeCatch(*) { 
-	send("{shift up}{ctrl up}{space up}{capslock up}")
+	send("{shift up}{ctrl up}{space up}{capsLock up}")
 	sleep(1500)
 	loop 5 {
 		if fishCaught {	

@@ -9,23 +9,27 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) {
-	castButtonClicked()
+	toggleOn()
+	startAfk()
 }
 
 stopButtonClicked(*) {
-	ui.autoFish:=false
-	ui.mode:="off"
-	mode(ui.mode)
-	ui.toggleEnabledFS.move(a_screenWidth-50,,,)
-	ui.toggleEnabledFS.redraw()
-	ui.enableButtonToggle.value := "./img/toggle_off.png"
-	if !ui.fullscreen {
-		guiVis(ui.disabledGui,true)
-		winSetTransparent(180,ui.disabledGui)
-	}
-	sleep(1000)
-	killAfk() 
-	exit
+	toggleOff()
+	toggleOn()
+	; ui.autoFish:=false
+	; ui.mode:="off"
+	; mode(ui.mode)
+	; ui.toggleEnabledFS.move(a_screenWidth-50,,,)
+	; ui.toggleEnabledFS.redraw()
+	; ui.enableButtonToggle.value := "./img/toggle_off.png"
+	; if !ui.fullscreen {
+		; guiVis(ui.disabledGui,true)
+		; winSetTransparent(180,ui.disabledGui)
+	; }
+	; sleep(1000)
+	; setcapsLockState(true)
+	; killAfk() 
+	; exit
 }
 
 castButtonClicked(*) {
@@ -33,7 +37,7 @@ castButtonClicked(*) {
 	ui.autoFish:=true
 	ui.mode:="cast"
 	mode(ui.mode)
-	ui.fishQ.push(ui.mode)
+	;ui.fishQ.push(ui.mode)
 	;showQ()
 	cast()
 	setTimer(startAfk,-100)
@@ -128,19 +132,22 @@ toggleEnabled(*) {
 
 
 toggleOn(*) {
-		;setCapsLockState(true)
-		ui.toggleEnabledFS.value:="./img/toggle_horz_on.png"
-		ui.toggleEnabledFSLabel.opt("hidden")
-		;ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
-		ui.toggleEnabledFS.redraw()
-		for this_obj in ui.fsObjects 
-			this_obj.opt("-hidden")			
-		ui.enableButtonToggle.value := "./img/toggle_on.png"
-		guiVis(ui.disabledGui,false)
+	;msgBox('toggleOn')
+	setcapsLockState(true)
+	ui.toggleEnabledFS.value:="./img/toggle_horz_on.png"
+	ui.toggleEnabledFSLabel.opt("hidden")
+	;ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
+	ui.toggleEnabledFS.redraw()
+	for this_obj in ui.fsObjects 
+		this_obj.opt("-hidden")			
+	ui.enableButtonToggle.value := "./img/toggle_on.png"
+	guiVis(ui.disabledGui,false)
+	;startAfk()
 }
 	
 toggleOff(*) {
-	;setCapsLockState(false)
+	;msgBox('toggleOff')
+	setcapsLockState(true)
 	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
 	ui.toggleEnabledFSLabel.opt("-hidden")
 	for this_obj in ui.fsObjects 

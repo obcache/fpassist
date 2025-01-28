@@ -128,7 +128,7 @@ initVars(*) {
 	ui.reeledInCoord3:=ui.reeledInCoord3std
 	ui.reeledInCoord4:=ui.reeledInCoord4std
 	ui.reeledInCoord5:=ui.reeledInCoord5std
-	setCapsLockState(false)
+	setcapsLockState(false)
 }
 
 cfgWrite(*) {
