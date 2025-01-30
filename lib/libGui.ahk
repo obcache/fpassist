@@ -402,6 +402,9 @@ logViewer(*) {
 goFS(*) {
 	ui.fullscreen := true
 	guiVis(ui.fishGuiFS,true)
+	ui.fishCaughtFS.redraw()
+	ui.fishCaughtLabelFS.redraw()
+	ui.fishCaughtLabel2FS.redraw()
 	guiVis(ui.fishGui,false)
 	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
 	; winSetTransparent(160,ui.fishGuiFsBg)
@@ -475,6 +478,9 @@ showLog(*) {
 	
 noFS(*) {
 	ui.fullscreen:=false
+	ui.bigFishCaught.redraw()
+	ui.bigFishCaughtLabel.redraw()
+	ui.bigFishCaughtLabel2.redraw()
 	                                                            
 	ui.hookedXstd:=1075
 	ui.hookedYstd:=508

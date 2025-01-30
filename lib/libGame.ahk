@@ -10,7 +10,7 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 
 startButtonClicked(*) {
 	toggleOn()
-	startAfk()
+	castButtonClicked()
 }
 
 stopButtonClicked(*) {

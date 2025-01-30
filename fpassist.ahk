@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.4.6"
+A_FileVersion := "1.3.4.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -272,6 +272,7 @@ killAfk(*) {
 	send("{lctrl up}")
 	send("{rctrl up}")
 	send("{space up}")
+	setCapsLockState(true)
 	exit
 }
 
@@ -307,7 +308,6 @@ this:=object()
 startAfk(this_mode:="cast",*) {
 	mode(this_mode)
 	ui.enabled:=true
-	ui.autoFish:=true
 	setTimer(updateAfkTime,1000)
 	log("AFK: Started")
 	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
@@ -321,9 +321,9 @@ startAfk(this_mode:="cast",*) {
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
+	
 	while ui.enabled  {
 		;detectPrompts()
-
 		(ui.enabled) ? 0 : killAfk()
 		if reeledIn() {
 			send("{backspace}")
@@ -334,7 +334,9 @@ startAfk(this_mode:="cast",*) {
 		(ui.enabled) ? 0 : killAfk()
 		ui.mode:="retrieve"
 		if !reeledIn() {
+		
 			retrieve()
+		
 		}
 	
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
@@ -705,7 +707,7 @@ landFish(*) {
 
 
 analyzeCatch(*) { 
-	send("{shift up}{ctrl up}{space up}{capsLock up}")
+	send("{shift up}{ctrl up}{space up}")
 	sleep(1500)
 	loop 5 {
 		if fishCaught {	
