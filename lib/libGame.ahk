@@ -9,6 +9,7 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) {
+	toggleOff()
 	toggleOn()
 	castButtonClicked()
 }
@@ -33,12 +34,9 @@ stopButtonClicked(*) {
 }
 
 castButtonClicked(*) {
-	
-	ui.autoFish:=true
+	ui.enabled:=true
 	ui.mode:="cast"
 	mode(ui.mode)
-	;ui.fishQ.push(ui.mode)
-	;showQ()
 	cast()
 	setTimer(startAfk,-100)
 }
