@@ -47,9 +47,7 @@ ui.toggleBackwardEnabled:=false
 	XButton2::LAlt
 	MButton::r
 	!RButton:: {
-		setTimer () => toggleEnabled(),-10
-		setTimer () => send("{capsLock}"),-350
-		setTimer () => toggleEnabled(),-550
+		stopButtonClicked()
 	}
 	capsLock:: {
 		toggleEnabled()

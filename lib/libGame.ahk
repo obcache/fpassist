@@ -15,8 +15,10 @@ startButtonClicked(*) {
 }
 
 stopButtonClicked(*) {
-	setTimer () => toggleOn(),-100
-	toggleOff()
+		setTimer () => toggleEnabled(),-10
+		setTimer () => send("{capsLock}"),-350
+		setTimer () => toggleEnabled(),-550
+
 	
 	;toggleOn()
 	; ui.autoFish:=false
