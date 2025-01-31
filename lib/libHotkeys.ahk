@@ -49,7 +49,7 @@ ui.toggleBackwardEnabled:=false
 	!RButton:: {
 		setTimer () => toggleEnabled(),-10
 		setTimer () => send("{capsLock}"),-350
-		setTimer () => toggleEnabled(),-450
+		setTimer () => toggleEnabled(),-550
 	}
 	capsLock:: {
 		toggleEnabled()
