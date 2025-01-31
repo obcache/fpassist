@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.5.1"
+A_FileVersion := "1.3.5.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -676,9 +676,14 @@ reelIn(*) {
 
 landFish(*) {
 	log("Started: Land Fish",1)
-	mode("land")
 	ui.mode:="land"
+	mode(ui.mode)
+	
 	log("Landing Fish")
+	loop 10 {
+		sendNice("{l}")
+		sleep(200)
+	}	
 	sendNice("{RButton down}")
 	sleep(500)
 	sendNice("{space Down}")
