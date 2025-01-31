@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.4.8"
+A_FileVersion := "1.3.4.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -39,13 +39,15 @@ cfgLoad()
 startGame()
 createGui()
 createGuiFS()
+
 winActivate(ui.game)
 
 onExit(exitFunc)
 
 if ui.fullscreen
 	goFS()
-	
+else
+	noFS()
 
 
 ui.fullscreen := false
@@ -321,6 +323,9 @@ startAfk(this_mode:="cast",*) {
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
+
+	if !reeledIn()
+		reelIn()
 	
 	while ui.enabled  {
 		;detectPrompts()
@@ -329,14 +334,14 @@ startAfk(this_mode:="cast",*) {
 			send("{backspace}")
 			sleep500(2)
 			cast()
+		} else {
+			reelIn()
 		}
-		
+
 		(ui.enabled) ? 0 : killAfk()
 		ui.mode:="retrieve"
 		if !reeledIn() {
-		
 			retrieve()
-		
 		}
 	
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
@@ -380,15 +385,14 @@ checkPixel(x,y,targetColor) {
 calibrate(*) {
 	;modeHeader("Calibrate")
 	errorLevel:=(ui.enabled) ? 0 : killAfk()	
+	
 	log("Calibrate: Drag",1)
 	loop 13 {
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
-		winWait("ahk_exe fishingplanet.exe")
 		sendNice("{NumpadSub}")
 		sleep(50)
 	}
-	if !ui.autoFish
-		return
+	sleep500(1)
 	ui.currDrag := 0
 	loop cfg.dragLevel[cfg.profileSelected] {
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
@@ -399,7 +403,6 @@ calibrate(*) {
 	log("Calibrate: Reel Speed",1)
 	loop 6 {
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
-		winWait("ahk_exe fishingPlanet.exe")
 		sendNice("{click wheelDown}")
 		sleep(50)
 	}	 
@@ -418,7 +421,7 @@ ui.fishQ:=array()
 
 
 cast(*) {
-		mode("cast")
+	mode("cast")
 	if ui.rodHolderEnabled.value {
 		rodCount:=4
 		loop rodCount {
@@ -443,7 +446,7 @@ cast(*) {
 			sleep500(4)
 
 			errorLevel:=(ui.enabled) ? 0 : killAfk()	
-			
+
 			log("Cast: Prepared")
 			ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
 			sleep500(3)
@@ -537,7 +540,6 @@ rotateRodStands(rodCount:=4) {
 	send("{" this_rodStand "}")
 	sleep(100)
 	send("{lshift up}")
-	
 }
 
 retrieve(*) {
@@ -574,6 +576,7 @@ retrieve(*) {
 		
 		
 	case !ui.floatEnabled.value:
+		
 		mechanic.names:=["twitchFreq","stopFreq","reelFreq"]
 		mechanic.count := 0
 		mechanic.last := ""
@@ -812,7 +815,7 @@ checkKeepnet(*) {
 
 tmp.beenPaused := false
 sendNice(payload:="",gameWin:=ui.game) {
-if payload=="" {
+	if payload=="" {
 		if winActive(gameWin) {
 			if tmp.beenPaused {
 				log("Game: Resuming",1,"Game: Resumed")

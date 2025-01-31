@@ -9,14 +9,16 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) {
-	toggleOff()
+	;toggleOff()
 	toggleOn()
 	castButtonClicked()
 }
 
 stopButtonClicked(*) {
+	setTimer () => toggleOn(),-100
 	toggleOff()
-	toggleOn()
+	
+	;toggleOn()
 	; ui.autoFish:=false
 	; ui.mode:="off"
 	; mode(ui.mode)
@@ -145,7 +147,7 @@ toggleOn(*) {
 	
 toggleOff(*) {
 	;msgBox('toggleOff')
-	setcapsLockState(true)
+	;setcapsLockState(true)
 	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
 	ui.toggleEnabledFSLabel.opt("-hidden")
 	for this_obj in ui.fsObjects 
