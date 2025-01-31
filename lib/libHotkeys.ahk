@@ -24,7 +24,7 @@ hotif(isHot)
 	hotKey(ui.exitKey,cleanExit)
 	hotKey(ui.reloadKey,appReload)
 	hotKey(ui.startKeyMouse,startButtonClicked)
-	hotKey(ui.stopKeyMouse,killAfk)
+	
 	hotkey("+" ui.cancelKey,killAfk)
 	hotkey("+" ui.reelKey,reelButtonClicked)
 	hotKey("+" ui.startKey,startButtonClicked)
@@ -46,10 +46,15 @@ ui.toggleBackwardEnabled:=false
 	;Boat Steering
 	XButton2::LAlt
 	MButton::r
+	!RButton:: {
+		setTimer () => toggleEnabled(),-10
+		setTimer () => send("{capsLock}"),-350
+		setTimer () => toggleEnabled(),-450
+	}
 	capsLock:: {
 		toggleEnabled()
 	}
-
+	
 	+a:: {
 		setTimer(turnLeft,4000)
 		turnLeft()

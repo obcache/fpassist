@@ -133,7 +133,7 @@ toggleEnabled(*) {
 
 toggleOn(*) {
 	;msgBox('toggleOn')
-	setcapsLockState(true)
+	;setcapsLockState(true)
 	ui.toggleEnabledFS.value:="./img/toggle_horz_on.png"
 	ui.toggleEnabledFSLabel.opt("hidden")
 	;ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
