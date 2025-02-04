@@ -18,6 +18,7 @@ stopButtonClicked(*) {
 		setTimer () => toggleEnabled(),-10
 		setTimer () => send("{capsLock}"),-350
 		setTimer () => toggleEnabled(),-550
+		
 
 	
 	;toggleOn()
