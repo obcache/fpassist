@@ -122,13 +122,25 @@ ui.toggleBackwardEnabled:=false
 		sleep(200)
 		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
-	!MButton:: {
+	
+~RButton & WheelUp:: {
 		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
 		sendIfWinActive("{3}",ui.game,true)
 		sleep(200)
 		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
+	
+~RButton & WheelDown:: {
+		sendIfWinActive("{LShift Down}",ui.game,true)
+		sleep(200)
+		sendIfWinActive("{4}",ui.game,true)
+		sleep(200)
+		sendIfWinActive("{LShift Up}",ui.game,true)
+	}
+	
+
+
 #hotIf
 
 toggleRight(*) {

@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.5.4"
+A_FileVersion := "1.3.5.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -50,7 +50,7 @@ else
 	noFS()
 
 
-ui.fullscreen := false
+;ui.fullscreen := false
 
 mode(mode) {
 	ui.mode:=mode	
@@ -312,9 +312,16 @@ startAfk(this_mode:="cast",*) {
 	ui.enabled:=true
 	setTimer(updateAfkTime,1000)
 	log("AFK: Started")
+	send("{LButton Up}")
+	send("{RButton Up}")
+	send("{Shift Up}")
+	send("{LShift Up}")
+	send("{Space Up}")
+	send("{CapsLock Up}")
 	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
 
 	ui.FishCaughtFS.opt("-hidden")
+	;ui.fishLogFS.opt("-hidden")
 	ui.fishCaughtLabelFS.opt("-hidden")
 	ui.fishCaughtLabel2FS.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
@@ -366,6 +373,12 @@ isHooked(*) {
 		if (checkPixel(ui.hookedX,ui.hookedY,hookedColor)) {
 			log("HOOKED!")
 			ui.isHooked := 1
+			send("{LButton Up}")
+			send("{RButton Up}")
+			send("{Shift Up}")
+			send("{LShift Up}")
+			send("{Space Up}")
+			send("{CapsLock Up}")
 			;setTimer(isHooked,0)
 			return ui.isHooked
 		}
@@ -682,12 +695,13 @@ landFish(*) {
 	log("Landing Fish")
 	loop 10 {
 		sendNice("{l}")
-		sleep(200)
+		sleep(100)
 	}	
 	sendNice("{RButton down}")
-	sleep(500)
-	sendNice("{space Down}")
-	while !reeledIn()  {
+	sleep(300)
+	
+	while isHooked() || !reeledIn() {
+		sendNice("{space Down}")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		sendNice("{RButton Down}")
 		;loop round(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2))
@@ -719,7 +733,7 @@ analyzeCatch(*) {
 	sleep(1500)
 	loop 5 {
 		if fishCaught {	
-			sleep(3000)
+			sleep(2000)
 			break
 		} else {
 			log("Analyze: No Fish")
@@ -860,7 +874,7 @@ reeledIn(*) {
 		&& ui.checkReel5 < 12250871) {
 			ui.reeledIn := 1
 		} else
-		ui.reeledIn := 0
+			ui.reeledIn := 0
 	return ui.reeledIn
 }
 
@@ -1058,4 +1072,7 @@ updateAfkTime(*) {
 		ui.playAniStep := 1
 	ui.startButtonStatus.value := "./img/play_ani_" ui.playAniStep ".png"
 }
+
+
+
 

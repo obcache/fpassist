@@ -8,14 +8,12 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 	Return
 }
 
-
 osdNotify(msg) {
 	winGetPos(&x,&y,&w,&h,ui.fishGui)	
 	msgWidth := strLen(msg)*5
 	ui.osdNotify := ui.fishGui.addText("-hidden x" (w/2)-(msgWidth/2) " y100 w" msgWidth " h50 backgroundTrans cEEEEEE",msg)
 	setTimer () => ui.osdNotify.opt("hidden"),-5000
 }
-
 
 themeDef(themeNum:=1,*) {
 	switch themeNum {
@@ -42,6 +40,7 @@ themeDef(themeNum:=1,*) {
 			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
 	}
 }
+
 initVars(*) {
 	cfg.profile 			:= array()
 	ui.fishLogArr 			:= array()
@@ -151,6 +150,9 @@ cfgWrite(*) {
 	iniWrite(guiW,cfg.file,"System","GuiW")
 	iniWrite(guiH,cfg.file,"System","GuiH")
 	iniWrite(ui.fullscreen,cfg.file,"Game","Fullscreen")
+	if ui.fishCaughtFS.text < ui.bigFishCaught.text	
+		ui.fishCaughtFS.text:=ui.bigFishCaught.text
+	iniWrite(ui.fishCaughtFS.text,cfg.file,"Game","FishCaught")
 }
 
 cfgLoad(*) {

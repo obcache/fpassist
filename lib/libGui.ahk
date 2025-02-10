@@ -14,37 +14,40 @@ ui.fishGuiFSy:=""
 ui.fishGuiFSx:=""
 
 ; if ui.fullscreen {
-switch a_screenWidth {
-	case 3440:
-		ui.hookedXfs:=3060																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-		ui.hookedYfs:=1000
-		ui.hookedColor:=[0x1CACB5,0x1EA9C3]
-		ui.reeledInCoord1fs:=[2944,1250]
-		ui.reeledInCoord2fs:=[2944,1280]
-		ui.reeledInCoord3fs:=[2984,1250]
-		ui.reeledInCoord4fs:=[2984,1280]
-		ui.reeledInCoord5fs:=[2963,1265]
-		ui.fsPanelOffset:=[0,0]
-	case 2560:
-		ui.hookedXfs:=2160																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-		ui.hookedYfs:=1000
-		ui.hookedColor:=[0x1CACB5,0x1EA9C3]
-		ui.reeledInCoord1fs:=[2055,1270]
-		ui.reeledInCoord2fs:=[2055,1310]
-		ui.reeledInCoord3fs:=[2090,1310]
-		ui.reeledInCoord4fs:=[2090,1270]
-		ui.reeledInCoord5fs:=[2080,1330]
-		ui.fsPanelOffset:=[-320,0]
-	case 1920:
-		ui.hookedXfs:=1625																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-		ui.hookedYfs:=745
-		ui.hookedColor:=[0x1CACB5,0x1EA9C3]
-		ui.reeledInCoord1fs:=[1550,928]
-		ui.reeledInCoord2fs:=[1577,928]
-		ui.reeledInCoord3fs:=[1577,952]
-		ui.reeledInCoord4fs:=[1550,952]
-		ui.reeledInCoord5fs:=[1565,970]
-		ui.fsPanelOffset:=[-200,0]
+setFScoords()
+setFScoords(*) {
+	switch a_screenWidth {
+		case 3440:
+			ui.hookedXfs:=3060																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
+			ui.hookedYfs:=1000
+			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
+			ui.reeledInCoord1fs:=[2944,1250]
+			ui.reeledInCoord2fs:=[2944,1280]
+			ui.reeledInCoord3fs:=[2984,1250]
+			ui.reeledInCoord4fs:=[2984,1280]
+			ui.reeledInCoord5fs:=[2963,1265]
+			ui.fsPanelOffset:=[0,0]
+		case 2560:
+			ui.hookedXfs:=2160																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
+			ui.hookedYfs:=1000
+			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
+			ui.reeledInCoord1fs:=[2055,1270]
+			ui.reeledInCoord2fs:=[2055,1310]
+			ui.reeledInCoord3fs:=[2090,1310]
+			ui.reeledInCoord4fs:=[2090,1270]
+			ui.reeledInCoord5fs:=[2080,1330]
+			ui.fsPanelOffset:=[-320,0]
+		case 1920:
+			ui.hookedXfs:=1625																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
+			ui.hookedYfs:=745
+			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
+			ui.reeledInCoord1fs:=[1550,928]
+			ui.reeledInCoord2fs:=[1577,928]
+			ui.reeledInCoord3fs:=[1577,952]
+			ui.reeledInCoord4fs:=[1550,952]
+			ui.reeledInCoord5fs:=[1565,970]
+			ui.fsPanelOffset:=[-200,0]
+	}
 }
 
 createGui() {
@@ -278,7 +281,7 @@ createGui() {
 	ui.fishLogCountLabel.setFont("s9 q5","Helvetica")
 	ui.fishLogCountLabel2 := ui.fishGui.addText("x213 y13 w40 h25 backgroundTrans right c" ui.fontColor[2],"Count")
 	ui.fishLogCountLabel2.setFont("s10 q5","Helvetica")
-	ui.fishLogCount := ui.fishGui.addText("x254 y2 w40 h30 backgroundTrans c" ui.fontColor[2],"000")
+	ui.fishLogCount := ui.fishGui.addText("x254 y2 w40 h30 backgroundTrans c" ui.fontColor[2],iniRead(cfg.file,"Game","FishCaught",0))
 	ui.fishLogCount.setFont("s18 q5","Impact") 
 	ui.fishLog := ui.fishGui.addText("x4 y34 w292 h680 background" ui.bgColor[1])
 	ui.fishLogText := ui.fishGui.addListbox("readOnly x4 y31 w292 h688 -wrap 0x2000 0x100 -E0x200 background" ui.bgColor[4],ui.fishLogArr)
@@ -315,7 +318,7 @@ createGui() {
 	ui.fishLogAfkTimeLabel2.setFont("s19 q5","Arial")
 	ui.fishLogAfkTime := ui.fishGui.addText("hidden x835 y688 w200 h60 c" ui.trimFontColor[6] " backgroundTrans","00:00:00")
 	ui.fishLogAfkTime.setFont("s35 q5","Arial")
-	ui.bigFishCaught := ui.fishGui.addText("hidden x1160 y666 w160 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}","000"))
+	ui.bigFishCaught := ui.fishGui.addText("hidden x1160 y666 w160 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}",iniRead(cfg.file,"Game","FishCaught",0)))
 	ui.bigFishCaught.setFont("s54 q5")
 	ui.bigFishCaughtLabel := ui.fishGui.addText("hidden right x1053 y677 w100 h40 backgroundTrans c" ui.trimFontColor[6],"Fish")
 	ui.bigFishCaughtLabel.setFont("s24 q5")
@@ -401,6 +404,7 @@ logViewer(*) {
 
 goFS(*) {
 	ui.fullscreen := true
+	setFScoords()
 	guiVis(ui.fishGuiFS,true)
 	ui.fishCaughtFS.redraw()
 	ui.fishCaughtLabelFS.redraw()
@@ -408,39 +412,7 @@ goFS(*) {
 	guiVis(ui.fishGui,false)
 	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
 	; winSetTransparent(160,ui.fishGuiFsBg)
-	switch a_screenWidth {
-		case 3440:
-			ui.hookedXfs:=3060																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-			ui.hookedYfs:=1000
-			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
-			ui.reeledInCoord1fs:=[2944,1250]
-			ui.reeledInCoord2fs:=[2944,1280]
-			ui.reeledInCoord3fs:=[2984,1250]
-			ui.reeledInCoord4fs:=[2984,1280]
-			ui.reeledInCoord5fs:=[2963,1265]
-			ui.fsPanelOffset:=[0,0]
-		case 2560:
-			ui.hookedXfs:=2160																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-			ui.hookedYfs:=1000
-			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
-			ui.reeledInCoord1fs:=[2055,1270]
-			ui.reeledInCoord2fs:=[2055,1310]
-			ui.reeledInCoord3fs:=[2090,1310]
-			ui.reeledInCoord4fs:=[2090,1270]
-			ui.reeledInCoord5fs:=[2080,1330]
-			ui.fsPanelOffset:=[-350,0]
 
-		case 1920:
-			ui.hookedXfs:=1625																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-			ui.hookedYfs:=745
-			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
-			ui.reeledInCoord1fs:=[1550,928]
-			ui.reeledInCoord2fs:=[1577,928]
-			ui.reeledInCoord3fs:=[1577,952]
-			ui.reeledInCoord4fs:=[1550,952]
-			ui.reeledInCoord5fs:=[1565,970]
-			ui.fsPanelOffset:=[-100,0]
-	}
 	ui.reeledInCoord1:=ui.reeledInCoord1fs
 	ui.reeledInCoord2:=ui.reeledInCoord2fs
 	ui.reeledInCoord3:=ui.reeledInCoord3fs
@@ -450,8 +422,7 @@ goFS(*) {
 	ui.hookedY:=ui.hookedYfs
 	;createGuiFS()
 	showLog()
-	click()
-	
+	;click()
 }
 
 showLog(*) {
@@ -530,7 +501,7 @@ createGuiFS(*) {
 	;winSetTransColor("010203",ui.fishGuiFS.hwnd)
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
 	ui.noFSbutton.onEvent("click",noFS)
-	ui.FishCaughtFS := ui.fishGuiFS.addText("hidden x" ui.fishGuiFSx+130-30 " y" ui.fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}","0"))
+	ui.FishCaughtFS := ui.fishGuiFS.addText("hidden x" ui.fishGuiFSx+130-30 " y" ui.fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}",iniRead(cfg.file,"Game","FishCaught",0)))
 	ui.FishCaughtFS.setFont("s94")
 	ui.FishCaughtLabelFS := ui.fishGuiFS.addText("hidden right x" ui.fishGuiFSx-98-30 " y" ui.fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.trimFontColor[6],"Fish")
 	ui.FishCaughtLabelFS.setFont("s54","Calibri")
@@ -579,15 +550,19 @@ createGuiFS(*) {
 	ui.profileNextFS.onEvent("click",profileRArrowClicked)
 	
 	ui.castIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsPanelOffset[1] " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
+	ui.castIconFS.onEvent("click",startButtonClicked)
 	
 	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsIcons.w+30+ui.fsPanelOffset[1] " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
+	ui.retrieveIconFS.onEvent("click",retrieveButtonClicked)
 	
 	ui.reelIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+((ui.fsIcons.w+30)*2)+ui.fsPanelOffset[1] " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
+	ui.reelIconFS.onEvent("click",reelButtonClicked)
 	
 	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1] " y" ui.fsIcons.y-10 " w80 backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
 	ui.toggleEnabledFSLabel.setFont("s10 cWhite Bold","Small Fonts")
-	
+
 	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1] " y" ui.fsIcons.y+15 " w105 h45 backgroundTrans","./img/toggle_horz_ON.png")
+	ui.toggleEnabledFS.onEvent("click",toggleEnabled)
 	
 	ui.fsObjects:=[ui.profilePrevFS,ui.profileSelectedFsBorder,ui.profileSelectedFS,ui.profileNextFS,ui.profilePrevFS,ui.castIconFS,ui.reelIconFS,ui.retrieveIconFS]
 	guiVis(ui.fishGuiFS,false)
