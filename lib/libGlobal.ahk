@@ -58,20 +58,20 @@ initVars(*) {
 
 	cfg.profileSetting := map()
 		
-		cfg.profileSetting["profileName"] := "NewProfile"
-		cfg.profileSetting["castLength"] := "1900"
-		cfg.profileSetting["castTime"] := "1"
-		cfg.profileSetting["sinkTime"] := "1"
-		cfg.profileSetting["reelSpeed"] := "1"
-		cfg.profileSetting["dragLevel"] := "1"
-		cfg.profileSetting["landAggro"] := "1"
-		cfg.profileSetting["twitchFreq"] := "1"
-		cfg.profileSetting["stopFreq"] := "1"
-		cfg.profileSetting["reelFreq"] := "1"
-		cfg.profileSetting["rodHolderEnabled"] := "0"
-		cfg.profileSetting["floatEnabled"] := "0"
-		cfg.profileSetting["bgModeEnabled"] := "0"
-		cfg.profileSetting["recastTime"] := "5"
+	cfg.profileSetting["profileName"] := "NewProfile"
+	cfg.profileSetting["castLength"] := "1900"
+	cfg.profileSetting["castTime"] := "1"
+	cfg.profileSetting["sinkTime"] := "1"
+	cfg.profileSetting["reelSpeed"] := "1"
+	cfg.profileSetting["dragLevel"] := "1"
+	cfg.profileSetting["landAggro"] := "1"
+	cfg.profileSetting["twitchFreq"] := "1"
+	cfg.profileSetting["stopFreq"] := "1"
+	cfg.profileSetting["reelFreq"] := "1"
+	cfg.profileSetting["rodHolderEnabled"] := "0"
+	cfg.profileSetting["floatEnabled"] := "0"
+	cfg.profileSetting["bgModeEnabled"] := "0"
+	cfg.profileSetting["recastTime"] := "5"
 	tmp.beenPaused			:= false
 	tmp.retrieveFlashOn 	:= false
 	ui.greenCheckColor 		:= round(0x7ED322)
@@ -87,9 +87,10 @@ initVars(*) {
 	ui.cancelOperation 		:= false
 	ui.casting 				:= false
 	ui.autoclickerActive 	:= false
-	ui.fishCount 			:= 000
-	ui.castCount 			:= 000
+	ui.fishCount 			:= ""
+	ui.castCount 			:= 0
 	ui.runCount				:= 0
+	ui.scaleFactor			:= 1
 	tmp.h					:= 40
 	ui.currDrag 			:= 0
 	defaultValue 			:= 0

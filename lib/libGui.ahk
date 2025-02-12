@@ -18,6 +18,8 @@ setFScoords()
 setFScoords(*) {
 	switch a_screenWidth {
 		case 3440:
+			ui.scaleFactorX:=1
+			ui.scaleFactorY:=1
 			ui.hookedXfs:=3060																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 			ui.hookedYfs:=1000
 			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
@@ -28,6 +30,8 @@ setFScoords(*) {
 			ui.reeledInCoord5fs:=[2963,1265]
 			ui.fsPanelOffset:=[0,0]
 		case 2560:
+			ui.scaleFactorX:=.95
+			ui.scaleFactor:=1
 			ui.hookedXfs:=2160																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 			ui.hookedYfs:=1000
 			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
@@ -38,6 +42,8 @@ setFScoords(*) {
 			ui.reeledInCoord5fs:=[2080,1330]
 			ui.fsPanelOffset:=[-320,0]
 		case 1920:
+			ui.scaleFactorX:=.89
+			ui.scaleFactorY:=.95
 			ui.hookedXfs:=1625																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 			ui.hookedYfs:=745
 			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
@@ -407,12 +413,15 @@ goFS(*) {
 	setFScoords()
 	guiVis(ui.fishGuiFS,true)
 	ui.fishCaughtFS.redraw()
-	ui.fishCaughtLabelFS.redraw()
-	ui.fishCaughtLabel2FS.redraw()
+	; ui.fishCaughtLabelFS.redraw()
+	; ui.fishCaughtLabel2FS.redraw()
 	guiVis(ui.fishGui,false)
-	winMove(0,0,a_screenWidth,a_screenHeight-30,ui.game)	
+	monitorGetWorkArea(monitorGetPrimary(),&l,&t,&r,&b)
+	;msgBox(r "`n" b)
+	winMove(0,0,r,b,ui.game)	
 	; winSetTransparent(160,ui.fishGuiFsBg)
-
+	; winMinimize(ui.game)
+	; winRestore(ui.game)
 	ui.reeledInCoord1:=ui.reeledInCoord1fs
 	ui.reeledInCoord2:=ui.reeledInCoord2fs
 	ui.reeledInCoord3:=ui.reeledInCoord3fs
@@ -426,7 +435,6 @@ goFS(*) {
 }
 
 showLog(*) {
-		
 		winGetPos(&tX,&tY,&tW,&tH,ui.game)
 		highestMx:=0
 		highestMy:=0
@@ -493,7 +501,7 @@ createGuiFS(*) {
 		; h:=""
 	; else
 		; ui.fishGuiFS.destroy()
-		
+	monitorGetWorkArea(monitorGetPrimary(),&mX,&mY,&mW,&mH)	
 	ui.fishGuiFS := gui()
 	
 	ui.fishGuiFS.opt("-caption -border +toolWindow owner" ui.fishGui.hwnd)
@@ -501,12 +509,23 @@ createGuiFS(*) {
 	;winSetTransColor("010203",ui.fishGuiFS.hwnd)
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
 	ui.noFSbutton.onEvent("click",noFS)
-	ui.FishCaughtFS := ui.fishGuiFS.addText("hidden x" ui.fishGuiFSx+130-30 " y" ui.fishGuiFSy+20 " w250 h300 backgroundTrans c" ui.trimFontColor[6],format("{:03i}",iniRead(cfg.file,"Game","FishCaught",0)))
-	ui.FishCaughtFS.setFont("s94")
-	ui.FishCaughtLabelFS := ui.fishGuiFS.addText("hidden right x" ui.fishGuiFSx-98-30 " y" ui.fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.trimFontColor[6],"Fish")
-	ui.FishCaughtLabelFS.setFont("s54","Calibri")
-	ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("hidden right x" ui.fishGuiFSx-90-30 " y" ui.fishGuiFSy+20+40 " w200 h90 backgroundTrans c" ui.trimFontColor[6],"Count")
-	ui.FishCaughtLabel2FS.setFont("s60","Calibri")
+	
+	ui.fishCountIcon:=ui.fishGuiFS.addPicture("hidden section x" (mw-160)*ui.scaleFactorX " y" (mY+35)*ui.scaleFactorX " h30 w-1","./img/icon_fish.png")
+	ui.fishCount1:=ui.fishGuiFS.addPicture("hidden x+10 ys h30 w-1","./img/0.png")
+	ui.fishCount2:=ui.fishGuiFS.addPicture("hidden x+0 ys h30 w-1","./img/0.png")
+	ui.fishCount3:=ui.fishGuiFS.addPicture("hidden x+0 ys h30 w-1","./img/0.png")
+	ui.fishCount4:=ui.fishGuiFS.addPicture("hidden x+0 ys h30 w-1","./img/0.png")
+	ui.fishCount:=strSplit(format("{:04i}",iniRead(cfg.file,"Game","FishCaught",0)))
+	loop ui.fishCount.length {
+		ui.fishCount%a_index%.value:="./img/" ui.fishCount[a_index] ".png"
+	}
+	ui.FishCaughtFS := ui.fishGuiFS.addText("hidden x" (mW-330)*ui.scaleFactorX " y" (mY+10)*ui.scaleFactorX " w80 	h30 backgroundTrans c" ui.trimFontColor[6],format("{:03i}",iniRead(cfg.file,"Game","FishCaught",0)))
+	ui.FishCaughtFS.setFont("s26 q3","Arial Bold")
+	; ui.FishCaughtLabelFS := ui.fishGuiFS.addText("hidden right x" ui.fishGuiFSx-98-30 " y" ui.fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.trimFontColor[6],"Fish")
+	; ui.FishCaughtLabelFS.setFont("s20","Calibri")
+	; ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("hidden right x" ui.fishGuiFSx-90-30 " y" ui.fishGuiFSy+20+40 " w200 h90 backgroundTrans c" ui.trimFontColor[6],"Count")
+	; ui.FishCaughtLabel2FS.setFont("s20","Calibri")
+	
 	ui.fishLogFS := ui.fishGuiFS.addText("hidden x95 y350 w360 h450 backgroundTrans c" ui.fontColor[3],"")
 	ui.fishLogFS.setFont("s16")
 	ui.fishGuiFS.setFont("s12")
@@ -520,7 +539,7 @@ createGuiFS(*) {
 	ui.fsPanel.y := 230
 	ui.fsPanel.w := 60
 	ui.fsPanel.h := 20
-
+	
 	; try 
 		; controlGetHwnd(ui.profilePrevFS)
 	; catch
@@ -529,7 +548,7 @@ createGuiFS(*) {
 		; ui.profilePrevFS.destroy()
 	; }
 	
-	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x-35+ui.fsPanelOffset[1] " y" ui.fsIcons.y-44 " w30 h38 backgroundTrans","./img/button_arrowLeft_knot.png")
+	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x-35+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-44)*ui.scaleFactorY " w" 30*ui.scaleFactorX " h" 38*ui.scaleFactorY " backgroundTrans","./img/button_arrowLeft_knot.png")
 
 	; try 
 		; controlGetHwnd(ui.profileSelectedFsBorder)
@@ -538,30 +557,30 @@ createGuiFS(*) {
 		; ui.profileSelectedFsBorder.opt("x" ui.fsIcons.x+ui.fsPanelOffset[1])
 		; ui.profileSelectedFsBorder.redraw()
 	; }
-		ui.profileSelectedFsBorder := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsPanelOffset[1] " y" ui.fsIcons.y-45 " w" ui.fsIcons.w*3+150 " h40 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
+		ui.profileSelectedFsBorder := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-45)*ui.scaleFactorY " w" (ui.fsIcons.w*3+150)*ui.scaleFactorX " h" 40*ui.scaleFactorX " center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
 
 ; try
 		; ui.profileSelectedFS.destroy()
-	ui.profileSelectedFS := ui.fishGuiFS.addText("x" ui.fsIcons.x+10+ui.fsPanelOffset[1] " y" ui.fsIcons.y-40 " w" ui.fsIcons.w*3+134 " h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
-	 ui.profileSelectedFS.setFont("s19")
+	ui.profileSelectedFS := ui.fishGuiFS.addText("x" (ui.fsIcons.x+10+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-40)*ui.scaleFactorY " w" (ui.fsIcons.w*3+134)*ui.scaleFactorX " h" 32*ui.scaleFactorX " center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
+	 ui.profileSelectedFS.setFont("s" 19*ui.scalefactorX)
 	
-	ui.profileNextFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3+155)+ui.fsPanelOffset[1] " y" ui.fsIcons.y-44 " w32 h38 backgroundTrans","./img/button_arrowRight_knot.png")
+	ui.profileNextFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+(ui.fsIcons.w*3+155)+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-44)*ui.scaleFactorY " w" 32*ui.scaleFactorX " h" 38*ui.scaleFactorX " backgroundTrans","./img/button_arrowRight_knot.png")
 	ui.profilePrevFS.onEvent("click",profileLArrowClicked)
 	ui.profileNextFS.onEvent("click",profileRArrowClicked)
 	
-	ui.castIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsPanelOffset[1] " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
+	ui.castIconFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y)*ui.scaleFactorY " w" (ui.fsIcons.w)*ui.scaleFactorX " h" (ui.fsIcons.h)*ui.scaleFactorX " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
 	ui.castIconFS.onEvent("click",startButtonClicked)
 	
-	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+ui.fsIcons.w+30+ui.fsPanelOffset[1] " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
+	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+ui.fsIcons.w+30+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y)*ui.scaleFactorY " w" (ui.fsIcons.w)*ui.scaleFactorX " h" (ui.fsIcons.h)*ui.scaleFactorX " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
 	ui.retrieveIconFS.onEvent("click",retrieveButtonClicked)
 	
-	ui.reelIconFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+((ui.fsIcons.w+30)*2)+ui.fsPanelOffset[1] " y" ui.fsIcons.y " w" ui.fsIcons.w " h" ui.fsIcons.h " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
+	ui.reelIconFS := ui.fishGuiFS.addPicture("x" ((ui.fsIcons.x+(ui.fsIcons.w+30)*2)+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y)*ui.scaleFactorY " w" (ui.fsIcons.w)*ui.scaleFactorX " h" (ui.fsIcons.h)*ui.scaleFactorX " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
 	ui.reelIconFS.onEvent("click",reelButtonClicked)
 	
-	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1] " y" ui.fsIcons.y-10 " w80 backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
-	ui.toggleEnabledFSLabel.setFont("s10 cWhite Bold","Small Fonts")
+	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" (ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-10)*ui.scaleFactorY " w" 80*ui.scaleFactorX " backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
+	ui.toggleEnabledFSLabel.setFont("s" 10*ui.scaleFactorX " cWhite Bold","Small Fonts")
 
-	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1] " y" ui.fsIcons.y+15 " w105 h45 backgroundTrans","./img/toggle_horz_ON.png")
+	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y+15)*ui.scaleFactorY " w" 105*ui.scaleFactorX " h" 45*ui.scaleFactorX " backgroundTrans","./img/toggle_horz_ON.png")
 	ui.toggleEnabledFS.onEvent("click",toggleEnabled)
 	
 	ui.fsObjects:=[ui.profilePrevFS,ui.profileSelectedFsBorder,ui.profileSelectedFS,ui.profileNextFS,ui.profilePrevFS,ui.castIconFS,ui.reelIconFS,ui.retrieveIconFS]

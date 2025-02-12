@@ -50,7 +50,14 @@ startGame(*) {
 			ui.loadingProgress2.value += 2
 			winGetPos(&x,&y,&w,&h,ui.game)
 		}
-	winSetStyle("-0xC00000",ui.game)
+		winSetStyle("-0xC00000",ui.game)
 	winSetTransparent(0,ui.game) 
 	}
+
+	createGui()
+	createGuiFS()
+	if ui.fullscreen
+		goFS()
+	else
+		noFS()
 }

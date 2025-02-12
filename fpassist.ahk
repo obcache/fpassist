@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.5.7"
+A_FileVersion := "1.3.5.8"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -37,17 +37,15 @@ if a_isCompiled && !inStr(cfg.installDir,a_scriptDir) {
 themeDef()
 cfgLoad()
 startGame()
-createGui()
-createGuiFS()
+
 
 winActivate(ui.game)
+ui.isActiveWindow:=""
+;setTimer () => ((ui.lastCapsLockState:=getKeyState("capslock")),ui.isActiveWindow:=(winActive(ui.game)) ? (ui.isActiveWindow) ? 1 : (setCapsLockState(ui.lastCapslockState),1) : (ui.isActiveWindow) ? (0,setCapsLockState(0)) : 0),500
 
 onExit(exitFunc)
 
-if ui.fullscreen
-	goFS()
-else
-	noFS()
+
 
 
 ;ui.fullscreen := false
@@ -208,7 +206,11 @@ stopAfk(restart:="",*) {
 	sendNice("{lbutton up}")
 	sendNice("{rbutton up}")
 	 
-	ui.FishCaughtFS.opt("+hidden")
+	;ui.FishCaughtFS.opt("+hidden")
+	ui.fishCaught1.opt("+hidden")
+	ui.fishCaught2.opt("+hidden")
+	ui.fishCaught3.opt("+hidden")
+	ui.fishCaught4.opt("+hidden")
 	ui.fishCaughtLabelFS.opt("+hidden")
 	ui.fishCaughtLabel2FS.opt("+hidden")
 	ui.fishLogAfkTime.opt("+hidden")
@@ -320,10 +322,16 @@ startAfk(this_mode:="cast",*) {
 	send("{CapsLock Up}")
 	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
 
-	ui.FishCaughtFS.opt("-hidden")
+;	ui.FishCaughtFS.opt("-hidden")
+	ui.fishCountIcon.opt("-hidden")
+	ui.fishCount1.opt("-hidden")
+	ui.fishCount2.opt("-hidden")
+	ui.fishCount3.opt("-hidden")
+	ui.fishCount4.opt("-hidden")
+	
 	;ui.fishLogFS.opt("-hidden")
-	ui.fishCaughtLabelFS.opt("-hidden")
-	ui.fishCaughtLabel2FS.opt("-hidden")
+	; ui.fishCaughtLabelFS.opt("-hidden")
+	; ui.fishCaughtLabel2FS.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
@@ -748,25 +756,40 @@ analyzeCatch(*) {
 	ui.fishLogAfkTime.opt("hidden")
 	ui.fishLogAfkTimeLabel.opt("hidden")
 	ui.fishLogAfkTimeLabel2.opt("hidden")
+	ui.fishCountIcon.opt("hidden")
+	ui.fishCount1.opt("hidden")
+	ui.fishCount2.opt("hidden")
+	ui.fishCount3.opt("hidden")
+	ui.fishCount4.opt("hidden")
 	log("Fish Caught!",0)
 	picTimestamp := formatTime(,"yyyyMMddhhmmss")
 	runWait("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" picTimestamp ".png",,"hide")
 	sleep(1500)
 	log("Screenshot: " a_scriptDir "/fishPics/" picTimestamp ".png",1)
+	ui.fishCountIcon.opt("-hidden")
+	ui.fishCount1.opt("-hidden")
+	ui.fishCount2.opt("-hidden")
+	ui.fishCount3.opt("-hidden")
+	ui.fishCount4.opt("-hidden")
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
-	if ui.fishLogCount.text < 999
+	if ui.fishLogCount.text < 9999 {
 		ui.fishLogCount.text := format("{:03i}",ui.fishLogCount.text + 1)
 		try
 			ui.bigFishCaught.text := format("{:03i}",ui.fishLogCount.text)
 		try
 			ui.statFishCount.text := format("{:03i}",ui.fishLogCount.text)
-		try
-			ui.FishCaughtFS.text := format("{:03i}",ui.fishLogCount.text)
+		try {
+			ui.fishCount:=strSplit(format("{:04i}",ui.fishLogCount.text))
+			loop ui.fishCount.length {
+				ui.fishCaught%a_index%.value:="%ui.fishCount[a_index]%.png"
+			}
+		}
+		}	
 	sleep(1500)
 	sendNice("{space}")
 	sleep(1500)
