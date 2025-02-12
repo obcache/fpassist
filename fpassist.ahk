@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.5.8"
+A_FileVersion := "1.3.5.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -784,10 +784,7 @@ analyzeCatch(*) {
 		try
 			ui.statFishCount.text := format("{:03i}",ui.fishLogCount.text)
 		try {
-			ui.fishCount:=strSplit(format("{:04i}",ui.fishLogCount.text))
-			loop ui.fishCount.length {
-				ui.fishCaught%a_index%.value:="%ui.fishCount[a_index]%.png"
-			}
+ 
 		}
 		}	
 	sleep(1500)

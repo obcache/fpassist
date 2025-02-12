@@ -358,6 +358,7 @@ install() {
 			{
 				dirCreate(installDir "\logs")
 			}
+			fileInstall("./img/icon_fish.png",installDir "/img/icon_fish.png",1)
 			fileInstall("./Img/fp_splash.png",installDir "/img/fp_splash.png",1)
 			fileInstall("./img/button_folder.png",installDir "/img/button_folder.png",1)
 			fileInstall("./img/profileFS_border.png",installDir "/img/profileFS_border.png",1)
