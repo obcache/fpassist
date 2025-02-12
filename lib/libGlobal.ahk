@@ -359,6 +359,17 @@ install() {
 				dirCreate(installDir "\logs")
 			}
 			fileInstall("./img/icon_fish.png",installDir "/img/icon_fish.png",1)
+			fileInstall("./img/0.png",installDir "/img/0.png",1)
+			fileInstall("./img/2.png",installDir "/img/2.png",1)
+			fileInstall("./img/3.png",installDir "/img/3.png",1)
+			fileInstall("./img/4.png",installDir "/img/4.png",1)
+			fileInstall("./img/5.png",installDir "/img/5.png",1)
+			fileInstall("./img/6.png",installDir "/img/6.png",1)
+			fileInstall("./img/7.png",installDir "/img/7.png",1)
+			fileInstall("./img/8.png",installDir "/img/8.png",1)
+			fileInstall("./img/9.png",installDir "/img/9.png",1)
+			fileInstall("./img/1.png",installDir "/img/1.png",1)
+			
 			fileInstall("./Img/fp_splash.png",installDir "/img/fp_splash.png",1)
 			fileInstall("./img/button_folder.png",installDir "/img/button_folder.png",1)
 			fileInstall("./img/profileFS_border.png",installDir "/img/profileFS_border.png",1)
