@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.6.0"
+A_FileVersion := "1.3.6.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -312,6 +312,12 @@ this:=object()
 startAfk(this_mode:="cast",*) {
 	mode(this_mode)
 	ui.enabled:=true
+	ui.fishCountIcon.opt("-hidden")
+	ui.fishCount1.opt("-hidden")
+	ui.fishCount2.opt("-hidden")
+	ui.fishCount3.opt("-hidden")
+	ui.fishCount4.opt("-hidden")
+	ui.fishCount5.opt("-hidden")
 	setTimer(updateAfkTime,1000)
 	log("AFK: Started")
 	send("{LButton Up}")
@@ -323,11 +329,7 @@ startAfk(this_mode:="cast",*) {
 	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
 
 ;	ui.FishCaughtFS.opt("-hidden")
-	ui.fishCountIcon.opt("-hidden")
-	ui.fishCount1.opt("-hidden")
-	ui.fishCount2.opt("-hidden")
-	ui.fishCount3.opt("-hidden")
-	ui.fishCount4.opt("-hidden")
+
 	
 	;ui.fishLogFS.opt("-hidden")
 	; ui.fishCaughtLabelFS.opt("-hidden")
@@ -761,6 +763,7 @@ analyzeCatch(*) {
 	ui.fishCount2.opt("hidden")
 	ui.fishCount3.opt("hidden")
 	ui.fishCount4.opt("hidden")
+	ui.fishCount5.opt("hidden")
 	log("Fish Caught!",0)
 	picTimestamp := formatTime(,"yyyyMMddhhmmss")
 	runWait("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" picTimestamp ".png",,"hide")
@@ -771,22 +774,26 @@ analyzeCatch(*) {
 	ui.fishCount2.opt("-hidden")
 	ui.fishCount3.opt("-hidden")
 	ui.fishCount4.opt("-hidden")
+	ui.fishCount5.opt("-hidden")
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
-	if ui.fishLogCount.text < 9999 {
-		ui.fishLogCount.text := format("{:03i}",ui.fishLogCount.text + 1)
+	if ui.fishLogCount.text < 99999 {
+		ui.fishLogCount.text := format("{:05i}",ui.fishLogCount.text + 1)
+		iniWrite(ui.fishLogCount.text,cfg.file,"Game","FishCaught")
 		try
-			ui.bigFishCaught.text := format("{:03i}",ui.fishLogCount.text)
+			ui.bigFishCaught.text := format("{:05i}",ui.fishLogCount.text)
 		try
-			ui.statFishCount.text := format("{:03i}",ui.fishLogCount.text)
-		try {
- 
+			ui.statFishCount.text := format("{:05i}",ui.fishLogCount.text)
+	
+		ui.fishCount:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
+		loop ui.fishCount.length {
+			ui.fishCount%a_index%.value:="./img/" ui.fishCount[a_index] ".png"
 		}
-		}	
+	}	
 	sleep(1500)
 	sendNice("{space}")
 	sleep(1500)

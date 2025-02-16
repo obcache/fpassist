@@ -90,7 +90,8 @@ initVars(*) {
 	ui.fishCount 			:= ""
 	ui.castCount 			:= 0
 	ui.runCount				:= 0
-	ui.scaleFactor			:= 1
+	ui.scaleFactorX		:= 1
+	ui.scaleFactorY		:= 1
 	tmp.h					:= 40
 	ui.currDrag 			:= 0
 	defaultValue 			:= 0
@@ -151,9 +152,9 @@ cfgWrite(*) {
 	iniWrite(guiW,cfg.file,"System","GuiW")
 	iniWrite(guiH,cfg.file,"System","GuiH")
 	iniWrite(ui.fullscreen,cfg.file,"Game","Fullscreen")
-	if ui.fishCaughtFS.text < ui.bigFishCaught.text	
-		ui.fishCaughtFS.text:=ui.bigFishCaught.text
-	iniWrite(ui.fishCaughtFS.text,cfg.file,"Game","FishCaught")
+	if ui.fishLogCount.text < ui.bigFishCaught.text	
+		ui.fishLogCount.text:=ui.bigFishCaught.text
+	iniWrite(ui.fishLogCount.text,cfg.file,"Game","FishCaught")
 }
 
 cfgLoad(*) {
@@ -165,6 +166,7 @@ cfgLoad(*) {
 	cfg.debug 				:= iniRead(cfg.file,"System","Debug",2)
 	cfg.rodCount 			:= iniRead(cfg.file,"Game","RodCount",6)
 	ui.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
+	ui.fishCount:=strSplit(iniRead(cfg.file,"Game","FishCaught",0))
 }
 
 initTrayMenu(*) {
