@@ -510,12 +510,12 @@ createGuiFS(*) {
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
 	ui.noFSbutton.onEvent("click",noFS)
 	
-	ui.fishCount1:=ui.fishGuiFS.addPicture("hidden section x" (mw-510)*ui.scaleFactorX " y" (mY+30)*ui.scaleFactorX " h50 w-1","./img/0.png")
+	ui.fishCount1:=ui.fishGuiFS.addPicture("hidden section x" (mw-545)*ui.scaleFactorX " y" (mY+30)*ui.scaleFactorX " h50 w-1","./img/0.png")
 	ui.fishCount2:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
 	ui.fishCount3:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
 	ui.fishCount4:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
 	ui.fishCount5:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
-	ui.fishCountIcon:=ui.fishGuiFS.addPicture("hidden x+10 ys+3 h50 w-1","./img/icon_fish.png")
+	ui.fishCountIcon:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/icon_fish.png")
 	ui.fishCountIcon.opt("-hidden")
 	ui.fishCount1.opt("-hidden")
 	ui.fishCount2.opt("-hidden")
@@ -523,9 +523,9 @@ createGuiFS(*) {
 	ui.fishCount4.opt("-hidden")
 	ui.fishCount5.opt("-hidden")
 	ui.fishCount:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
-	loop ui.fishCount.length {
-		ui.fishCount%a_index%.value:="./img/" ui.fishCount[a_index] ".png"
-	}
+		loop ui.fishCount.length {
+			ui.fishCount%a_index%.value:="./img/" ((a_index==1) ? ui.fishCount[a_index] "_begin" : ui.fishCount[a_index]) ".png"
+		}
 	;ui.FishCaughtFS := ui.fishGuiFS.addText("hidden x" (mW-530)*ui.scaleFactorX " y" (mY+10)*ui.scaleFactorX " w80 	h30 backgroundTrans c" ui.trimFontColor[6],format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
 	;ui.FishCaughtFS.setFont("s26 q3","Arial Bold")
 	; ui.FishCaughtLabelFS := ui.fishGuiFS.addText("hidden right x" ui.fishGuiFSx-98-30 " y" ui.fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.trimFontColor[6],"Fish")
