@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.6.4"
+A_FileVersion := "1.3.6.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -738,7 +738,7 @@ landFish(*) {
 }	
 
 
-analyzeCatch(*) { 
+analyzeCatch(*) {  
 	send("{shift up}{ctrl up}{space up}")
 	sleep(1500)
 	loop 5 {
@@ -791,9 +791,9 @@ analyzeCatch(*) {
 	
 		ui.fishCount:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
 		loop ui.fishCount.length {
-			ui.fishCount%a_index%.value:="./img/" (a_index==1) ? a_index "_begin" : (a_index==5) ? a_index "_end" : a_index ".png"
+			ui.fishCount%a_index%.value:="./img/" ((a_index==1) ? ui.fishCount[a_index] "_begin" : ui.fishCount[a_index]) ".png"
 		}
-	}	
+	}
 	sleep(1500)
 	sendNice("{space}")
 	sleep(1500)
