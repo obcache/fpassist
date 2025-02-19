@@ -42,9 +42,19 @@ ui.toggleLeftEnabled:=false
 ui.toggleForwardEnabled:=false
 ui.toggleBackwardEnabled:=false
 
+~!Tab:: {
+	sleep(500)
+	(winActive(ui.game))
+		? setCapslockState(ui.prevState)
+		: 	(ui.prevState:=getKeyState("capslock"))
+				? setCapslockState(false)
+				: 0	
+}
+
 #hotIf WinActive(ui.game)	
 	;Boat Steering
 	XButton2::LAlt
+	XButton1::LCtrl
 	MButton::r
 	!RButton:: {
 		stopButtonClicked()
@@ -86,7 +96,7 @@ ui.toggleBackwardEnabled:=false
 		setTimer(throttleForward,0)
 	}
 
-	WheelUp:: {
+	^WheelUp:: {
 		if !getKeyState("RButton") {
 			send("{wheelUp}")
 			return
@@ -97,7 +107,7 @@ ui.toggleBackwardEnabled:=false
 			ui.currentRod := 7
 		sendIfWinActive("{" ui.currentRod "}",ui.game)
 	}
-	WheelDown:: {
+	^WheelDown:: {
 		if !getKeyState("RButton") {
 			send("{WheelDown}")
 			return
