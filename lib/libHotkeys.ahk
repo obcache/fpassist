@@ -96,7 +96,7 @@ ui.toggleBackwardEnabled:=false
 		setTimer(throttleForward,0)
 	}
 
-	^WheelUp:: {
+	+WheelUp:: {
 		if !getKeyState("RButton") {
 			send("{wheelUp}")
 			return
@@ -107,7 +107,7 @@ ui.toggleBackwardEnabled:=false
 			ui.currentRod := 7
 		sendIfWinActive("{" ui.currentRod "}",ui.game)
 	}
-	^WheelDown:: {
+	+WheelDown:: {
 		if !getKeyState("RButton") {
 			send("{WheelDown}")
 			return
