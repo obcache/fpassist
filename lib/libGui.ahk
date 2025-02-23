@@ -146,7 +146,7 @@ createGui() {
 	ui.rodHolderEnabled.onEvent("click",toggleRoldHolder)
 	ui.rodHolderEnabledLabel := ui.fishGui.addText("right x160 y775 w60 h15 backgroundTrans c" ui.fontColor[4],"Rod Stand")
 	ui.rodHolderEnabledLabel.setFont("s7","small fonts")
-
+	
 	ui.floatEnabled := ui.fishGui.addCheckBox("x223 y785 w10 h15",cfg.floatEnabled[cfg.profileSelected])
 	ui.floatEnabled.onEvent("click",toggleFloat)
 	ui.floatEnabledLabel := ui.fishGui.addText("right x160 y786 w60 h15 c" ui.fontColor[4],"Float/Bottom")

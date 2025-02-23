@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.6.7"
+A_FileVersion := "1.3.7.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -39,8 +39,8 @@ cfgLoad()
 startGame()
 
 
-winActivate(ui.game)
-ui.isActiveWindow:=""
+; winActivate(ui.game)
+; ui.isActiveWindow:=""
 ;setTimer () => ((ui.lastCapsLockState:=getKeyState("capslock")),ui.isActiveWindow:=(winActive(ui.game)) ? (ui.isActiveWindow) ? 1 : (setCapsLockState(ui.lastCapslockState),1) : (ui.isActiveWindow) ? (0,setCapsLockState(0)) : 0),500
 
 onExit(exitFunc)
@@ -207,18 +207,7 @@ stopAfk(restart:="",*) {
 	sendNice("{rbutton up}")
 	 
 	;ui.FishCaughtFS.opt("+hidden")
-	ui.fishCaught1.opt("+hidden")
-	ui.fishCaught2.opt("+hidden")
-	ui.fishCaught3.opt("+hidden")
-	ui.fishCaught4.opt("+hidden")
-	ui.fishCaughtLabelFS.opt("+hidden")
-	ui.fishCaughtLabel2FS.opt("+hidden")
-	ui.fishLogAfkTime.opt("+hidden")
-	ui.fishLogAfkTimeLabel.opt("+hidden")
-	ui.fishLogAfkTimeLabel2.opt("+hidden")
-	ui.bigFishCaught.opt("+hidden")
-	ui.bigFishCaughtLabel.opt("+hidden")
-	ui.bigFishCaughtLabel2.opt("+hidden")	
+	
 	
 	 if !fileExist(a_scriptDir "/logs/current_log.txt")
 		 fileAppend('"Session Start","AFK Start","AFK Duration","Fish Caught","Cast Count","Cast Length","Drag Level","Reel Speed"`n', a_scriptDir "/logs/current_log.txt")
@@ -1103,3 +1092,15 @@ updateAfkTime(*) {
 
 
 
+
+
+;setTimer(checkMode,2000)
+checkMode(*) {
+	if pixelGetColor(98,53)=="0xF7F7F7" && pixelGetColor(107,56)=="0xF7F7F7" {
+		ui.fishGuiFS.show()
+		winActivate(ui.game)
+	} else {
+		ui.fishGuiFS.hide()
+		winActivate(ui.game)
+	}
+}

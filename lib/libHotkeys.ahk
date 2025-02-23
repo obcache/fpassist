@@ -41,14 +41,16 @@ ui.toggleRightEnabled:=false
 ui.toggleLeftEnabled:=false
 ui.toggleForwardEnabled:=false
 ui.toggleBackwardEnabled:=false
+ui.prevState:=getKeyState("capslock")
 
 ~!Tab:: {
-	sleep(500)
-	(winActive(ui.game))
-		? setCapslockState(ui.prevState)
-		: 	(ui.prevState:=getKeyState("capslock"))
-				? setCapslockState(false)
-				: 0	
+	focusChanged()
+	focusChanged(*) {
+		sleep(500)
+		(winActive(ui.game))
+			? setCapslockState(ui.prevState)
+			: setCapslockState(false)
+	}
 }
 
 #hotIf WinActive(ui.game)	
@@ -59,8 +61,10 @@ ui.toggleBackwardEnabled:=false
 	!RButton:: {
 		stopButtonClicked()
 	}
-	capsLock:: {
+
+	~capsLock:: {
 		toggleEnabled()
+		ui.prevState:=getKeyState("capslock")
 	}
 	
 	+a:: {
