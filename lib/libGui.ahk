@@ -9,6 +9,9 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 	Return
 }
 
+
+this:=object()
+
 ui.fsPanelOffset:=[0,0]
 ui.fishGuiFSy:=""
 ui.fishGuiFSx:=""
@@ -461,8 +464,8 @@ noFS(*) {
 	ui.bigFishCaughtLabel.redraw()
 	ui.bigFishCaughtLabel2.redraw()
 	                                                            
-	ui.hookedXstd:=1075
-	ui.hookedYstd:=508
+	ui.hookedXstd:=1090
+	ui.hookedYstd:=510
 	ui.reeledInCoord1std:=[1026,635]
 	ui.reeledInCoord2std:=[1047,635]
 	ui.reeledInCoord3std:=[1026,656]
@@ -493,7 +496,17 @@ noFS(*) {
 createGuiFS(*) {
 	; try
 		; ui.fishGuiFS.destroy()
-	ui.fishGuiFSx := a_screenWidth-800+ui.fsPanelOffset[1]
+	ui.fsPanel := object()
+	ui.fsIcons := object()
+	ui.fsIcons.x := map(3440,2600,2560,1800,1920,1050)
+	ui.fsIcons.y := map(3440,50,2560,50,1920,35)
+	ui.fsIcons.w := map(3440,90,2560,80,1920,50)
+	ui.fsIcons.w := map(3440,90,2560,80,1920,50)
+	ui.fsPanel.x := 550
+	ui.fsPanel.y := 830
+	ui.fsPanel.w := 60
+	ui.fsPanel.h := 20
+	ui.fishGuiFSx := 800
 	ui.fishGuiFSy := a_screenHeight-30-200-184
 	; try 
 		; winGetId(ui.fishGuiFS)
@@ -509,88 +522,61 @@ createGuiFS(*) {
 	;winSetTransColor("010203",ui.fishGuiFS.hwnd)
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenWidth-70 " y10 w60 h60 backgroundTrans","./img/button_nofs.png")
 	ui.noFSbutton.onEvent("click",noFS)
+
+	ui.profileSelectedFsBorder := ui.fishGuiFS.addPicture("section x" ui.fsIcons.x[a_screenwidth] " y20 w460 h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
+	ui.fishCountBorder := ui.fishGuiFS.addPicture("x+-460 ys+0 w350 h30 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
+	ui.profilePrevFS := ui.fishGuiFS.addPicture("x+-344 ys+3 w16 h24 background" ui.bgColor[3],"./img/button_arrowLeft_knot.png")
+	ui.profileSelectedFS := ui.fishGuiFS.addText("x+0 ys+3 w308 h24 center background" ui.bgColor[3] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
+	ui.profileNextFS := ui.fishGuiFS.addPicture("x+0 ys+3 w16 h24 background" ui.bgColor[3],"./img/button_arrowRight_knot.png")
 	
-	ui.fishCount1:=ui.fishGuiFS.addPicture("hidden section x" (mw-545)*ui.scaleFactorX " y" (mY+30)*ui.scaleFactorX " h50 w-1","./img/0.png")
-	ui.fishCount2:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
-	ui.fishCount3:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
-	ui.fishCount4:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
-	ui.fishCount5:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/0.png")
-	ui.fishCountIcon:=ui.fishGuiFS.addPicture("hidden x+0 ys+0 h50 w-1","./img/icon_fish.png")
-	ui.fishCountIcon.opt("-hidden")
-	ui.fishCount1.opt("-hidden")
-	ui.fishCount2.opt("-hidden")
-	ui.fishCount3.opt("-hidden")
-	ui.fishCount4.opt("-hidden")
-	ui.fishCount5.opt("-hidden")
-	ui.fishCount:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
-		loop ui.fishCount.length {
-			ui.fishCount%a_index%.value:="./img/" ((a_index==1) ? ui.fishCount[a_index] "_begin" : ui.fishCount[a_index]) ".png"
-		}
-	;ui.FishCaughtFS := ui.fishGuiFS.addText("hidden x" (mW-530)*ui.scaleFactorX " y" (mY+10)*ui.scaleFactorX " w80 	h30 backgroundTrans c" ui.trimFontColor[6],format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
-	;ui.FishCaughtFS.setFont("s26 q3","Arial Bold")
-	; ui.FishCaughtLabelFS := ui.fishGuiFS.addText("hidden right x" ui.fishGuiFSx-98-30 " y" ui.fishGuiFSy+20+8 " w200 h80 backgroundTrans c" ui.trimFontColor[6],"Fish")
-	; ui.FishCaughtLabelFS.setFont("s20","Calibri")
-	; ui.FishCaughtLabel2FS := ui.fishGuiFS.addtext("hidden right x" ui.fishGuiFSx-90-30 " y" ui.fishGuiFSy+20+40 " w200 h90 backgroundTrans c" ui.trimFontColor[6],"Count")
-	; ui.FishCaughtLabel2FS.setFont("s20","Calibri")
+	ui.profileSelectedFS.setFont("s16 cFFFFFF","Arial")
+	ui.fishCount:=" " format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)) " "
+	ui.fishCountText:=ui.fishGuiFS.addText("x+4 ys+3 w102 h24 right background" ui.bgColor[3] " c" ui.trimFontColor[6],ui.fishCount)
+	ui.fishCountText.setFont("s16 cFFFFFF","Arial")
+	ui.profilePrevFS.onEvent("click",profileLArrowClicked)
+	ui.profileNextFS.onEvent("click",profileRArrowClicked)
+
+	; ui.fishCount1:=ui.fishGuiFS.addPicture("hidden x+-520 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
+	; ui.fishCount2:=ui.fishGuiFS.addPicture("hidden x+0 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
+	; ui.fishCount3:=ui.fishGuiFS.addPicture("hidden x+0 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
+	; ui.fishCount4:=ui.fishGuiFS.addPictur e("hidden x+0 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
+	; ui.fishCount5:=ui.fishGuiFS.addPicture("hidden x+0 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
+	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x+4 ys+0 h30 w20 backgroundTrans","./img/toggle_ON.png")
+	ui.toggleEnabledFS.onEvent("click",toggleEnabled)
+	ui.fishCountBorder.opt("-hidden")
+	ui.fishCountIcon:=ui.fishGuiFS.addPicture("hidden x+0 ys+7 h32 w-1","./img/icon_fish.png")
+	;ui.fishCountIcon.opt("-hidden")
+	; ui.fishCount1.opt("-hidden")
+	; ui.fishCount2.opt("-hidden")
+	; ui.fishCount3.opt("-hidden")
+	; ui.fishCount4.opt("-hidden")
+	; ui.fishCount5.opt("-hidden")
+
+	; ui.fishCountArr:=strSplit(ui.fishCount)
+	; loop ui.fishCountArr.length {
+			; ui.fishCount%a_index%.value:="./img/" ((a_index==1) ? ui.fishCountArr[a_index] "_begin" : ui.fishCountArr[a_index]) ".png"
+		; }
+
 	
 	ui.fishLogFS := ui.fishGuiFS.addText("hidden x95 y350 w360 h450 backgroundTrans c" ui.fontColor[3],"")
 	ui.fishLogFS.setFont("s16")
 	ui.fishGuiFS.setFont("s12")
-	ui.fsPanel := object()
-	ui.fsIcons := object()
-	ui.fsIcons.x := (a_screenWidth*.68)
-	ui.fsIcons.y := a_screenHeight*.875
-	ui.fsIcons.w := 120
-	ui.fsIcons.h := 120
-	ui.fsPanel.x := 50
-	ui.fsPanel.y := 230
-	ui.fsPanel.w := 60
-	ui.fsPanel.h := 20
-	
-	; try 
-		; controlGetHwnd(ui.profilePrevFS)
-	; catch
-		; x:=""
-	; else {
-		; ui.profilePrevFS.destroy()
-	; }
-	
-	ui.profilePrevFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x-35+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-44)*ui.scaleFactorY " w" 30*ui.scaleFactorX " h" 38*ui.scaleFactorY " backgroundTrans","./img/button_arrowLeft_knot.png")
 
-	; try 
-		; controlGetHwnd(ui.profileSelectedFsBorder)
-	; catch
-	; else {
-		; ui.profileSelectedFsBorder.opt("x" ui.fsIcons.x+ui.fsPanelOffset[1])
-		; ui.profileSelectedFsBorder.redraw()
-	; }
-		ui.profileSelectedFsBorder := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-45)*ui.scaleFactorY " w" (ui.fsIcons.w*3+150)*ui.scaleFactorX " h" 40*ui.scaleFactorX " center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
+	ui.fsIcons.x[a_screenwidth]-=(a_screenwidth==3440) ? 215 : (a_screenwidth==2560) ? 160 : 100
+	ui.fsIcons.y[a_screenwidth]-=(a_screenwidth==3440) ? 25 : (a_screenwidth==2560) ? 25 : -21
 
-; try
-		; ui.profileSelectedFS.destroy()
-	ui.profileSelectedFS := ui.fishGuiFS.addText("x" (ui.fsIcons.x+10+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-40)*ui.scaleFactorY " w" (ui.fsIcons.w*3+134)*ui.scaleFactorX " h" 32*ui.scaleFactorX " center background" ui.bgColor[2] " c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
-	 ui.profileSelectedFS.setFont("s" 19*ui.scalefactorX)
-	
-	ui.profileNextFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+(ui.fsIcons.w*3+155)+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-44)*ui.scaleFactorY " w" 32*ui.scaleFactorX " h" 38*ui.scaleFactorX " backgroundTrans","./img/button_arrowRight_knot.png")
-	ui.profilePrevFS.onEvent("click",profileLArrowClicked)
-	ui.profileNextFS.onEvent("click",profileRArrowClicked)
-	
-	ui.castIconFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y)*ui.scaleFactorY " w" (ui.fsIcons.w)*ui.scaleFactorX " h" (ui.fsIcons.h)*ui.scaleFactorX " backgroundTrans c" ui.bgcolor[6],"./img/icon_cast.png")
+
+	ui.castIconFS := ui.fishGuiFS.addPicture("section x900 y" a_screenheight-140 " w70 h70 background" ui.bgColor[3] " c" ui.bgcolor[2],"./img/icon_cast.png")
 	ui.castIconFS.onEvent("click",startButtonClicked)
-	
-	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+ui.fsIcons.w+30+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y)*ui.scaleFactorY " w" (ui.fsIcons.w)*ui.scaleFactorX " h" (ui.fsIcons.h)*ui.scaleFactorX " backgroundTrans c" ui.bgcolor[6],"./img/icon_retrieve.png")
+	ui.retrieveIconFS := ui.fishGuiFS.addPicture("x+0 ys+0 w70 h70 background" ui.bgColor[3] " c" ui.bgcolor[6],"./img/icon_retrieve.png")
 	ui.retrieveIconFS.onEvent("click",retrieveButtonClicked)
-	
-	ui.reelIconFS := ui.fishGuiFS.addPicture("x" ((ui.fsIcons.x+(ui.fsIcons.w+30)*2)+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y)*ui.scaleFactorY " w" (ui.fsIcons.w)*ui.scaleFactorX " h" (ui.fsIcons.h)*ui.scaleFactorX " backgroundTrans c" ui.bgcolor[6],"./img/icon_reel.png")
+	ui.reelIconFS := ui.fishGuiFS.addPicture("x+0 ys+0 w70 h70 background" ui.bgColor[3] " c" ui.bgcolor[6],"./img/icon_reel.png")
 	ui.reelIconFS.onEvent("click",reelButtonClicked)
 	
-	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" (ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y-10)*ui.scaleFactorY " w" 80*ui.scaleFactorX " backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
+	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" (ui.fsIcons.x[a_screenwidth]+(ui.fsIcons.w[a_screenwidth]*3)+80+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y[a_screenwidth]-10)*ui.scaleFactorY " w" 80*ui.scaleFactorX " backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
 	ui.toggleEnabledFSLabel.setFont("s" 10*ui.scaleFactorX " cWhite Bold","Small Fonts")
-
-	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" (ui.fsIcons.x+(ui.fsIcons.w*3)+80+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y+15)*ui.scaleFactorY " w" 105*ui.scaleFactorX " h" 45*ui.scaleFactorX " backgroundTrans","./img/toggle_horz_ON.png")
-	ui.toggleEnabledFS.onEvent("click",toggleEnabled)
 	
-	ui.fsObjects:=[ui.profilePrevFS,ui.profileSelectedFsBorder,ui.profileSelectedFS,ui.profileNextFS,ui.profilePrevFS,ui.castIconFS,ui.reelIconFS,ui.retrieveIconFS]
+	ui.fsObjects:=[ui.fishCountBorder,ui.profilePrevFS,ui.profileSelectedFsBorder,ui.profileSelectedFS,ui.profileNextFS,ui.profilePrevFS,ui.castIconFS,ui.reelIconFS,ui.retrieveIconFS]
 	guiVis(ui.fishGuiFS,false)
 	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
 }

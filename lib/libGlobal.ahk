@@ -18,7 +18,7 @@ osdNotify(msg) {
 themeDef(themeNum:=1,*) {
 	switch themeNum {
 		case 1:
-			ui.bgColor 				:= ["202020","323032","454548","1B1A1C","DFDFFF","999999"]
+			ui.bgColor 				:= ["202020","323032","636363","1B1A1C","DFDFFF","999999"]
 			ui.fontColor 			:= ["151415","A0AFB5","D0D5FF","666666","353535","50556F"]
 			ui.trimColor 			:= ["DFDFFF","6d0f0f","f39909","11EE11","EE1111","303030"]
 			ui.trimDarkColor 		:= ["101011","2d0f0f","7b4212","11EE11","EE1111","303030"]
@@ -40,7 +40,22 @@ themeDef(themeNum:=1,*) {
 			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
 	}
 }
-
+	setTimer(menuCheck,1000)
+menuCheck(*) {
+	static guiVisible:=true
+		if winActive(ui.game)
+			if pixelGetColor(557,187)=="0xEFD070" {
+				if guiVisible {
+					ui.fishGuiFS.hide()
+					guiVisible:=false
+				}
+			} else {
+				if !guiVisible {
+					ui.fishGuiFS.show()
+					guiVisible:=true
+				}
+			}
+	}
 initVars(*) {
 	cfg.profile 			:= array()
 	ui.fishLogArr 			:= array()
@@ -114,7 +129,7 @@ initVars(*) {
 	ui.lastMsg 				:= ""
 	ui.lastMode 			:= 0
 	ui.cycleStartTime		:= 0
-	ui.hookedXstd:=1090	
+	ui.hookedXstd:=1090
 	ui.hookedYstd:=510
 	ui.hookedColor:=[0x1DECFE,0x1EA9C3,0x419AAC]
 	ui.reeledInCoord1std:=[1026,635]
@@ -166,7 +181,7 @@ cfgLoad(*) {
 	cfg.debug 				:= iniRead(cfg.file,"System","Debug",2)
 	cfg.rodCount 			:= iniRead(cfg.file,"Game","RodCount",6)
 	ui.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
-	ui.fishCount:=strSplit(iniRead(cfg.file,"Game","FishCaught",0))
+	ui.fishCountArr:=strSplit(iniRead(cfg.file,"Game","FishCaught",0))
 }
 
 initTrayMenu(*) {

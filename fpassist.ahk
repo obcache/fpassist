@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.7.1"
+A_FileVersion := "1.3.7.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -234,7 +234,7 @@ endAfk(*) {
 	setTimer(flashCancel,0)
 	setTimer(flashRetrieve,0)
 	setTimer(flashCast,0)
-	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
+	ui.toggleEnabledFS.value:="./img/toggle_off.png"
 	ui.toggleEnabledFSLabel.opt("hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
@@ -253,7 +253,7 @@ killAfk(*) {
 	setTimer(turnLeft,0)
 	setTimer(turnRight,0)
 	setTimer(throttleForward,0)
-	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
+	ui.toggleEnabledFS.value:="./img/toggle_off.png"
 	ui.toggleEnabledFSLabel.opt("hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
@@ -302,11 +302,11 @@ startAfk(this_mode:="cast",*) {
 	mode(this_mode)
 	ui.enabled:=true
 	ui.fishCountIcon.opt("-hidden")
-	ui.fishCount1.opt("-hidden")
-	ui.fishCount2.opt("-hidden")
-	ui.fishCount3.opt("-hidden")
-	ui.fishCount4.opt("-hidden")
-	ui.fishCount5.opt("-hidden")
+	; ui.fishCount1.opt("-hidden")
+	; ui.fishCount2.opt("-hidden")
+	; ui.fishCount3.opt("-hidden")
+	; ui.fishCount4.opt("-hidden")
+	; ui.fishCount5.opt("-hidden")
 	setTimer(updateAfkTime,1000)
 	log("AFK: Started")
 	send("{LButton Up}")
@@ -747,23 +747,25 @@ analyzeCatch(*) {
 	ui.fishLogAfkTime.opt("hidden")
 	ui.fishLogAfkTimeLabel.opt("hidden")
 	ui.fishLogAfkTimeLabel2.opt("hidden")
-	ui.fishCountIcon.opt("hidden")
-	ui.fishCount1.opt("hidden")
-	ui.fishCount2.opt("hidden")
-	ui.fishCount3.opt("hidden")
-	ui.fishCount4.opt("hidden")
-	ui.fishCount5.opt("hidden")
+	ui.fishCountText.opt("hidden")
+	;ui.fishCountIcon.opt("hidden")
+	; ui.fishCount1.opt("hidden")
+	; ui.fishCount2.opt("hidden")
+	; ui.fishCount3.opt("hidden")
+	; ui.fishCount4.opt("hidden")
+	; ui.fishCount5.opt("hidden")
 	log("Fish Caught!",0)
 	picTimestamp := formatTime(,"yyyyMMddhhmmss")
 	runWait("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" picTimestamp ".png",,"hide")
 	sleep(1500)
 	log("Screenshot: " a_scriptDir "/fishPics/" picTimestamp ".png",1)
-	ui.fishCountIcon.opt("-hidden")
-	ui.fishCount1.opt("-hidden")
-	ui.fishCount2.opt("-hidden")
-	ui.fishCount3.opt("-hidden")
-	ui.fishCount4.opt("-hidden")
-	ui.fishCount5.opt("-hidden")
+	;ui.fishCountIcon.opt("-hidden")
+	; ui.fishCount1.opt("-hidden")
+	; ui.fishCount2.opt("-hidden")
+	; ui.fishCount3.opt("-hidden")
+	; ui.fishCount4.opt("-hidden")
+	; ui.fishCount5.opt("-hidden")
+	ui.fishCountText.opt("-hidden")
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
@@ -778,9 +780,9 @@ analyzeCatch(*) {
 		try
 			ui.statFishCount.text := format("{:05i}",ui.fishLogCount.text)
 	
-		ui.fishCount:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
-		loop ui.fishCount.length {
-			ui.fishCount%a_index%.value:="./img/" ((a_index==1) ? ui.fishCount[a_index] "_begin" : ui.fishCount[a_index]) ".png"
+		ui.fishCountArr:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
+		loop ui.fishCountArr.length {
+			ui.fishCountArr%a_index%.value:="./img/" ((a_index==1) ? ui.fishCount[a_index] "_begin" : ui.fishCount[a_index]) ".png"
 		}
 	}
 	sleep(1500)

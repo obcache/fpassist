@@ -138,7 +138,7 @@ toggleEnabled(*) {
 toggleOn(*) {
 	;msgBox('toggleOn')
 	;setcapsLockState(true)
-	ui.toggleEnabledFS.value:="./img/toggle_horz_on.png"
+	ui.toggleEnabledFS.value:="./img/toggle_on.png"
 	ui.toggleEnabledFSLabel.opt("hidden")
 	;ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
 	ui.toggleEnabledFS.redraw()
@@ -146,13 +146,13 @@ toggleOn(*) {
 		this_obj.opt("-hidden")			
 	ui.enableButtonToggle.value := "./img/toggle_on.png"
 	guiVis(ui.disabledGui,false)
-	ui.fishCountIcon.opt("-hidden")
-	ui.fishCount1.opt("-hidden")
-	ui.fishCount2.opt("-hidden")
-	ui.fishCount3.opt("-hidden")
-	ui.fishCount4.opt("-hidden")
-	ui.fishCount5.opt("-hidden")
-	ui.fishCountIcon.opt("-hidden")
+	; ui.fishCountIcon.opt("-hidden")
+	; ui.fishCount1.opt("-hidden")
+	; ui.fishCount2.opt("-hidden")
+	; ui.fishCount3.opt("-hidden")
+	; ui.fishCount4.opt("-hidden")
+	; ui.fishCount5.opt("-hidden")
+	; ui.fishCountIcon.opt("-hidden")
 	ui.bigFishCaught.opt("-hidden")
 	ui.bigFishCaughtLabel.opt("-hidden")
 	ui.bigFishCaughtLabel2.opt("-hidden")
@@ -165,14 +165,15 @@ toggleOn(*) {
 toggleOff(*) {
 	;msgBox('toggleOff')
 	;setcapsLockState(true)
-	ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
+	ui.toggleEnabledFS.value:="./img/toggle_off.png"
 	ui.toggleEnabledFSLabel.opt("-hidden")
-	ui.fishCount1.opt("+hidden")
-	ui.fishCount2.opt("+hidden")
-	ui.fishCount3.opt("+hidden")
-	ui.fishCount4.opt("+hidden")
-	ui.fishCount5.opt("+hidden")
-	ui.fishCountIcon.opt("+hidden")
+	ui.fishCountText.opt("+hidden")
+	; ui.fishCount1.opt("+hidden")
+	; ui.fishCount2.opt("+hidden")
+	; ui.fishCount3.opt("+hidden")
+	; ui.fishCount4.opt("+hidden")
+	; ui.fishCount5.opt("+hidden")
+	; ui.fishCountIcon.opt("+hidden")
 	; ui.fishCaughtLabelFS.opt("+hidden")
 	; ui.fishCaughtLabel2FS.opt("+hidden")
 	ui.fishLogAfkTime.opt("+hidden")
