@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.7.4"
+A_FileVersion := "1.3.7.7"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -45,7 +45,7 @@ startGame()
 
 onExit(exitFunc)
 
-
+setStoreCapslockMode(0)
 
 
 ;ui.fullscreen := false
@@ -61,6 +61,9 @@ mode(mode) {
 			reelButtonOff()
 			retrieveButtonOff()
 			ui.retrieveButton.text:="Retrieve"
+			ui.actionBg.opt("background61823A")
+			ui.action.text:="Cast"
+			ui.action.setFont("c" ui.fontColor[1])
 			castButtonOn()
 			startButtonOn()
 			cancelButtonOn()
@@ -72,6 +75,10 @@ mode(mode) {
 			retrieveButtonOn()
 			startButtonOn()
 			cancelButtonOn()
+			
+			ui.actionBg.opt("background" ui.trimColor[3])
+			ui.action.setFont("c" ui.trimFontColor[1])
+			ui.action.text:="Land"
 			ui.reelIconFS.value:="./img/icon_reel_on.png"
 			flashretrieve()
 			setTimer(flashretrieve,1500)
@@ -80,6 +87,9 @@ mode(mode) {
 			ui.retrieveButton.text:="Retrieve"
 			reelButtonOff()
 			castButtonOff()
+			ui.actionBg.opt("background" ui.trimColor[4])
+			ui.action.setFont("c" ui.trimFontColor[1])
+			ui.action.text:="Lure"
 			try {
 				ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
 			}
@@ -92,6 +102,9 @@ mode(mode) {
 			try {
 				ui.reelIconFS.value:="./img/icon_reel_on.png"
 			}	
+			ui.actionBg.opt("background6182FA")
+			ui.action.setFont("c" ui.trimFontColor[6])
+			ui.action.text:="Catch"
 			retrieveButtonOff()
 			startButtonOn()
 			cancelButtonOn()
@@ -105,6 +118,9 @@ mode(mode) {
 			cancelButtonOff()
 			startButtonOff()
 			retrieveButtonOff()
+			ui.actionBg.opt("background" ui.bgColor[2])
+			ui.action.text:="Idle"
+			ui.action.setFont("c" ui.fontColor[2])
 			castButtonOff()
 			reelButtonOff()
 			ui.autoFish:=false
@@ -206,7 +222,7 @@ stopAfk(restart:="",*) {
 	sendNice("{lbutton up}")
 	sendNice("{rbutton up}")
 	 
-	;ui.FishCaughtFS.opt("+hidden")
+	;ui.fishCountFS.opt("+hidden")
 	
 	
 	 if !fileExist(a_scriptDir "/logs/current_log.txt")
@@ -254,7 +270,6 @@ killAfk(*) {
 	setTimer(turnRight,0)
 	setTimer(throttleForward,0)
 	ui.toggleEnabledFS.value:="./img/toggle_off.png"
-	ui.toggleEnabledFSLabel.opt("hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
 	;toggleEnabled()
@@ -317,18 +332,18 @@ startAfk(this_mode:="cast",*) {
 	send("{CapsLock Up}")
 	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
 
-;	ui.FishCaughtFS.opt("-hidden")
+;	ui.fishCountFS.opt("-hidden")
 
 	
 	;ui.fishLogFS.opt("-hidden")
-	; ui.fishCaughtLabelFS.opt("-hidden")
-	; ui.fishCaughtLabel2FS.opt("-hidden")
+	; ui.fishCountLabelFS.opt("-hidden")
+	; ui.fishCountLabel2FS.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
-	ui.bigFishCaught.opt("-hidden")
-	ui.bigFishCaughtLabel.opt("-hidden")
-	ui.bigFishCaughtLabel2.opt("-hidden")
+	ui.bigfishCount.opt("-hidden")
+	ui.bigfishCountLabel.opt("-hidden")
+	ui.bigfishCountLabel2.opt("-hidden")
 
 	if !reeledIn()
 		reelIn()
@@ -731,7 +746,7 @@ analyzeCatch(*) {
 	send("{shift up}{ctrl up}{space up}")
 	sleep(1500)
 	loop 5 {
-		if fishCaught {	
+		if fishCount {	
 			sleep(2000)
 			break
 		} else {
@@ -741,9 +756,9 @@ analyzeCatch(*) {
 	}
 	if !(DirExist("./fishPics"))
 		DirCreate("./fishPics")
-	ui.bigFishCaught.opt("hidden")
-	ui.bigFishCaughtLabel.opt("hidden")
-	ui.bigFishCaughtLabel2.opt("hidden")
+	ui.bigfishCount.opt("hidden")
+	ui.bigfishCountLabel.opt("hidden")
+	ui.bigfishCountLabel2.opt("hidden")
 	ui.fishLogAfkTime.opt("hidden")
 	ui.fishLogAfkTimeLabel.opt("hidden")
 	ui.fishLogAfkTimeLabel2.opt("hidden")
@@ -766,21 +781,21 @@ analyzeCatch(*) {
 	; ui.fishCount4.opt("-hidden")
 	; ui.fishCount5.opt("-hidden")
 	ui.fishCountText.opt("-hidden")
-	ui.bigFishCaught.opt("-hidden")
-	ui.bigFishCaughtLabel.opt("-hidden")
-	ui.bigFishCaughtLabel2.opt("-hidden")
+	ui.bigfishCount.opt("-hidden")
+	ui.bigfishCountLabel.opt("-hidden")
+	ui.bigfishCountLabel2.opt("-hidden")
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
 	if ui.fishLogCount.text < 99999 {
 		ui.fishLogCount.text := format("{:05i}",ui.fishLogCount.text + 1)
-		iniWrite(ui.fishLogCount.text,cfg.file,"Game","FishCaught")
+		iniWrite(ui.fishLogCount.text,cfg.file,"Game","fishCount")
 		try
-			ui.bigFishCaught.text := format("{:05i}",ui.fishLogCount.text)
+			ui.bigfishCount.text := format("{:05i}",ui.fishLogCount.text)
 		try
 			ui.statFishCount.text := format("{:05i}",ui.fishLogCount.text)
 	
-		; ui.fishCountArr:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","FishCaught",0)))
+		; ui.fishCountArr:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","fishCount",0)))
 		; loop ui.fishCountArr.length {
 			; ui.fishCountArr%a_index%.value:="./img/" ((a_index==1) ? ui.fishCount[a_index] "_begin" : ui.fishCount[a_index]) ".png"
 		; }
@@ -798,17 +813,17 @@ analyzeCatch(*) {
 	
 }
 
-ui.fishCaughtX:=450
-ui.fishCaughtY:=575
-ui.fishCaughtColor:=[0xFFFFFF,0x797A7E]
+ui.fishCountX:=450
+ui.fishCountY:=575
+ui.fishCountColor:=[0xFFFFFF,0x797A7E]
 
-fishCaught(*) {
-	fishCaughtPixelColor := pixelGetColor(450,575)
-	log("Analyze: Fish Caught[FFFFFF & 797A7E] :: Actual[" fishCaughtPixelColor "]")
-	fishCaughtPixel := round(fishCaughtPixelColor)
+fishCount(*) {
+	fishCountPixelColor := pixelGetColor(450,575)
+	log("Analyze: Fish Caught[FFFFFF & 797A7E] :: Actual[" fishCountPixelColor "]")
+	fishCountPixel := round(fishCountPixelColor)
 	
 	log("Analyzing: Catch",1,"Analyzed: Catch")
-	if checkWhite := checkPixel(ui.fishCaughtX,ui.fishCaughtY,ui.fishCaughtColor[1]) || checkGrey := checkPixel(ui.fishCaughtX,ui.fishCaughtY,ui.fishCaughtColor[2]) {
+	if checkWhite := checkPixel(ui.fishCountX,ui.fishCountY,ui.fishCountColor[1]) || checkGrey := checkPixel(ui.fishCountX,ui.fishCountY,ui.fishCountColor[2]) {
 		return 1
 	} else {
 		log("No Fish Detected.",2)
@@ -1071,7 +1086,7 @@ sleep500(loopCount := 1,stopOnReel := false) {
 
 modeHeader(mode,debugLevel:=1) {
 	ui.mode:=mode
-	;log(ui.lastMode ": Stopping",1,ui.lastMode ": Stopped")
+	;log(ui.lastMode ": Stopping",1,ui.lastMode ": Stopped")	
 	log("Ready",debugLevel)
 	;log("<<<STOPPING: " strUpper(ui.lastMode) ">>>",debugLevel,"<<<STOPPED: " strUpper(ui.lastMode) ">>>")
 
@@ -1096,13 +1111,5 @@ updateAfkTime(*) {
 
 
 
-;setTimer(checkMode,2000)
-checkMode(*) {
-	if pixelGetColor(98,53)=="0xF7F7F7" && pixelGetColor(107,56)=="0xF7F7F7" {
-		ui.fishGuiFS.show()
-		winActivate(ui.game)
-	} else {
-		ui.fishGuiFS.hide()
-		winActivate(ui.game)
-	}
-}
+setTimer(checkMode,1000)
+

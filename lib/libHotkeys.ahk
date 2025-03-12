@@ -37,20 +37,39 @@ hotif(isHot)
 	hotKey("^d",turnRight)
 hotIf()
 
+
+
 ui.toggleRightEnabled:=false
 ui.toggleLeftEnabled:=false
 ui.toggleForwardEnabled:=false
 ui.toggleBackwardEnabled:=false
 ui.prevState:=getKeyState("capslock")
+ui.visible:=true
+
+checkMode(*) {
+	((pixelGetColor(98,53)=="0xF7F7F7" || pixelGetColor(70,37)=="0xF7F7F7") && (pixelGetColor(107,56)=="0xF7F7F7" || pixelGetColor(80,37)=="0xF7F7F7"))
+		? (ui.visible)
+			? exit
+			: (ui.visible:=true,
+				guiVis(ui.fishGuiFS,true))
+				;winActivate(ui.game))
+		: (ui.visible)
+			? (ui.visible:=false,
+				guiVis(ui.fishGuiFS,false))
+				;winActivate(ui.game))
+			: exit
+}
+
+focusChanged(*) {
+	sleep(500)
+	(winActive(ui.game))
+		? setCapslockState(ui.prevState)
+		: setCapslockState(false)
+}
 
 ~!Tab:: {
 	focusChanged()
-	focusChanged(*) {
-		sleep(500)
-		(winActive(ui.game))
-			? setCapslockState(ui.prevState)
-			: setCapslockState(false)
-	}
+	setTimer(checkMode,-1000)
 }
 
 #hotIf WinActive(ui.game)	

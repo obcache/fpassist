@@ -167,9 +167,9 @@ cfgWrite(*) {
 	iniWrite(guiW,cfg.file,"System","GuiW")
 	iniWrite(guiH,cfg.file,"System","GuiH")
 	iniWrite(ui.fullscreen,cfg.file,"Game","Fullscreen")
-	if ui.fishLogCount.text < ui.bigFishCaught.text	
-		ui.fishLogCount.text:=ui.bigFishCaught.text
-	iniWrite(ui.fishLogCount.text,cfg.file,"Game","FishCaught")
+	if ui.fishLogCount.text < ui.bigfishCount.text	
+		ui.fishLogCount.text:=ui.bigfishCount.text
+	iniWrite(ui.fishLogCount.text,cfg.file,"Game","fishCount")
 }
 
 cfgLoad(*) {
@@ -181,7 +181,7 @@ cfgLoad(*) {
 	cfg.debug 				:= iniRead(cfg.file,"System","Debug",2)
 	cfg.rodCount 			:= iniRead(cfg.file,"Game","RodCount",6)
 	ui.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
-	ui.fishCountArr:=strSplit(iniRead(cfg.file,"Game","FishCaught",0))
+	ui.fishCountText		:= iniRead(cfg.file,"Game","fishCount",0)
 }
 
 initTrayMenu(*) {
@@ -203,8 +203,6 @@ isFS(*) {
 	else
 		return 0
 }
-
-
 
 guiVis(guiName,isVisible:= true) {
 	if (isVisible) {
@@ -232,11 +230,10 @@ notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := 
 	ui.notifyGui.SetFont("s16")  ; Set a large font size (32-point).
 	ui.notifyGui.AddText("w262 h58 c" ui.fontColor[2] " " Alignment " BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
 	ui.notifyGui.AddText("xs hidden")
-	
+
 	WinSetTransparent(0,ui.notifyGui)
 	ui.notifyGui.Show("NoActivate Autosize")  ; NoActivate avoids deactivating the currently active window.
 	ui.notifyGui.GetPos(&x,&y,&w,&h)
-		
 	ui.profileText.getPos(&guiX,&guiY,&guiW,&guiH)
 	ui.notifyGui.Show("x" (GuiX+(GuiW/2)-(w/2)+20) " y" GuiY+(13-(h/2))+6  "w262 h58 NoActivate")
 	guiVis(ui.notifyGui,true)
@@ -257,14 +254,10 @@ notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := 
 	}
 
 	waitOSD() {
-	
 		ui.notifyGui.destroy()
 		notifyOSD("Timed out waiting for response.`nPlease try your action again",-1000)
 	
 	}
-
-
-
 }
 
 fadeOSD() {
@@ -375,39 +368,6 @@ install() {
 			{
 				dirCreate(installDir "\logs")
 			}
-			fileInstall("./img/icon_fish.png",installDir "/img/icon_fish.png",1)
-			fileInstall("./img/0.png",installDir "/img/0.png",1)
-			fileInstall("./img/2.png",installDir "/img/2.png",1)
-			fileInstall("./img/3.png",installDir "/img/3.png",1)
-			fileInstall("./img/4.png",installDir "/img/4.png",1)
-			fileInstall("./img/5.png",installDir "/img/5.png",1)
-			fileInstall("./img/6.png",installDir "/img/6.png",1)
-			fileInstall("./img/7.png",installDir "/img/7.png",1)
-			fileInstall("./img/8.png",installDir "/img/8.png",1)
-			fileInstall("./img/9.png",installDir "/img/9.png",1)
-			fileInstall("./img/1.png",installDir "/img/1.png",1)
-			
-			fileInstall("./img/0_begin.png",installDir "/img/0_begin.png",1)
-			fileInstall("./img/2_begin.png",installDir "/img/2_begin.png",1)
-			fileInstall("./img/3_begin.png",installDir "/img/3_begin.png",1)
-			fileInstall("./img/4_begin.png",installDir "/img/4_begin.png",1)
-			fileInstall("./img/5_begin.png",installDir "/img/5_begin.png",1)
-			fileInstall("./img/6_begin.png",installDir "/img/6_begin.png",1)
-			fileInstall("./img/7_begin.png",installDir "/img/7_begin.png",1)
-			fileInstall("./img/8_begin.png",installDir "/img/8_begin.png",1)
-			fileInstall("./img/9_begin.png",installDir "/img/9_begin.png",1)
-			fileInstall("./img/1_begin.png",installDir "/img/1_begin.png",1)
-			
-			fileInstall("./img/0_end.png",installDir "/img/0_end.png",1)
-			fileInstall("./img/2_end.png",installDir "/img/2_end.png",1)
-			fileInstall("./img/3_end.png",installDir "/img/3_end.png",1)
-			fileInstall("./img/4_end.png",installDir "/img/4_end.png",1)
-			fileInstall("./img/5_end.png",installDir "/img/5_end.png",1)
-			fileInstall("./img/6_end.png",installDir "/img/6_end.png",1)
-			fileInstall("./img/7_end.png",installDir "/img/7_end.png",1)
-			fileInstall("./img/8_end.png",installDir "/img/8_end.png",1)
-			fileInstall("./img/9_end.png",installDir "/img/9_end.png",1)
-			fileInstall("./img/1_end.png",installDir "/img/1_end.png",1)
 			
 			fileInstall("./Img/fp_splash.png",installDir "/img/fp_splash.png",1)
 			fileInstall("./img/button_folder.png",installDir "/img/button_folder.png",1)
@@ -432,7 +392,7 @@ install() {
 			fileInstall("./img/icon_retrieve.png",installDir "/img/icon_retrieve.png",1)
 			fileInstall("./img/icon_reel_on.png",installDir "/img/icon_reel_on.png",1)
 			fileInstall("./img/icon_reel_flash.png",installDir "/img/icon_reel_flash.png",1)
-			fileInstall("./img/icon_reel.png",installDir "/img/icon_reel.png",1)			
+			fileInstall("./img/icon_reel.png",installDir "/img/icon_reel.png",1)													
 			fileInstall("./img/toggle_on.png",installDir "/img/toggle_on.png",1)
 			fileInstall("./img/toggle_off.png",installDir "/img/toggle_off.png",1)
 			fileInstall("./img/toggle_horz_on.png",installDir "/img/toggle_horz_on.png",1)
@@ -446,7 +406,11 @@ install() {
 			fileInstall("./update.exe",installDir "/update.exe",1)
 			fileInstall("./fpassist_currentBuild.dat",installDir "/fpassist_currentBuild.dat",1)
 			fileInstall("./img/hooman.ico",installDir "/img/hooman.ico",1)
-
+			fileInstall("./img/action_cast.png",installDir "/img/action_cast.png",1)
+			fileInstall("./img/action_retrieve.png",installDir "/img/action_retrieve.png",1)
+			fileInstall("./img/action_reel.png",installDir "/img/action_reel.png",1)
+			fileInstall("./img/action_idle.png",installDir "/img/action_idle.png",1)
+			fileInstall("./img/button_edit_light.png",installDir "/img/button_edit_light.png",1)
 			
 			pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
 			
