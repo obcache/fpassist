@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.7.7"
+A_FileVersion := "1.3.7.8"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -61,9 +61,9 @@ mode(mode) {
 			reelButtonOff()
 			retrieveButtonOff()
 			ui.retrieveButton.text:="Retrieve"
-			ui.actionBg.opt("background61823A")
+			ui.actionBg.opt("background00C6FD")
 			ui.action.text:="Cast"
-			ui.action.setFont("c" ui.fontColor[1])
+			ui.action.setFont("c08238c")
 			castButtonOn()
 			startButtonOn()
 			cancelButtonOn()
@@ -76,10 +76,10 @@ mode(mode) {
 			startButtonOn()
 			cancelButtonOn()
 			
-			ui.actionBg.opt("background" ui.trimColor[3])
-			ui.action.setFont("c" ui.trimFontColor[1])
+			ui.actionBg.opt("backgroundF29400")
+			ui.action.setFont("c4e2314")
 			ui.action.text:="Land"
-			ui.reelIconFS.value:="./img/icon_reel_on.png"
+			;ui.reelIconFS.value:="./img/icon_reel_on.png"
 			flashretrieve()
 			setTimer(flashretrieve,1500)
 
@@ -87,24 +87,26 @@ mode(mode) {
 			ui.retrieveButton.text:="Retrieve"
 			reelButtonOff()
 			castButtonOff()
-			ui.actionBg.opt("background" ui.trimColor[4])
-			ui.action.setFont("c" ui.trimFontColor[1])
+			ui.actionBg.opt("background0024eb")
+			ui.action.setFont("cf1f3ff")
 			ui.action.text:="Lure"
-			try {
-				ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
-			}
+			; try {
+				; ui.retrieveIconFS.value:="./img/icon_retrieve_on.png"
+			; }
 			startButtonOn()
 			cancelButtonOn()
 			retrieveButtonOn()
 		
+		
+		
 		case "reel":
 			ui.retrieveButton.text:="Retrieve"
-			try {
-				ui.reelIconFS.value:="./img/icon_reel_on.png"
-			}	
-			ui.actionBg.opt("background6182FA")
-			ui.action.setFont("c" ui.trimFontColor[6])
-			ui.action.text:="Catch"
+			; try {
+				; ui.reelIconFS.value:="./img/icon_reel_on.png"
+			; }	
+			ui.actionBg.opt("backgroundF1F3FF")
+			ui.action.setFont("c0024EB")
+			ui.action.text:="Reel"
 			retrieveButtonOff()
 			startButtonOn()
 			cancelButtonOn()
@@ -118,9 +120,9 @@ mode(mode) {
 			cancelButtonOff()
 			startButtonOff()
 			retrieveButtonOff()
-			ui.actionBg.opt("background" ui.bgColor[2])
+			ui.actionBg.opt("backgroundb0bab5")
 			ui.action.text:="Idle"
-			ui.action.setFont("c" ui.fontColor[2])
+			ui.action.setFont("c565f6e")
 			castButtonOff()
 			reelButtonOff()
 			ui.autoFish:=false
@@ -730,7 +732,7 @@ landFish(*) {
 	
 	sendNice("{space Up}")
 	setTimer(flashRetrieve,0)
-	ui.reelIconFS.value:="./img/icon_reel.png"
+	;ui.reelIconFS.value:="./img/icon_reel.png"
 	ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
 	ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
 	ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
