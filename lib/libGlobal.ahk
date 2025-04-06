@@ -204,13 +204,25 @@ isFS(*) {
 		return 0
 }
 
+checkMode(*) {
+	(ui.visible)
+		? (!(pixelGetColor(98,53)=="0xF7F7F7" || pixelGetColor(70,37)=="0xF7F7F7") && (pixelGetColor(107,56)=="0xF7F7F7" || pixelGetColor(80,37)=="0xF7F7F7"))
+			? 0 
+			: guiVis(ui.fishGuiFS,false)
+		: (!(pixelGetColor(98,53)=="0xF7F7F7" || pixelGetColor(70,37)=="0xF7F7F7") && (pixelGetColor(107,56)=="0xF7F7F7" || pixelGetColor(80,37)=="0xF7F7F7"))
+			? guiVis(ui.fishGuiFS,true)
+			: 0
+}
+
 guiVis(guiName,isVisible:= true) {
 	if (isVisible) {
 		WinSetTransparent(255,guiName)
 		WinSetTransparent("Off",guiName)
 		WinSetTransColor("010203",guiName)
+		ui.visible:=true
 	} else {
 		WinSetTransparent(0,guiName)
+		ui.visible:=false
 
 	}
 }

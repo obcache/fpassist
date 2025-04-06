@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.7.9"
+A_FileVersion := "1.3.8.0"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -288,31 +288,31 @@ killAfk(*) {
 
 ;setTimer(processQ,-100)
 
-processQ(*) {
-		loop {
-		if !ui.autoFish
-			break
-		if ui.fishQ.length>0 {
-			this_step:=ui.fishQ[1]
-			ui.fishQ.delete(1)
-			switch this_step {
-				case "cast":
-					cast()
-				case "retrieve":
-					retrieve()
-				case "land":
-					landFish()
-				case "reel":
-					reelIn()
-				case "clearQ":
-					ui.fishQ.delete()
-				case "stopQ":
-					setTimer(processQ,0)
-			}
-			sleep(500)
-		}
-	}
-}																																																																																																																			
+; processQ(*) {
+		; loop {
+		; if !ui.autoFish
+			; break
+		; if ui.fishQ.length>0 {
+			; this_step:=ui.fishQ[1]
+			; ui.fishQ.delete(1)
+			; switch this_step {
+				; case "cast":
+					; cast()
+				; case "retrieve":
+					; retrieve()
+				; case "land":
+					; landFish()
+				; case "reel":
+					; reelIn()
+				; case "clearQ":
+					; ui.fishQ.delete()
+				; case "stopQ":
+					; setTimer(processQ,0)
+			; }
+			; sleep(500)
+		; }
+	; }
+; }																																																																																																																			
 
 this:=object()
 startAfk(this_mode:="cast",*) {

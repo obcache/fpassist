@@ -44,21 +44,9 @@ ui.toggleLeftEnabled:=false
 ui.toggleForwardEnabled:=false
 ui.toggleBackwardEnabled:=false
 ui.prevState:=getKeyState("capslock")
-ui.visible:=true
+ui.visible:=false
 
-checkMode(*) {
-	((pixelGetColor(98,53)=="0xF7F7F7" || pixelGetColor(70,37)=="0xF7F7F7") && (pixelGetColor(107,56)=="0xF7F7F7" || pixelGetColor(80,37)=="0xF7F7F7"))
-		? (ui.visible)
-			? exit
-			: (ui.visible:=true,
-				guiVis(ui.fishGuiFS,true))
-				;winActivate(ui.game))
-		: (ui.visible)
-			? (ui.visible:=false,
-				guiVis(ui.fishGuiFS,false))
-				;winActivate(ui.game))
-			: exit
-}
+
 
 focusChanged(*) {
 	sleep(500)
