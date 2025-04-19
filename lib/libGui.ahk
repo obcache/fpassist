@@ -25,7 +25,9 @@ setFScoords(*) {
 			ui.scaleFactorY:=1
 			ui.hookedXfs:=3060																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 			ui.hookedYfs:=1000
-			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
+			ui.hookedX2fs:=3060
+			ui.hookedY2fs:=1000
+			ui.hookedColorfs:=[0x1DECFE,0x1EA9C3,0x419AAC]
 			ui.reeledInCoord1fs:=[2944,1250]
 			ui.reeledInCoord2fs:=[2944,1280]
 			ui.reeledInCoord3fs:=[2984,1250]
@@ -37,7 +39,7 @@ setFScoords(*) {
 			ui.scaleFactorY:=1
 			ui.hookedXfs:=2160																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 			ui.hookedYfs:=1000
-			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
+			ui.hookedColor:=[0x1DECFE,0x1EA9C3,0x419AAC]
 			ui.reeledInCoord1fs:=[2055,1270]
 			ui.reeledInCoord2fs:=[2055,1310]
 			ui.reeledInCoord3fs:=[2090,1310]
@@ -47,16 +49,45 @@ setFScoords(*) {
 		case 1920:
 			ui.scaleFactorX:=.89
 			ui.scaleFactorY:=.95
-			ui.hookedXfs:=1625																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-			ui.hookedYfs:=745
-			ui.hookedColor:=[0x1CACB5,0x1EA9C3]
-			ui.reeledInCoord1fs:=[1551,930]
-			ui.reeledInCoord2fs:=[1577,930]
-			ui.reeledInCoord3fs:=[1551,930]
-			ui.reeledInCoord4fs:=[1577,956]
-			ui.reeledInCoord5fs:=[1551,956]
+			ui.hookedXfs:=1641																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
+			ui.hookedYfs:=747
+			ui.hookedX2fs:=1741
+			ui.hookedY2fs:=746
+			ui.hookedColorfs:=[0x1EA6C6,0x1EA6C6]
+			ui.reeledInCoord1fs:=[1577,930]
+			ui.reeledInCoord2fs:=[1551,930]
+			ui.reeledInCoord3fs:=[1577,956]
+			ui.reeledInCoord4fs:=[1551,956]
+			ui.reeledInCoord5fs:=[1568,940]
+			ui.fsPanelOffset:=[-200,0]		
+		DEFAULT:
+			ui.scaleFactorX:=.89
+			ui.scaleFactorY:=.95
+			
+			ui.hookedXfs:=1641																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
+			ui.hookedYfs:=747
+			ui.hookedColor:=[0x1EA6C6]
+
+			ui.reeledInCoord1fs:=[1577,930]
+			ui.reeledInCoord2fs:=[1551,930]
+			ui.reeledInCoord3fs:=[1577,956]
+			ui.reeledInCoord4fs:=[1551,956]
+			ui.reeledInCoord5fs:=[1568,940]
 			ui.fsPanelOffset:=[-200,0]
+		
 	}
+	
+	ui.reeledInCoord1:=ui.reeledInCoord1fs
+	ui.reeledInCoord2:=ui.reeledInCoord2fs
+	ui.reeledInCoord3:=ui.reeledInCoord3fs
+	ui.reeledInCoord4:=ui.reeledInCoord4fs
+	ui.reeledInCoord5:=ui.reeledInCoord5fs
+	ui.hookedX:=ui.hookedXfs
+	ui.hookedY:=ui.hookedYfs
+	ui.hookedX2:=ui.hookedX2fs
+	ui.hookedY2:=ui.hookedY2fs
+	ui.hookedColor:=ui.hookedColorfs
+;MSGbOX(ui.reeledInCoord5fs[1] "`n" ui.reeledInCoord5fs[2])
 }
 
 createGui() {
@@ -456,19 +487,24 @@ showLog(*) {
 			; logY:=lmT
 		; }
 	; }
-	vdLeft:=sysGet("76")
-	vdWidth:=sysGet("78")
-	vdRight:=vdLeft+vdWidth
+	if monitorGetCount() > 1 {
+		vdLeft:=sysGet("76")
+		vdWidth:=sysGet("78")
+		vdRight:=vdLeft+vdWidth
 
-	winGetPos(&gX,&gY,&gW,&gH,ui.game)
-	if gX+gY+600 > vdRight {
-		logX:=gX-600
-		monitorGet(monitorGetPrimary()-1,&lmL,&lmT,&lmR,&lmB)
-		logY:=lmT
+		winGetPos(&gX,&gY,&gW,&gH,ui.game)
+		if gX+gW+600 > vdRight {
+			logX:=gX-600
+			monitorGet(monitorGetPrimary()-1,&lmL,&lmT,&lmR,&lmB)
+			logY:=lmT
+		} else {
+			logX:=gX+gW
+			monitorGet(monitorGetPrimary()+1,&lmL,&lmT,&lmR,&lmB)
+			logY:=lmT
+		}
 	} else {
-		logX:=gX+gW
-		monitorGet(monitorGetPrimary()+1,&lmL,&lmT,&lmR,&lmB)
-		logY:=lmT
+		logX:=0
+		logY:=0
 	}
 	; loop monitorGetCount {
 		; monitorGet(a_index,&thisLeft,&thisTop,&thisRight,&thisBottom)

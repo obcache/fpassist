@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.8.0"
+A_FileVersion := "1.3.8.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -347,8 +347,15 @@ startAfk(this_mode:="cast",*) {
 	ui.bigfishCountLabel.opt("-hidden")
 	ui.bigfishCountLabel2.opt("-hidden")
 
-	if !reeledIn()
-		reelIn()
+	loop 5 {
+		send("{+}")
+		sleep(150)
+	}
+	
+	while !reeledIn {
+		send("{space down}")
+		sleep(500)
+	}
 	
 	while ui.enabled  {
 		;detectPrompts()
@@ -386,7 +393,7 @@ isHooked(*) {
 	errorLevel:=(ui.enabled) ? 0 : killAfk()	
 	for hookedColor in ui.hookedColor {
 		;msgBox((ui.fullscreen)?'fs':'std')
-		if (checkPixel(ui.hookedX,ui.hookedY,hookedColor)) {
+		if (checkPixel(ui.hookedX,ui.hookedY,ui.hookedColor[1]) && checkPixel(ui.hookedX2,ui.hookedY2,ui.hookedColor[2])) {
 			log("HOOKED!")
 			ui.isHooked := 1
 			send("{LButton Up}")
@@ -896,21 +903,14 @@ sendNice(payload:="",gameWin:=ui.game) {
 }
 
 reeledIn(*) {
-	ui.checkReel1 := round(pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
-	ui.checkReel2 := round(pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2]))
-	ui.checkReel3 := round(pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2]))
-	ui.checkReel4 := round(pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2]))
-	ui.checkReel5 := round(pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2]))
-	
-	if (ui.checkReel1 >= 12250871
-		&& ui.checkReel2 >= 12250871
-		&& ui.checkReel3 >= 12250871
-		&& ui.checkReel4 >= 12250871
-		&& ui.checkReel5 < 12250871) {
-			ui.reeledIn := 1
-		} else
-			ui.reeledIn := 0
-	return ui.reeledIn
+	if pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2])=="0xF7F7F7"
+	&& pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])=="0xF7F7F7"
+	&& pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])=="0xF7F7F7"
+	&& pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])=="0xF7F7F7"
+	&& pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])!="0xF7F7F7"
+		return 1
+	else
+		return 0
 }
 
 
@@ -1109,9 +1109,4 @@ updateAfkTime(*) {
 }
 
 
-
-
-
-
 setTimer(checkMode,1000)
-
