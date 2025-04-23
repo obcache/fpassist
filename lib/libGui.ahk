@@ -23,11 +23,11 @@ setFScoords(*) {
 		case 3440:
 			ui.scaleFactorX:=1
 			ui.scaleFactorY:=1
-			ui.hookedXfs:=3060																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-			ui.hookedYfs:=1000
+			ui.hookedXfs:=3080																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
+			ui.hookedYfs:=1020
 			ui.hookedX2fs:=3060
 			ui.hookedY2fs:=1000
-			ui.hookedColorfs:=[0x1DECFE,0x1EA9C3,0x419AAC]
+			ui.hookedColorfs:=[0x1A7CC6,0x19EAB7]
 			ui.reeledInCoord1fs:=[2944,1250]
 			ui.reeledInCoord2fs:=[2944,1280]
 			ui.reeledInCoord3fs:=[2984,1250]
@@ -39,7 +39,7 @@ setFScoords(*) {
 			ui.scaleFactorY:=1
 			ui.hookedXfs:=2160																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 			ui.hookedYfs:=1000
-			ui.hookedColor:=[0x1DECFE,0x1EA9C3,0x419AAC]
+			ui.hookedColorfs:=[0x1DECFE,0x1EA9C3]
 			ui.reeledInCoord1fs:=[2055,1270]
 			ui.reeledInCoord2fs:=[2055,1310]
 			ui.reeledInCoord3fs:=[2090,1310]
@@ -66,7 +66,7 @@ setFScoords(*) {
 			
 			ui.hookedXfs:=1641																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
 			ui.hookedYfs:=747
-			ui.hookedColor:=[0x1EA6C6]
+			ui.hookedColorfs:=[0x1EA6C6]
 
 			ui.reeledInCoord1fs:=[1577,930]
 			ui.reeledInCoord2fs:=[1551,930]
@@ -87,6 +87,7 @@ setFScoords(*) {
 	ui.hookedX2:=ui.hookedX2fs
 	ui.hookedY2:=ui.hookedY2fs
 	ui.hookedColor:=ui.hookedColorfs
+	
 ;MSGbOX(ui.reeledInCoord5fs[1] "`n" ui.reeledInCoord5fs[2])
 }
 
