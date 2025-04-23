@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.8.3"
+A_FileVersion := "1.3.8.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -352,15 +352,15 @@ startAfk(this_mode:="cast",*) {
 		sleep(150)
 	}
 	
-	while !reeledIn {
+	while ui.enabled && !reeledIn {
 		send("{space down}")
 		sleep(500)
 	}
+	errorLevel:=(ui.enabled) ? 0 : killAfk()
 	
 	while ui.enabled  {
-		;detectPrompts()
-		(ui.enabled) ? 0 : killAfk()
 		if reeledIn() {
+			errorLevel:=(ui.enabled) ? 0 : killAfk()
 			send("{backspace}")
 			sleep500(2)
 			cast()
@@ -368,45 +368,36 @@ startAfk(this_mode:="cast",*) {
 			reelIn()
 		}
 
-		(ui.enabled) ? 0 : killAfk()
 		ui.mode:="retrieve"
 		if !reeledIn() {
 			retrieve()
 		}
 	
-		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 	}
-
+	errorLevel:=(ui.enabled) ? 0 : killAfk()
 	sleep500(3)
-	errorLevel:=(ui.enabled) ? 0 : killAfk()	
+		
 	analyzeCatch()
-	errorLevel:=(ui.enabled) ? 0 : killAfk()	
+	
 	sleep500(3)
-	errorLevel:=(ui.enabled) ? 0 : killAfk()	
+	
 	checkKeepnet()
 
 	killAfk()
 }
 
 isHooked(*) {
-	ui.isHooked := 0
-	errorLevel:=(ui.enabled) ? 0 : killAfk()	
-	for hookedColor in ui.hookedColor {
-		;msgBox((ui.fullscreen)?'fs':'std')
-		if (checkPixel(ui.hookedX,ui.hookedY,ui.hookedColor[1]) && checkPixel(ui.hookedX2,ui.hookedY2,ui.hookedColor[2])) {
-			log("HOOKED!")
-			ui.isHooked := 1
-			send("{LButton Up}")
-			send("{RButton Up}")
-			send("{Shift Up}")
-			send("{LShift Up}")
-			send("{Space Up}")
-			send("{CapsLock Up}")
+	lineTension:=round(pixelGetColor(ui.hookedX,ui.hookedY))
+	;log("Line Tension: " lineTension "`tLooking For: " ui.hookedColor[1])
+	if lineTension==ui.hookedColor[1] {
+		;if (checkPixel(ui.hookedX2,ui.hookedY2,ui.hookedColor[2])) {
+			;log("HOOKED!")
 			;setTimer(isHooked,0)
-			return ui.isHooked
-		}
+			;landFish()
+			return 1
+		;}
 	}
-	return ui.isHooked
+	return 0
 }
 
 checkPixel(x,y,targetColor) {
@@ -517,7 +508,7 @@ cast(*) {
 			}
 		}
 	} else {
-		if !reeledIn() && ui.enabled && ui.autoFish {
+		if !reeledIn() && ui.enabled {
 			castButtonDim()
 			reelButtonOn()
 			reelIn()
@@ -526,17 +517,19 @@ cast(*) {
 			sleep500(2)
 		}
 
-		if reeledIn()
+		if reeledIn() {
+			log("Cast: Prepared")
 			sleep500(4)
-		else
+		} else
 			return
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		
-		log("Cast: Prepared")
+		
 		ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
 		sleep500(3)
 		
 		log("Cast: Drawing Back Rod",1)
+		
 		sendNice("{space down}")
 		(cfg.profileSelected <= cfg.castLength.length)  
 			? sleep(cfg.castLength[cfg.profileSelected])
@@ -562,7 +555,6 @@ cast(*) {
 		sendNice("{space down}")
 		sleep(500)
 		sendNice("{space up}")
-		sleep500(4)
 	}
 }
 
@@ -579,7 +571,7 @@ rotateRodStands(rodCount:=4) {
 }
 
 retrieve(*) {
-	setTimer(detectPrompts,0)
+	;setTimer(detectPrompts,0)
 	errorLevel:=(ui.enabled) ? 0 : killAfk()	
 	mode("retrieve")
 	log("Started: Retrieve")
@@ -622,13 +614,7 @@ retrieve(*) {
 		log("Retrieve: Starting",1,"Retrieve: Started")
 		while !reeledIn() {
 			errorLevel:=(ui.enabled) ? 0 : killAfk()	
-			if isHooked() { 
-				winActivate(ui.game)
-				sleep(500)
-				errorLevel:=(ui.enabled) ? 0 : killAfk()	
-				landFish()
-				return
-			}
+			(isHooked()) ? landFish() : 0
 			
 			if ui.twitchFreq.value == 10 {
 				send("{space down}")
@@ -772,23 +758,11 @@ analyzeCatch(*) {
 	ui.fishLogAfkTimeLabel.opt("hidden")
 	ui.fishLogAfkTimeLabel2.opt("hidden")
 	ui.fishCountText.opt("hidden")
-	;ui.fishCountIcon.opt("hidden")
-	; ui.fishCount1.opt("hidden")
-	; ui.fishCount2.opt("hidden")
-	; ui.fishCount3.opt("hidden")
-	; ui.fishCount4.opt("hidden")
-	; ui.fishCount5.opt("hidden")
 	log("Fish Caught!",0)
 	picTimestamp := formatTime(,"yyyyMMddhhmmss")
 	runWait("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" picTimestamp ".png",,"hide")
 	sleep(1500)
 	log("Screenshot: " a_scriptDir "/fishPics/" picTimestamp ".png",1)
-	;ui.fishCountIcon.opt("-hidden")
-	; ui.fishCount1.opt("-hidden")
-	; ui.fishCount2.opt("-hidden")
-	; ui.fishCount3.opt("-hidden")
-	; ui.fishCount4.opt("-hidden")
-	; ui.fishCount5.opt("-hidden")
 	ui.fishCountText.opt("-hidden")
 	ui.bigfishCount.opt("-hidden")
 	ui.bigfishCountLabel.opt("-hidden")
@@ -803,11 +777,6 @@ analyzeCatch(*) {
 			ui.bigfishCount.text := format("{:05i}",ui.fishLogCount.text)
 		try
 			ui.statFishCount.text := format("{:05i}",ui.fishLogCount.text)
-	
-		; ui.fishCountArr:=strSplit(format("{:05i}",iniRead(cfg.file,"Game","fishCount",0)))
-		; loop ui.fishCountArr.length {
-			; ui.fishCountArr%a_index%.value:="./img/" ((a_index==1) ? ui.fishCount[a_index] "_begin" : ui.fishCount[a_index]) ".png"
-		; }
 	}
 	sleep(1500)
 	sendNice("{space}")
@@ -819,7 +788,6 @@ analyzeCatch(*) {
 	send("{lctrl up}")
 	send("{rctrl up}")
 	send("{space up}")
-	
 }
 
 ui.fishCountX:=450
@@ -912,7 +880,6 @@ reeledIn(*) {
 	else
 		return 0
 }
-
 
 detectPrompts(*) {
 	if !winActive(ui.game) 
@@ -1052,46 +1019,11 @@ sleep500(loopCount := 1,stopOnReel := false) {
 	return errorLevel
 }
 
-
-/*slider2(this_name,this_gui:=ui.fishGui,this_x:=0,this_y:=0,this_w:=100,this_h:=20,thumbImg:="") {
-	; global
-	; cSlider := object()
-	; cSlider.x := this_x
-	; cSlider.w := this_w    
-	; cSlider.h := this_h
-	; cslider.%this_name%Bg := this_gui.addPicture("x" this_x " y" this_y " w" this_w " h" this_h " background" ui.bgColor[5])
-	; if thumbImg {
-		; cslider.%this_name%Thumb := this_gui.addPicture("v" this_name " x" this_x-4 " y" this_y-4 " w" this_h+8 " backgroundTrans h" this_h+8,thumbImg)
-	; } else {
-		; cslider.%this_name%Thumb := this_gui.addPicture("v" this_name " background" ui.trimColor[1] " x" this_x+4 " y" this_y-4 " w10 backgroundTrans h" this_h+4)
-	; }
-	; cslider.%this_name%Thumb.onEvent("click",sliderMoved)
-	; cslider.%this_name%Thumb.redraw()
-; }
-
-;sliderMoved(this_slider,info*) {
-	msgBox('here')
-	; button_down := true
-	; while button_down {
-		; button_down := getKeyState("LButton")
-		; mouseGetPos(&x,&y)
-		cslider.%this_slider%.getPos(&slider_x,,,)
-		; if x>cSlider.x+cSlider.w-cSlider.h
-			; x:=cSlider.x+cSlider.w-cSlider.h
-		; if x<cSlider.x
-			; x:=cSlider.x
-		; this_slider.move(x,,,)
-		; sleep(10)
-	; }
-; }
-*/
-
 modeHeader(mode,debugLevel:=1) {
 	ui.mode:=mode
 	;log(ui.lastMode ": Stopping",1,ui.lastMode ": Stopped")	
 	log("Ready",debugLevel)
 	;log("<<<STOPPING: " strUpper(ui.lastMode) ">>>",debugLevel,"<<<STOPPED: " strUpper(ui.lastMode) ">>>")
-
 
 	log("STARTING: " strUpper(ui.mode),debugLevel,"STARTED: " strUpper(ui.mode))
 	log("Ready",debugLevel,"••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
@@ -1107,6 +1039,5 @@ updateAfkTime(*) {
 		ui.playAniStep := 1
 	ui.startButtonStatus.value := "./img/play_ani_" ui.playAniStep ".png"
 }
-
 
 setTimer(checkMode,1000)
