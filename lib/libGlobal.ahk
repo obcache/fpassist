@@ -455,8 +455,8 @@ install() {
 			
 			pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
 			
-			fileCreateShortcut(installDir "/fpassist.exe", a_desktop "\fpassist.lnk",installDir,,"Fishing Planet Assist",installDir "/img/hooman.ico")
-			fileCreateShortcut(installDir "/fpassist.exe", a_startMenu "\Programs\fpassist.lnk",installDir,,"fpassist Gaming Assistant",installDir "/img/hooman.ico")
+			fileCreateShortcut(installDir "/fpassist.exe", a_desktop "\fpassist.lnk",installDir,,"Fishing Planet Assist",installDir "/img/fpassist_icon.ico")
+			fileCreateShortcut(installDir "/fpassist.exe", a_startMenu "\Programs\fpassist.lnk",installDir,,"fpassist Gaming Assistant",installDir "/img/fpassist_icon.ico")
 			iniWrite(installDir,installDir "/fpassist.ini","System","InstallDir")
 			if errorLevel
 				return errorLevel
