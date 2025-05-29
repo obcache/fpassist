@@ -40,18 +40,18 @@ themeDef(themeNum:=1,*) {
 			ui.trimDarkFontColor 	:= ["9595A5","9595A5","44DDCC","11EE11","EE1111","303030"]
 	}
 }
-	setTimer(menuCheck,1000)
+;setTimer(menuCheck,1000)
 menuCheck(*) {
 	static guiVisible:=true
 		if winActive(ui.game)
 			if pixelGetColor(557,187)=="0xEFD070" {
 				if guiVisible {
-					ui.fishGuiFS.hide()
 					guiVisible:=false
+					guiVis(ui.fishGuiFS,false)
 				}
 			} else {
 				if !guiVisible {
-					ui.fishGuiFS.show()
+					guiVis(ui.fishGuiFS,true)
 					guiVisible:=true
 				}
 			}
@@ -93,7 +93,6 @@ initVars(*) {
 	ui.sessionStartTime 	:= A_Now
 	ui.enabled 				:= true
 	cfg.emptyKeepnet 		:= false
-	ui.autoFish 			:= false
 	ui.isAFK 				:= false
 	ui.isFS 				:= false
 	ui.fullscreen 			:= false
@@ -141,7 +140,10 @@ initVars(*) {
 	ui.reeledInCoord3std:=[1026,656]
 	ui.reeledInCoord4std:=[1047,656]
 	ui.reeledInCoord5std:=[1036,644]
-
+	
+	ui.fishCaughtCoord1Std:=[1836,1240]
+	ui.fishCaughtColorStd:=[0xEF7F00]
+	
 	ui.hookedCoord1:=ui.hooked1std
 	ui.hookedCoord2:=ui.hooked2std
 	
@@ -156,6 +158,9 @@ initVars(*) {
 	ui.hookedX2:=ui.hookedCoord2[1]
 	ui.hookedY2:=ui.hookedCoord2[2]
 	ui.hookedColor:=ui.hookedColorStd
+	ui.fishCaughtCoord1:=ui.fishCaughtCoord1Std
+	ui.fishCaughtColor:=ui.fishCaughtColorStd
+	
 	setcapsLockState(false)
 }
 
@@ -164,7 +169,7 @@ cfgWrite(*) {
 		ui.%setting%Str := ""
 		if setting != "profileName" {
 			while cfg.%setting%.length < cfg.profileName.length
-				cfg.%setting%.push(ui.%setting%.value)
+				cfg.%setting%.push(cfg.%setting%[cfg.profileSelected])
 			}
 			for profile in cfg.profileName {
 				ui.%setting%Str .= cfg.%setting%[a_index] ","
@@ -185,15 +190,26 @@ cfgWrite(*) {
 }
 
 cfgLoad(*) {
+	timeStamp:=formatTime(,"yyyyMMddhhmmss")
+	ui.logFile:="./logs/log_fpassist_" timeStamp ".txt"
+	ui.fishLogFile:="./logs/current_fish_data.txt"
+	if !fileExist(ui.fishLogFile)
+		 fileAppend('"Session Start","AFK Start","AFK Duration","Fish Caught","Cast Count","Cast Length","Drag Level","Reel Speed"`n',ui.fishLogFile)
+	if !fileExist(ui.logFile)
+		 fileAppend('"Timestamp","LogMessage"`n',ui.logFile)
+
 	for setting,default in cfg.profileSetting {
 		 cfg.%setting% := strSplit(iniRead(cfg.file,"Game",setting,default),",")
 	}
+	
 	ui.fullscreen			:= iniRead(cfg.file,"Game","Fullscreen",0)
 	cfg.profileSelected 	:= iniRead(cfg.file,"Game","ProfileSelected",1)
 	cfg.debug 				:= iniRead(cfg.file,"System","Debug",2)
 	cfg.rodCount 			:= iniRead(cfg.file,"Game","RodCount",6)
 	ui.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
 	ui.fishCountText		:= iniRead(cfg.file,"Game","fishCount",0)
+
+
 }
 
 initTrayMenu(*) {
@@ -508,65 +524,31 @@ exitFunc(*) {
 	exitApp
 }
 
+logCatch(*) {
+	 fileAppend(ui.statSessionStartTime.text "," ui.statAfkStartTime.text "," ui.statAfkDuration.text "," ui.statFishCount.text "," ui.statCastCount.text "," ui.statCastLength.text "," ui.statDragLevel.text "," ui.statReelSpeed.text "`n",ui.fishLogFile)
+}
+
 log(msg,debug:=0,msgHistory:=msg) {
-	if debug > cfg.debug
-		return
-	; ui.logLV.add(,msg,msg)
-	; if ui.fullscreen {
-		; try {
-			; ui.fishLogStr := ""
-			; loop ui.fishLogArr.length+1 {
-				; ui.fishLogStr .= ui.fishLogArr[a_index+1] "`n"
-				; ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
-			; }
-		; }
-	; } else {
-		; if ui.lastMsg {
-			; ui.fishStatusText.text := msg
-			; ui.fishLogArr.push(
-				; (ui.lastMsg=="Ready") 
-					; ? "——————————————————————————————————————" 
-					; : formatTime(,"[hh:mm:ss] ") ui.lastMsg)
-			; ui.fishLogArr.removeAt(1)
-			; ui.fishLogText.delete()
-			; ui.fishLogText.add(ui.fishLogArr)
-		; }
-	; }
+	ui.fishLogStr := ""
+	if !ui.lastMsg
+		ui.lastMsg:="Starting: FPAssist"
+		
+	msgData:=formatTime(,"[hh:mm:ss] ") 
+	ui.logLV.insert(1,,formatTime(,"[hh:mm:ss] ") msg)
+	ui.fishStatusText.text := msg
+		
+	if msg=="Ready" 
+		ui.fishLogArr.push(substr("_________________________________________________________________________",1,70))
+	else
+		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
 	
-	
-	try {
-			ui.fishLogStr := ""
-			loop ui.fishLogArr.length+1 {
-				ui.fishLogStr .= ui.fishLogArr[a_index+1] "`n"
-				ui.fishLogFS.text := rtrim(ui.fishLogStr,"`n")
-			}
-	}
-	
-	ui.logLV.insert(1,,
-	(msg=="Ready")
-		? substr("_________________________________________________________________________",1,70)
-		: formatTime(,"[hh:mm:ss] ") msg)
-	if ui.lastMsg {
-			ui.fishStatusText.text := msg
-			;ui.logFooter.text := msg
-			ui.fishLogArr.push(
-				(ui.lastMsg=="Ready") 
-					? "——————————————————————————————————————" 
-					: formatTime(,"[hh:mm:ss] ") ui.lastMsg)
-			ui.fishLogArr.removeAt(1)
-			ui.fishLogText.delete()
-			ui.fishLogText.add(ui.fishLogArr)
-			ui.logLV.delete()
-			
-			for row in ui.fishLogArr {
-				if a_index > 5
-					ui.logLV.add(,substr(row,1,120))
-			}
-			ui.logLV.add(,substr(formatTime(,"[hh:mm:ss] ") msg,1,120))
-	}
-	
+	ui.fishLogArr.removeAt(1)
+	ui.fishLogText.delete()
+	ui.fishLogText.add(ui.fishLogArr)
+
 	ui.lastMsg := msgHistory
 }
+
 
 killMe(*) {
 	ExitApp

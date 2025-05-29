@@ -9,9 +9,10 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 }
 
 startButtonClicked(*) {
-	;toggleOff()
-	toggleOn()
-	castButtonClicked()
+	ui.enabled:=true
+	ui.mode:="retrieve"
+	mode(ui.mode)
+	setTimer(startAfk,-100)
 }
 
 stopButtonClicked(*) {
@@ -21,9 +22,8 @@ stopButtonClicked(*) {
 		setTimer () => toggleOn(),-550 
 	} else 
 		setTimer () => toggleOn(), -100
-		 
+	ui.mode:="off"	 
 	;toggleOn()
-	; ui.autoFish:=false
 	; ui.mode:="off"
 	; mode(ui.mode)
 	; ui.toggleEnabledFS.move(a_screenWidth-50,,,)
@@ -43,12 +43,10 @@ castButtonClicked(*) {
 	ui.enabled:=true
 	ui.mode:="cast"
 	mode(ui.mode)
-	cast()
 	setTimer(startAfk,-100)
 }
 
 reelButtonClicked(*) {
-	ui.autoFish:=true
 	ui.mode:="reel"
 	mode(ui.mode)
 	ui.fishQ.push(ui.mode)
@@ -57,23 +55,24 @@ reelButtonClicked(*) {
 	setTimer(startAfk,-100)
 }
 
-showQ(*) {
-	ui.qui:=gui()
-	ui.qui.opt("toolWindow -caption -border owner" ui.fishGui.hwnd)
-	ui.qui.backColor:="454545"
-	ui.quiLb:=ui.qui.addListBox("",ui.fishQ)
-	ui.qui.show()
-}
+
 retrieveButtonClicked(*) {
-	ui.autoFish:=true
-	ui.mode:="retrieve"
-	mode(ui.mode)
-	ui.fishQ.push(ui.mode)
-	retrieve()
-	startAfk()
+	mode("retrieve")
+	;ui.fishQ.push(ui.mode)
+	;retrieve()
+	startAfk("retrieve")
 }
 
-castLengthChanged(*) {
+editorCastLengthChanged(*) {
+		while cfg.profileSelected > cfg.castLength.Length
+			cfg.castLength.push("2000")
+		
+		cfg.castLength[cfg.profileSelected] := ui.editorGui_castLength.value
+		ui.editorGui_castLengthText.text := cfg.castLength[cfg.profileSelected]
+		ui.profileIcon.focus()
+}
+
+CastLengthChanged(*) {
 		while cfg.profileSelected > cfg.castLength.Length
 			cfg.castLength.push("2000")
 		
@@ -129,11 +128,10 @@ rodsIn(*) {
 
 
 toggleEnabled(*) {
-		(ui.enabled := !ui.enabled) 
-			? toggleOn() 
-			: toggleOff()
+	(ui.enabled := !ui.enabled) 
+		? toggleOn() 
+		: toggleOff()
 }
-
 
 toggleOn(*) {
 	;msgBox('toggleOn')
@@ -162,12 +160,17 @@ toggleOn(*) {
 	ui.fishLogAfkTime.opt("-hidden")
 	ui.fishLogAfkTimeLabel.opt("-hidden")
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
+	if ui.editorVisible
+		guiVis(ui.editorGui,true)
+	
 	;startAfk()
 }
 	
 toggleOff(*) {
 	;msgBox('toggleOff')
 	;setcapsLockState(true)
+	if ui.editorVisible
+		guiVis(ui.editorGui,false)
 	ui.toggleEnabledFS.value:="./img/toggle_off.png"
 	;ui.toggleEnabledFSLabel.opt("-hidden")
 	ui.toggleLabel.opt("-hidden")
@@ -202,30 +205,82 @@ toggleOff(*) {
 }
 
 updateControls(*) {
-	try 
-		ui.twitchFreq.value := cfg.twitchFreq[cfg.profileSelected]
-	try 
-		ui.stopFreq.value := cfg.stopFreq[cfg.profileSelected]
-	try 
-		ui.dragLevel.value := cfg.dragLevel[cfg.profileSelected]
-	try 
-		ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
-	try 
-		ui.castTime.value := cfg.castTime[cfg.profileSelected]
-	try 
-		ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
+	
 	try
-		ui.rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
+		ui.editorGui_CastLengthText.text:=cfg.castLength[cfg.profileSelected]
 	try
-		ui.floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
+		ui.editorGui_reelSpeed.value:=cfg.reelSpeed[cfg.profileSelected]
 	try
-		ui.castLength.value := cfg.castLength[cfg.profileSelected]
+		ui.editorGui_dragLevel.value:=cfg.dragLevel[cfg.profileSelected]
+	try	
+		ui.editorGui_twitchFreq.value:=cfg.twitchFreq[cfg.profileSelected]
+	try
+		ui.editorGui_stopFreq.value:=cfg.stopFreq[cfg.profileSelected]
+	try
+		ui.editorGui_castTime.value:=cfg.castTimer[cfg.profileSelected]
+	try
+		ui.editorGui_sinkTim.value:=cfg.sinkTime[cfg.profileSelected]
+	try
+		ui.editorGui_recastTime.value:=cfg.recastTimer[cfg.profileSelected]
+	try
+		ui.editorGui_reelFreq.value:=cfg.reelFreq[cfg.profileSelected]
+	try
+		ui.editorGui_rodHolderEnabled.value:=cfg.rodHolderEnabled[cfg.profileSelected]
+	try
+		ui.editorGui_floatEnabled.value :=cfg.floatEnabled[cfg.profileSelected]
+	try
+		ui.editorGui_profileText.text := cfg.profileName[cfg.profileSelected]
+
 	try 
-		ui.castLengthText.text := cfg.castLength[cfg.profileSelected]
-	try
-		ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
+		ui.fishGuiFS_twitchFreq.value := cfg.twitchFreq[cfg.profileSelected]
 	try 
-		ui.profileText.text := cfg.profileName[cfg.profileSelected]
+		ui.fishGuiFS_stopFreq.value := cfg.stopFreq[cfg.profileSelected]
+	try 
+		ui.fishGuiFS_dragLevel.value := cfg.dragLevel[cfg.profileSelected]
+	try 
+		ui.fishGuiFS_reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
+	try 
+		ui.fishGuiFS_castTime.value := cfg.castTime[cfg.profileSelected]
+	try 
+		ui.fishGuiFS_sinkTime.value := cfg.sinkTime[cfg.profileSelected]
+	try
+		ui.fishGuiFS_rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
+	try
+		ui.fishGuiFS_floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
+	try
+		ui.fishGuiFS_castLength.value := cfg.castLength[cfg.profileSelected]
+	try 
+		ui.fishGuiFS_castLengthText.text := cfg.castLength[cfg.profileSelected]
+	try
+		ui.fishGuiFS_bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
+	try 
+		ui.fishGuiFS_profileText.text := cfg.profileName[cfg.profileSelected]
+	
+	
+	try 
+		ui.fishGui_twitchFreq.value := cfg.twitchFreq[cfg.profileSelected]
+	try 
+		ui.fishGui_stopFreq.value := cfg.stopFreq[cfg.profileSelected]
+	try 
+		ui.fishGui_dragLevel.value := cfg.dragLevel[cfg.profileSelected]
+	try 
+		ui.fishGui_reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
+	try 
+		ui.fishGui_castTime.value := cfg.castTime[cfg.profileSelected]
+	try 
+		ui.fishGui_sinkTime.value := cfg.sinkTime[cfg.profileSelected]
+	try
+		ui.fishGui_rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
+	try
+		ui.fishGui_floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
+	try
+		ui.fishGui_castLength.value := cfg.castLength[cfg.profileSelected]
+	try 
+		ui.fishGui_castLengthText.text := cfg.castLength[cfg.profileSelected]
+	try
+		ui.fishGui_bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
+	try 
+		ui.fishGui_profileText.text := cfg.profileName[cfg.profileSelected]
 	ui.profileNum.text := "Profile[" cfg.profileSelected "/" cfg.profileName.length "]"
 	try 
 		ui.profileIcon.focus()
@@ -322,6 +377,7 @@ editProfileName(*) {
 	ui.profileDeleteButton.opt("hidden")
 	ui.profileSaveButton.opt("-hidden")
 	ui.profileSaveCancelButton.opt("-hidden")
+	ui.editProfileEdit.onEvent("escape",cancelEditProfileName)
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
 	ui.editProfileGui.show("x" ui.profilePos["x"]+27 " y" ui.profilePos["y"]+4 " w208 h22")
 	ui.editProfileEdit.focus()

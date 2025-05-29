@@ -34,6 +34,10 @@ setFScoords(*) {
 			ui.reeledInCoord4fs:=[2984,1280]
 			ui.reeledInCoord5fs:=[2963,1265]
 			ui.fsPanelOffset:=[0,0]
+			ui.fishCaughtCoord1fs:=[1836,1240]
+			ui.fishCaughtCoord2fs:=[2036,1240]
+			ui.fishCaughtColorFs:=[16777215,14642944]
+			
 		case 2560:
 			ui.scaleFactorX:=.95
 			ui.scaleFactorY:=1
@@ -87,6 +91,9 @@ setFScoords(*) {
 	ui.hookedX2:=ui.hookedX2fs
 	ui.hookedY2:=ui.hookedY2fs
 	ui.hookedColor:=ui.hookedColorfs
+	ui.fishCaughtCoord1:=ui.fishCaughtCoord1fs
+	ui.fishCaughtCoord2:=ui.fishCaughtCoord2fs
+	ui.fishCaughtColor:=ui.fishCaughtColorFs
 	
 ;MSGbOX(ui.reeledInCoord5fs[1] "`n" ui.reeledInCoord5fs[2])
 }
@@ -95,6 +102,7 @@ createGui() {
 	while cfg.profileSelected > cfg.profileName.Length
 		cfg.profileName.push("Profile #" cfg.profileName.length+1)
 	ui.fishGui := gui()
+	ui.fishGui.name:="fishGui"
 	ui.fishGui.opt("-caption owner" winGetId(ui.game))
 	ui.fishGui.backColor := ui.bgColor[4]
 	ui.fishGui.color := ui.fontColor[2]
@@ -171,8 +179,8 @@ createGui() {
 	slider("sinkTime",,265,755,20,50,"0-20",1,1,"center","Sink","vertical","b")
 	slider("recastTime",,100,795,135,13,"1-20",1,1,"center","Recast",,"l","11")
 	slider("reelFreq",,1900,0,0,0,"0-10",1,10,"center","Reel")
-	ui.reelFreq.value := 10
-	ui.reelFreq.opt("hidden")
+	ui.%ui.fishGui.name%_reelFreq.value := 10
+	ui.%ui.fishGui.name%_reelFreq.opt("hidden")
 
 	while cfg.rodHolderEnabled.length < cfg.profileSelected
 		cfg.rodHolderEnabled.push(false)
@@ -442,35 +450,7 @@ logViewer(*) {
 		winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
 		ui.logGui.show("x" tX+tW+8 " y" tY " w600 h835")
 	}
-
-goFS(*) {
-	ui.fullscreen := true
-	setFScoords()
-	guiVis(ui.fishGuiFS,true)
-	;ui.fishCountFS.redraw()
-	; ui.fishCountLabelFS.redraw()
-	; ui.fishCountLabel2FS.redraw()
-	guiVis(ui.fishGui,false)
-	monitorGetWorkArea(monitorGetPrimary(),&l,&t,&r,&b)
-	;msgBox(r "`n" b)
-	winMove(0,0,r,b,ui.game)	
-	; winSetTransparent(160,ui.fishGuiFsBg)
-	; winMinimize(ui.game)
-	; winRestore(ui.game)
-	ui.reeledInCoord1:=ui.reeledInCoord1fs
-	ui.reeledInCoord2:=ui.reeledInCoord2fs
-	ui.reeledInCoord3:=ui.reeledInCoord3fs
-	ui.reeledInCoord4:=ui.reeledInCoord4fs
-	ui.reeledInCoord5:=ui.reeledInCoord5fs
-	;msgBox(ui.reeledInCoord1[1] ":" ui.reeledInCoord1[2] "`n" ui.reeledInCoord2[1] ":" ui.reeledInCoord2[2] "`n" ui.reeledInCoord3[1] ":" ui.reeledInCoord3[2])
-	ui.hookedX:=ui.hookedXfs
-	ui.hookedY:=ui.hookedYfs
-	;createGuiFS()
-	showLog()
-	;click()
-}
-
-showLog(*) {
+	showLog(*) {
 
 	; winGetPos(&tX,&tY,&tW,&tH,ui.game)
 	; if monitorGetCount() > 1 {
@@ -517,6 +497,35 @@ showLog(*) {
 	guiVis(ui.logGui,true)
 	guiVis(ui.fishGui,false)
 }
+	
+goFS(*) {
+	ui.fullscreen := true
+	setFScoords()
+	guiVis(ui.fishGuiFS,true)
+	;ui.fishCountFS.redraw()
+	; ui.fishCountLabelFS.redraw()
+	; ui.fishCountLabel2FS.redraw()
+	guiVis(ui.fishGui,false)
+	monitorGetWorkArea(monitorGetPrimary(),&l,&t,&r,&b)
+	;msgBox(r "`n" b)
+	winMove(0,0,r,b,ui.game)	
+	; winSetTransparent(160,ui.fishGuiFsBg)
+	; winMinimize(ui.game)
+	; winRestore(ui.game)
+	ui.reeledInCoord1:=ui.reeledInCoord1fs
+	ui.reeledInCoord2:=ui.reeledInCoord2fs
+	ui.reeledInCoord3:=ui.reeledInCoord3fs
+	ui.reeledInCoord4:=ui.reeledInCoord4fs
+	ui.reeledInCoord5:=ui.reeledInCoord5fs
+	;msgBox(ui.reeledInCoord1[1] ":" ui.reeledInCoord1[2] "`n" ui.reeledInCoord2[1] ":" ui.reeledInCoord2[2] "`n" ui.reeledInCoord3[1] ":" ui.reeledInCoord3[2])
+	ui.hookedX:=ui.hookedXfs
+	ui.hookedY:=ui.hookedYfs
+	;createGuiFS()
+	showLog()
+	;click()
+}
+
+
 	
 noFS(*) {
 	ui.fullscreen:=false
@@ -576,7 +585,7 @@ createGuiFS(*) {
 		; ui.fishGuiFS.destroy()
 	monitorGetWorkArea(monitorGetPrimary(),&mX,&mY,&mW,&mH)	
 	ui.fishGuiFS := gui()
-	
+	ui.fishGuiFS.name:="fishGuiFS"
 	ui.fishGuiFS.opt("-caption -border +toolWindow owner" ui.fishGui.hwnd)
 	ui.fishGuiFS.backColor := "010203"
 	;winSetTransColor("010203",ui.fishGuiFS.hwnd)
@@ -587,7 +596,7 @@ createGuiFS(*) {
 
 	ui.actionBorder := ui.fishGuiFS.addPicture("section x" ui.fsIcons.x[a_screenwidth]-70 " y" ui.fsIcons.y[a_screenwidth] " w710 h36 center backgroundTrans c" ui.trimFontColor[6],"./img/profileFS_border.png")
 	ui.actionBg :=ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]-58 " y" ui.fsIcons.y[a_screenwidth]+4 " h29 w70 background" ui.bgColor[3])
-	ui.fishCountBorder := ui.fishGuiFS.addPicture("section x" ui.fsIcons.x[a_screenwidth] " y" ui.fsIcons.y[a_screenwidth] " w730 h36 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
+	ui.fishCountBorder := ui.fishGuiFS.addPicture("section x" ui.fsIcons.x[a_screenwidth] " y" ui.fsIcons.y[a_screenwidth] " w730 h36 center background" ui.bgColor[3] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
 	ui.profileBorder := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth] " y" ui.fsIcons.y[a_screenwidth] " w560 h36 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
 	ui.panelBg :=ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+12 " y" ui.fsIcons.y[a_screenwidth]+4 " h29 w536 background" ui.bgColor[3])
 	ui.panelBg2 :=ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+560 " y" ui.fsIcons.y[a_screenwidth]+4 " h29 w156 background" ui.bgColor[3])
@@ -600,6 +609,7 @@ createGuiFS(*) {
 	ui.profileSelectedBg := ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+66 " y" ui.fsIcons.y[a_screenwidth]+5 " w440 h28 center background" ui.bgColor[3] " c" ui.trimFontColor[6])
 	ui.profileSelectedFS := ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+66 " y" ui.fsIcons.y[a_screenwidth]+3 " w440 h28 center backgroundTrans c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
 	ui.profileEdit := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+498 " y" ui.fsIcons.y[a_screenwidth]+8 " w20 h20 backgroundTrans","./img/button_edit_light.png")
+	ui.profileEdit.onEvent("click",toggleEditor)
 	ui.viewLog := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+525 " y" ui.fsIcons.y[a_screenwidth]+6 " w20 h24 background" ui.bgColor[3],"./img/button_folder.png")
 	
 	ui.profileSelectedFS.setFont("s19 cFFFFFF q5","Calibri")
@@ -693,7 +703,7 @@ statPanel(*) {
 	ui.statSessionStartTime := ui.fishGui.addText("x+0 ys w130 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyy-MM-dd@hh:mm:ss"))
 	
 	ui.statCastLengthLabel := ui.fishGui.addText("x+-15 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast: ")
-	ui.statCastLength := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.castLength.value)
+	ui.statCastLength := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],cfg.castLength[cfg.profileSelected])
 	
 	ui.statFishCountLabel := ui.fishGui.addText("x+-35 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Fish Count: ")
 	ui.statFishCount := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2], ui.fishLogCount.text)
@@ -702,7 +712,7 @@ statPanel(*) {
 	ui.statAfkStartTime := ui.fishGui.addText("x+0 ys w130 r1 backgroundTrans c" ui.fontColor[2],formatTime(,"yyyy-MM-dd@HH:mm:ss"))
 	
 	ui.statDragLevelLabel := ui.fishGui.addText("x+-15 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Drag: ")
-	ui.statDragLevel := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.dragLevel.value)
+	ui.statDragLevel := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.%ui.fishGui.name%_dragLevel.value)
 	
 	ui.statCastCountLabel := ui.fishGui.addText("x+-35 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Cast Count: ")
 	ui.statCastCount := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2], "000")
@@ -711,7 +721,7 @@ statPanel(*) {
 	ui.statAfkDuration := ui.fishGui.addText("x+0 ys w130 r1 backgroundTrans c" ui.fontColor[2],"")
 	
 	ui.statReelSpeedLabel := ui.fishGui.addText("x+-15 ys right section w80 r1 backgroundTrans c" ui.fontColor[2],"Speed: ")
-	ui.statReelSpeed := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.reelSpeed.value)
+	ui.statReelSpeed := ui.fishGui.addText("x+0 ys w80 r1 backgroundTrans c" ui.fontColor[2],ui.%ui.fishGui.name%_reelSpeed.value)
 	
 	ui.viewLog := ui.fishGui.addText("x+-35 ys right section w55 r1 backgroundTrans c" ui.fontColor[2],"View Log")
 	ui.viewLog.setFont("s9 underline")
@@ -721,12 +731,14 @@ statPanel(*) {
 		run("notepad.exe " a_scriptDir "/logs/current_log.txt")
 	}
 }
+
 timerFadeIn(*) {
 while tmp.h > 0 {
 		ui.timerAnim.move(,,,tmp.h-=1)
 		sleep(1)
 	}
 }
+
 timerFadeOut(*) {
 while tmp.h < 40 {
 		ui.timerAnim.move(,,,tmp.h+=1)

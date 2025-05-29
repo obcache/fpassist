@@ -10,18 +10,22 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 	Return
 }
 
+hotKey(ui.exitKey,cleanExit)
 hotif(isHot)
 
 	^+l:: {
-		ui.autoFish:=true
 		landFish()
+	}
+	
+	+e:: {
+		toggleEditor()
 	}
 
 	;hotkey("LShift",shiftDown)
 	;hotkey("~shift up",shiftUp)
 	hotkey("~f",stopFlashLightFlash)
 	hotkey("^+f",toggleFlashlightFlash)
-	hotKey(ui.exitKey,cleanExit)
+	
 	hotKey(ui.reloadKey,appReload)
 	hotKey(ui.startKeyMouse,startButtonClicked)
 	
@@ -35,6 +39,7 @@ hotif(isHot)
 	hotKey("^End",rodsIn)
 	hotKey("^a",turnLeft)
 	hotKey("^d",turnRight)
+	
 hotIf()
 
 
