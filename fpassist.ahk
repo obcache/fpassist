@@ -1,4 +1,4 @@
-A_FileVersion := "1.3.9.8"
+A_FileVersion := "1.3.9.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -793,7 +793,8 @@ ui.fishCountColor:=[0xFFFFFF,0x797A7E]
 
 landedFish(*) {
 	this_color:=round(pixelGetColor(ui.fishCaughtCoord1[1],ui.fishCaughtCoord1[2]))
-	if this_color == ui.fishCaughtColor[1] || this_color == ui.fishCaughtColor[2] {
+	if (this_color > ui.fishCaughtColor[1]-300000 && this_color < ui.fishCaughtColor[1]+300000) || 
+		(this_color > ui.fishCaughtColor[2]-300000 && this_color < ui.fishCaughtColor[2]+300000) {
 		log("Analyze Catch: Coord1 (is: " this_color " needs " ui.fishCaughtColor[1] " or " ui.fishCaughtColor[2] ")")
 		log("Analyze Catch: Match Found")
 		return 1

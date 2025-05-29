@@ -49,6 +49,9 @@ setFScoords(*) {
 			ui.reeledInCoord3fs:=[2090,1310]
 			ui.reeledInCoord4fs:=[2090,1270]
 			ui.reeledInCoord5fs:=[2080,1330]
+			ui.fishCaughtCoord1fs:=[1836,1240]
+			ui.fishCaughtCoord2fs:=[2036,1240]
+			ui.fishCaughtColorFs:=[16777215,14642944]
 			ui.fsPanelOffset:=[-320,0]
 		case 1920:
 			ui.scaleFactorX:=.89
@@ -63,6 +66,9 @@ setFScoords(*) {
 			ui.reeledInCoord3fs:=[1577,956]
 			ui.reeledInCoord4fs:=[1551,956]
 			ui.reeledInCoord5fs:=[1568,940]
+			ui.fishCaughtCoord1fs:=[1078,930]
+			ui.fishCaughtCoord2fs:=[1115,932]
+			ui.fishCaughtColorFs:=[round(0xFFFFFF),round(0xFFFFFF)]
 			ui.fsPanelOffset:=[-200,0]		
 		DEFAULT:
 			ui.scaleFactorX:=.89
