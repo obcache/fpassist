@@ -188,17 +188,17 @@ createGui() {
 	ui.%ui.fishGui.name%_reelFreq.value := 10
 	ui.%ui.fishGui.name%_reelFreq.opt("hidden")
 
-	while cfg.rodHolderEnabled.length < cfg.profileSelected
-		cfg.rodHolderEnabled.push(false)
+	while cfg.keepnetEnabled.length < cfg.profileSelected
+		cfg.keepnetEnabled.push(false)
 		
-	ui.rodHolderEnabled := ui.fishGui.addCheckBox("x223 y773 w10 h15 ",cfg.rodHolderEnabled[cfg.profileSelected])
-	ui.rodHolderEnabled.onEvent("click",toggleRoldHolder)
-	ui.rodHolderEnabledLabel := ui.fishGui.addText("right x160 y775 w60 h15 backgroundTrans c" ui.fontColor[4],"Rod Stand")
-	ui.rodHolderEnabledLabel.setFont("s7","small fonts")
+	ui.keepnetEnabled := ui.fishGui.addCheckBox("x223 y773 w10 h15 ",cfg.keepnetEnabled[cfg.profileSelected])
+	ui.keepnetEnabled.onEvent("click",toggleKeepnet)
+	ui.keepnetEnabledLabel := ui.fishGui.addText("right x160 y775 w60 h15 backgroundTrans c" ui.fontColor[4],"Keepnet")
+	ui.keepnetEnabledLabel.setFont("s7","small fonts")
 	
 	ui.floatEnabled := ui.fishGui.addCheckBox("x223 y785 w10 h15",cfg.floatEnabled[cfg.profileSelected])
 	ui.floatEnabled.onEvent("click",toggleFloat)
-	ui.floatEnabledLabel := ui.fishGui.addText("right x160 y786 w60 h15 c" ui.fontColor[4],"Float/Bottom")
+	ui.floatEnabledLabel := ui.fishGui.addText("right x160 y786 w60 h15 c" ui.fontColor[4],"Bottom")
 	ui.floatEnabledLabel.setFont("s7","small fonts")
 	
 	toggleFloat(*) {
@@ -206,18 +206,21 @@ createGui() {
 			cfg.floatEnabled.push(false)
 		cfg.floatEnabled[cfg.profileSelected] := ui.floatEnabled.value
 		floatEnabledStr := ""
-		if ui.floatEnabled.value
-			ui.rodHolderEnabled.opt("-disabled")
-		else {
-			ui.rodHolderEnabled.value:=false
-			ui.rodHolderEnabled.opt("disabled")
+		loop cfg.floatEnabled.length {
+			floatEnabledStr.=cfg.floatEnabled[a_index] ","
 		}
+		iniWrite(rtrim(floatEnabledStr,","),cfg.file,"Game","FloatEnabled")
 	}
 
-	toggleRoldHolder(*) {
-		while cfg.rodHolderEnabled.length < cfg.profileSelected
-			cfg.rodHolderEnabled.push(false)
-		cfg.rodHolderEnabled[cfg.profileSelected] := ui.rodHolderEnabled.value
+	toggleKeepnet(*) {
+		while cfg.keepnetEnabled.length < cfg.profileSelected
+			cfg.keepnetEnabled.push(false)
+		cfg.keepnetEnabled[cfg.profileSelected] := ui.keepnetEnabled.value
+		keepnetEnabledStr := ""
+		loop cfg.keepnetEnabled.length {
+			keepnetEnabledStr.=cfg.keepnetEnabled[a_index] ","
+		}
+		iniWrite(rtrim(keepnetEnabledStr,","),cfg.file,"Game","KeepnetEnabled")	
 	}
 	
 	bgModeChanged(*) {

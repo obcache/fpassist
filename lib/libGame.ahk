@@ -225,7 +225,7 @@ updateControls(*) {
 	try
 		ui.editorGui_reelFreq.value:=cfg.reelFreq[cfg.profileSelected]
 	try
-		ui.editorGui_rodHolderEnabled.value:=cfg.rodHolderEnabled[cfg.profileSelected]
+		ui.editorGui_keepnetEnabled.value:=cfg.keepnetEnabled[cfg.profileSelected]
 	try
 		ui.editorGui_floatEnabled.value :=cfg.floatEnabled[cfg.profileSelected]
 	try
@@ -244,7 +244,7 @@ updateControls(*) {
 	try 
 		ui.fishGuiFS_sinkTime.value := cfg.sinkTime[cfg.profileSelected]
 	try
-		ui.fishGuiFS_rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
+		ui.fishGuiFS_keepnetEnabled.value := cfg.keepnetEnabled[cfg.profileSelected]
 	try
 		ui.fishGuiFS_floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
 	try
@@ -270,7 +270,7 @@ updateControls(*) {
 	try 
 		ui.fishGui_sinkTime.value := cfg.sinkTime[cfg.profileSelected]
 	try
-		ui.fishGui_rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
+		ui.fishGui_keepnetEnabled.value := cfg.keepnetEnabled[cfg.profileSelected]
 	try
 		ui.fishGui_floatEnabled.value := cfg.floatEnabled[cfg.profileSelected]
 	try
@@ -332,7 +332,7 @@ deleteProfileName(*) {
 		try
 			cfg.reelSpeed.removeAt(cfg.profileSelected)
 		try
-			cfg.rodHolderEnabled.removeAt(cfg.profileSelected)
+			cfg.keepnetEnabled.removeAt(cfg.profileSelected)
 
 		if cfg.profileSelected > cfg.profileName.length {
 			cfg.profileSelected := 1
@@ -356,7 +356,7 @@ deleteProfileName(*) {
 		try
 			ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
 		try
-			ui.rodHolderEnabled.value := cfg.rodHolderEnabled[cfg.profileSelected]
+			ui.keepnetEnabled.value := cfg.keepnetEnabled[cfg.profileSelected]
 		try
 			ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
 	} else {

@@ -83,10 +83,12 @@ initVars(*) {
 	cfg.profileSetting["twitchFreq"] := "1"
 	cfg.profileSetting["stopFreq"] := "1"
 	cfg.profileSetting["reelFreq"] := "1"
-	cfg.profileSetting["rodHolderEnabled"] := "0"
+	cfg.profileSetting["keepnetEnabled"] := "0"
 	cfg.profileSetting["floatEnabled"] := "0"
 	cfg.profileSetting["bgModeEnabled"] := "0"
 	cfg.profileSetting["recastTime"] := "5"
+	cfg.profileSetting["keepnetEnabled"] := 0
+	
 	tmp.beenPaused			:= false
 	tmp.retrieveFlashOn 	:= false
 	ui.greenCheckColor 		:= round(0x7ED322)
@@ -122,7 +124,7 @@ initVars(*) {
 	ui.exitKey 				:= "F4"
 	ui.retrieveKey 			:= "v"
 	ui.flashlight 			:= "+F"
-	ui.rodHolderNumber		:= 1
+	ui.keepnetNumber		:= 1
 	ui.startKeyMouse 		:= "!LButton"
 	ui.stopKeyMouse 		:= "!RButton"
 	ui.lastMsg 				:= ""

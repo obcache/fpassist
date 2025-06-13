@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.0.1"
+A_FileVersion := "1.4.0.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -412,7 +412,7 @@ ui.fishQ:=array()
 cast(*) {
 	checkKeepnet()
 	mode("cast")
-	if ui.rodHolderEnabled.value {
+	if ui.keepnetEnabled.value {
 		rodCount:=4
 		loop rodCount {
 			send("{" a_index "}")
@@ -535,7 +535,7 @@ retrieve(*) {
 	mode("retrieve")
 	log("Started: Retrieve")
 	switch {
-		case ui.rodHolderEnabled.value:
+		case ui.keepnetEnabled.value:
 			log("Watch: Monitoring Bait",1)
 			ui.retrieveButton.text := "Watch"
 			ui.editorGui_retrieveButton.text:="Watch"
@@ -806,6 +806,9 @@ landedFish(*) {
 }
 
 checkKeepnet(*) {
+	if !cfg.keepnetEnabled[cfg.profileSelected]
+		return
+		
 	thisColor := pixelGetColor(116,288)
 	ui.keepNetCoordX:=116 
 	ui.keepNetCoordY:=288

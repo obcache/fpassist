@@ -116,36 +116,36 @@ profileEditor(*) {
 		ui.%ui.editorGui.name%_reelFreq.value := 10
 		ui.%ui.editorGui.name%_reelFreq.opt("hidden")
 
-		while cfg.rodHolderEnabled.length < cfg.profileSelected
-			cfg.rodHolderEnabled.push(false)
+		while cfg.keepnetEnabled.length < cfg.profileSelected
+			cfg.keepnetEnabled.push(false)
 			
-		ui.editorRodHolderEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+20 " w10 h15 background" ui.bgColor[3],cfg.rodHolderEnabled[cfg.profileSelected])
-		ui.editorRodHolderEnabled.onEvent("click",toggleRoldHolder)
-		ui.editorRodHolderEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+22 " w60 h15 backgroundTrans c" ui.fontColor[2],"Rod Stand")
-		ui.editorRodHolderEnabledLabel.setFont("s7","small fonts")
+		ui.editorGui_keepnetEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+20 " w10 h15 background" ui.bgColor[3],cfg.keepnetEnabled[cfg.profileSelected])
+		ui.editorGui_keepnetEnabled.onEvent("click",toggleKeepnet)
+		ui.editorGui_keepnetEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+22 " w60 h15 backgroundTrans c" ui.fontColor[2],"Keepnet")
+		ui.editorGui_keepnetEnabledLabel.setFont("s7","small fonts")
 		
-		ui.editorFloatEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+32 " w10 h15 background" ui.bgColor[3],cfg.floatEnabled[cfg.profileSelected])
-		ui.editorFloatEnabled.onEvent("click",toggleFloat)
-		ui.editorFloatEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+33 " w60 h15 backgroundTrans c" ui.fontColor[2],"Float/Bottom")
-		ui.editorFloatEnabledLabel.setFont("s7","small fonts")
+		ui.editorGui_floatEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+32 " w10 h15 background" ui.bgColor[3],cfg.floatEnabled[cfg.profileSelected])
+		ui.editorGui_floatEnabled.onEvent("click",toggleFloat)
+		ui.editorGui_floatEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+33 " w60 h15 backgroundTrans c" ui.fontColor[2],"Bottom")
+		ui.editorGui_floatEnabledLabel.setFont("s7","small fonts")
 		
 		toggleFloat(*) {
 			while cfg.floatEnabled.length < cfg.profileSelected
 				cfg.floatEnabled.push(false)
-			cfg.floatEnabled[cfg.profileSelected] := ui.editorFloatEnabled.value
-			ui.editorFloatEnabledStr := ""
-			if ui.editorFloatEnabled.value
-				ui.editorRodHolderEnabled.opt("-disabled")
+			cfg.floatEnabled[cfg.profileSelected] := ui.editorGui_floatEnabled.value
+			ui.editorGui_floatEnabledStr := ""
+			if ui.editorGui_floatEnabled.value
+				ui.editorGui_keepnetEnabled.opt("-disabled")
 			else {
-				ui.editorRodHolderEnabled.value:=false
-				ui.editorRodHolderEnabled.opt("disabled")
+				ui.editorGui_keepnetEnabled.value:=false
+				ui.editorGui_keepnetEnabled.opt("disabled")
 			}
 		}
 
-		toggleRoldHolder(*) {
-			while cfg.rodHolderEnabled.length < cfg.profileSelected
-				cfg.rodHolderEnabled.push(false)
-			cfg.rodHolderEnabled[cfg.profileSelected] := ui.editorRodHolderEnabled.value
+		toggleKeepnet(*) {
+			while cfg.keepnetEnabled.length < cfg.profileSelected
+				cfg.keepnetEnabled.push(false)
+			cfg.keepnetEnabled[cfg.profileSelected] := ui.editorGui_keepnetEnabled.value
 		}
 		
 		bgModeChanged(*) {
