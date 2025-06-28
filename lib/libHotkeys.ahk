@@ -11,15 +11,22 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 }
 
 hotKey(ui.exitKey,cleanExit)
-hotif(isHot)
 
+isEnabled(*) {
+	if winActive(ui.game) && ui.enabled
+		return 1
+	else
+		return 0
+}
+
+hotif(isEnabled)
 	^+l:: {
 		landFish()
 	}
 	
-	+e:: {
-		toggleEditor()
-	}
+	 !+e:: {
+		 toggleEditor()
+	 }
 
 	;hotkey("LShift",shiftDown)
 	;hotkey("~shift up",shiftUp)
@@ -35,7 +42,7 @@ hotif(isHot)
 	hotKey("+" ui.castKey,castButtonClicked)
 	hotKey("+" ui.retrieveKey,retrieveButtonClicked)
 	hotKey("F11",toggleFS)
-	hotKey("Home",appReload)
+
 	hotKey("^End",rodsIn)
 	hotKey("^a",turnLeft)
 	hotKey("^d",turnRight)
@@ -65,8 +72,21 @@ focusChanged(*) {
 	setTimer(checkMode,-1000)
 }
 
+
+
 #hotIf WinActive(ui.game)	
 	;Boat Steering
+	^+H::
+	{
+		toggleHelp()
+	}
+	Home::
+	{
+		isColor:=pixelGetColor(ui.hookedX,ui.hookedY)
+		log("Hooked X: " ui.hookedX " Y: " ui.hookedY " is: " isColor " needs: " ui.hookedColor[1])
+		
+		ui.flagNextRead:=true
+	}
 	XButton2::LAlt
 	XButton1::LCtrl
 	MButton::r
@@ -74,7 +94,7 @@ focusChanged(*) {
 		stopButtonClicked()
 	}
 
-	~capsLock:: {
+	capsLock:: {
 		toggleEnabled()
 		ui.prevState:=getKeyState("capslock")
 	}
@@ -149,7 +169,7 @@ focusChanged(*) {
 		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 	
-~RButton & WheelUp:: {
+	~RButton & WheelUp:: {
 		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
 		sendIfWinActive("{3}",ui.game,true)

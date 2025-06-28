@@ -114,6 +114,7 @@ initVars(*) {
 	ui.secondsElapsed 		:= 0
 	ui.loadingProgress 		:= 5
 	ui.loadingProgress2 	:= 5
+	ui.logNextRead			:= false
 	ui.playAniStep 			:= 0
 	ui.startKey 			:= "f"
 	ui.cancelKey 			:= "q"
@@ -454,7 +455,7 @@ install() {
 			fileInstall("./img/action_reel.png",installDir "/img/action_reel.png",1)
 			fileInstall("./img/action_idle.png",installDir "/img/action_idle.png",1)
 			fileInstall("./img/button_edit_light.png",installDir "/img/button_edit_light.png",1)
-			
+			fileInstall("./img/button_settings.png",installDir "/img/button_settings.png",1)
 			pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
 			
 			fileCreateShortcut(installDir "/fpassist.exe", a_desktop "\fpassist.lnk",installDir,,"Fishing Planet Assist",installDir "/img/fpassist_icon.ico")

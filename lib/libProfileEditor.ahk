@@ -64,12 +64,6 @@ profileEditor(*) {
 		ui.editorGui_profileBg2 := ui.editorGui.addText("x" profilePos["x"]+3 " y" profilePos["y"]-3 " w" profilePos["w"]-30 " h" profilePos["h"]+6 " background" ui.bgColor[3])
 		ui.editorGui_profileBg3 := ui.editorGui.addText("x4 y32 w496 h34 background" ui.bgColor[3])
 		ui.editorGui_profileBg4 := ui.editorGui.addText("x3 y138 w497 h62 background" ui.bgColor[6])
-		ui.editorGui_profileNewButton := ui.editorGui.addPicture("x" profilePos["x"]+profilePos["w"]-192 " y" profilePos["y"]+4 " w20 h19 backgroundTrans","./img/button_new.png")
-		ui.editorGui_profileDeleteButton := ui.editorGui.addPicture("x" profilePos["x"]+profilePos["w"]-146 " y" profilePos["y"]+4 " w20 h19 backgroundTrans","./img/button_delete.png")
-		ui.editorGui_profileSaveCancelButton := ui.editorGui.addPicture("hidden x" profilePos["x"]+profilePos["w"]-190 " y" profilePos["y"]+4 " w20 h19 backgroundTrans","./img/button_cancel.png")
-		ui.editorGui_profileSaveCancelButton.onEvent("click",cancelEditProfileName)
-		ui.editorGui_profileSaveButton := ui.editorGui.addPicture("hidden x" profilePos["x"]-192 " y" profilePos["y"]+4 " w20 h20 backgroundTrans","./img/button_save.png")
-		ui.editorGui_profileEditButton := ui.editorGui.addPicture("x" profilePos["x"]+profilePos["w"]-166 " y" profilePos["y"]+4 " w19 h19 backgroundTrans","./img/button_edit.png")
 		ui.editorGui_profileLArrow := ui.editorGui.addPicture("x" profilePos["x"]+5 " y" profilePos["y"]+3 " w20 h23 backgroundTrans","./img/button_arrowLeft_knot.png")
 		ui.editorGui_profileRArrow := ui.editorGui.addPicture("x" (profilePos["x"]+30)+(profilePos["w"]-50) " y" profilePos["y"]+3 " w20 h23 backgroundTrans","./img/button_arrowRight_knot.png")
 		ui.editorGui_profileLArrow.onEvent("click",profileLArrowClicked)
@@ -85,10 +79,6 @@ profileEditor(*) {
 		profileNumStr := ""
 		ui.editorGui_profileNum := ui.editorGui.addText("x" profilePos["x"]+80 " y" profilePos["y"]+29 " right w160 h20 backgroundTrans c" ui.bgColor[5],profileNumStr)
 		ui.editorGui_profileNum.setFont("s13 c" ui.fontColor[2],"courier new")
-		ui.editorGui_profileSaveButton.onEvent("click",saveProfileName)
-		ui.editorGui_profileEditButton.onEvent("click",editProfileName)
-		ui.editorGui_profileNewButton.onEvent("click",newProfileName)
-		ui.editorGui_profileDeleteButton.onEvent("click",deleteProfileName)
 		
 		ui.editorGui_CastLength := ui.editorGui.addSlider("section toolTip background" ui.bgColor[3] " buddy2ui.ui.editorCastLengthText altSubmit center x" cp.x+65 " y" 71 " w176 h16  range1000-2500",1910)
 		ui.editorGui_castLength.onEvent("change",editorCastLengthChanged)
@@ -299,7 +289,7 @@ showEditor(*) {
 	; ui.editorGui.show("x" editorX " y" editorY)
 	
 	editorY:=-25
-	ui.editorGui_profileLArrow.focus()
+	ui.fishLogFS.focus()
 	winSetTransparent(0,ui.editorGui)
 	ui.editorGui.show("x" editorX " y" editorY)
 	winSetRegion("0-67 w502 h202",ui.editorGui)
@@ -311,7 +301,7 @@ showEditor(*) {
 	}
 	winSetTransparent("off",ui.editorGui)
 	
-	
+
 ; editorX:=0
 		; editorY:=0
 	;}
@@ -325,5 +315,7 @@ showEditor(*) {
 	;guiVis(ui.fishGuiFS,true)
 	;guiVis(ui.fishGui,false)
 }
+
+
 
 

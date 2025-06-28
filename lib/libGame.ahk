@@ -365,6 +365,54 @@ deleteProfileName(*) {
 	}
 }
 
+deleteProfileNameFS(*) {
+	if cfg.profileName.length > 1 {
+		try 
+			cfg.profileName.removeAt(cfg.profileSelected)
+		try
+			cfg.castLength.removeAt(cfg.profileSelected)
+		try
+			cfg.twitchFreq.removeAt(cfg.profileSelected)
+		try
+			cfg.stopFreq.removeAt(cfg.profileSelected)
+			try
+			cfg.dragLevel.removeAt(cfg.profileSelected)
+		try
+			cfg.reelSpeed.removeAt(cfg.profileSelected)
+		try
+			cfg.keepnetEnabled.removeAt(cfg.profileSelected)
+
+		if cfg.profileSelected > cfg.profileName.length {
+			cfg.profileSelected := 1
+		}
+		try
+			ui.profileText.text := cfg.profileName[cfg.profileSelected]
+		try
+			ui.castLength.value := cfg.castLength[cfg.profileSelected]
+		try
+			ui.castLengthText.text := cfg.castLength[cfg.profileSelected]
+		try	
+			ui.castTime.value := cfg.castTime[cfg.profileSelected]
+		try
+			ui.sinkTime.value := cfg.sinkTime[cfg.profileSelected]
+		try
+			ui.twitchFreq.value := cfg.twitchFreq[cfg.profileSelected]
+		try
+			ui.stopFreq.value := cfg.stopFreq[cfg.profileSelected]
+		try
+			ui.dragLevel.value := cfg.dragLevel[cfg.profileSelected]
+		try
+			ui.reelSpeed.value := cfg.reelSpeed[cfg.profileSelected]
+		try
+			ui.keepnetEnabled.value := cfg.keepnetEnabled[cfg.profileSelected]
+		try
+			ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
+	} else {
+		notifyOSD("Can't Delete Only Profile",ui.profileText)
+		;msgBox("Can't Delete Only Profile")
+	}
+}
+
 editProfileName(*) {
 	ui.editProfileGui := gui()
 	ui.editProfileGui.opt("-border -caption owner" ui.fishGui.hwnd)
@@ -377,7 +425,7 @@ editProfileName(*) {
 	ui.profileDeleteButton.opt("hidden")
 	ui.profileSaveButton.opt("-hidden")
 	ui.profileSaveCancelButton.opt("-hidden")
-	ui.editProfileEdit.onEvent("escape",cancelEditProfileName)
+	ui.fishGuiFS.onEvent("Escape",cancelEditProfileName)
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
 	ui.editProfileGui.show("x" ui.profilePos["x"]+27 " y" ui.profilePos["y"]+4 " w208 h22")
 	ui.editProfileEdit.focus()
@@ -394,13 +442,13 @@ newProfileName(*) {
 
 saveProfileName(*) {
 	cfg.profileName[cfg.profileSelected] := ui.editProfileEdit.text
-	ui.profileText.text := cfg.profileName[cfg.profileSelected]
-	ui.profileText.opt("-hidden")
-	ui.profileSaveButton.opt("hidden")
-	ui.profileSaveCancelButton.opt("hidden")
-	ui.profileEditButton.opt("-hidden")
-	ui.profileNewButton.opt("-hidden")
-	ui.profileDeleteButton.opt("-hidden")
+	ui.profileSelectedFS.text := cfg.profileName[cfg.profileSelected]
+	ui.profileSelectedFS.opt("-hidden")
+	ui.editorGui_profileSaveButton.opt("hidden")
+	ui.editorGui_profileSaveCancelButton.opt("hidden")
+	ui.editorGui_profileEditButton.opt("-hidden")
+	ui.editorGui_profileNewButton.opt("-hidden")
+	ui.editorGui_profileDeleteButton.opt("-hidden")
 	try
 		ui.editProfileGui.destroy()
 }
@@ -409,12 +457,64 @@ cancelEditProfileName(*) {
 	cfg.profileName[cfg.profileSelected] := ui.profileText.text 
 	try
 		ui.editProfileGui.destroy()
-	ui.profileText.opt("-hidden")
-	ui.profileSaveButton.opt("hidden")
-	ui.profileSaveCancelButton.opt("hidden")
-	ui.profileEditButton.opt("-hidden")
-	ui.profileNewButton.opt("-hidden")
-	ui.profileDeleteButton.opt("-hidden")
+	ui.profileSelectedFS.opt("-hidden")
+	ui.editorGui_profileSaveButton.opt("hidden")
+	ui.editorGui_profileSaveCancelButton.opt("hidden")
+	ui.editorGui_profileEditButton.opt("-hidden")
+	ui.editorGui_profileNewButton.opt("-hidden")
+	ui.editorGui_profileDeleteButton.opt("-hidden")
 	
 }
+editProfileNameFS(*) {
+	ui.editProfileGui := gui()
+	ui.editProfileGui.opt("-border -caption owner" ui.fishGuiFS.hwnd)
+	ui.editProfileBg := ui.editProfileGui.addText("x0 y0 w350 h28 background" ui.trimColor[6])
+	ui.editProfileEdit := ui.editProfileGui.addEdit("x0 y1 w350 center h26 background" ui.bgColor[3] " -multi -wantReturn -wantTab limit -wrap -theme c" ui.fontColor[3],cfg.profileName[cfg.profileSelected])
+	ui.editProfileEdit.setFont("s12","calibri")	
+	ui.profileSelectedFS.opt("hidden")
+	ui.editorGui_profileNewButton.opt("hidden")
+	ui.editorGui_profileEditButton.opt("hidden")
+	ui.editorGui_profileDeleteButton.opt("hidden")
+	ui.editorGui_profileSaveButton.opt("-hidden")
+	ui.editorGui_profileSaveCancelButton.opt("-hidden")
+	ui.fishGuiFS.onEvent("Escape",cancelEditProfileName)
+	winGetPos(&x,&y,&w,&h,ui.fishGuiFS)
+	ui.editProfileGui.show("center x" ui.fsIcons.x[a_screenwidth]+355+x " y" ui.fsIcons.y[a_screenwidth]+30 " w350 h26")
+	ui.editProfileEdit.focus()
+}
 
+
+newProfileNameFS(*) {
+	for setting,default in cfg.profileSetting {
+		cfg.%setting%.insertAt(cfg.profileSelected,default)
+	}
+	cfg.profileName[cfg.profileSelected] := "Profile #" cfg.profileName.length
+	updateControls()
+	editProfileName()
+}
+
+saveProfileNameFS(*) {
+	cfg.profileName[cfg.profileSelected] := ui.editProfileEdit.text
+	ui.profileSelectedFS.text := cfg.profileName[cfg.profileSelected]
+	ui.profileSelectedFS.opt("-hidden")
+	ui.editorGui_profileSaveButton.opt("hidden")
+	ui.editorGui_profileSaveCancelButton.opt("hidden")
+	ui.editorGui_profileEditButton.opt("-hidden")
+	ui.editorGui_profileNewButton.opt("-hidden")
+	ui.editorGui_profileDeleteButton.opt("-hidden")
+	try
+		ui.editProfileGui.destroy()
+}
+
+cancelEditProfileNameFS(*) {
+	cfg.profileName[cfg.profileSelected] := ui.profileSelectedFS.text 
+	try
+		ui.editProfileGui.destroy()
+	ui.profileSelectedFS.opt("-hidden")
+	ui.editorGui_profileSaveButton.opt("hidden")
+	ui.editorGui_profileSaveCancelButton.opt("hidden")
+	ui.editorGui_profileEditButton.opt("-hidden")
+	ui.editorGui_profileNewButton.opt("-hidden")
+	ui.editorGui_profileDeleteButton.opt("-hidden")
+	
+}

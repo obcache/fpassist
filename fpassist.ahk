@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.0.3"
+A_FileVersion := "1.4.0.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -21,6 +21,7 @@ initVars()
 #include <libProfileEditor>
 #include <libHotkeys>
 #include <Class_LV_Colors>
+#include <libHelp>
 
 verifyAdmin()		 
 
@@ -48,7 +49,8 @@ winActivate(ui.game)
 onExit(exitFunc)
 ;analyzeCatch()
 setStoreCapslockMode(0)
-
+createHelp()
+;toggleHelp()
 
 ;ui.fullscreen := false
 
@@ -124,12 +126,7 @@ mode(mode) {
 	cancelButtonOn()
 }
 
-isEnabled(*) {
-		if ui.enabled && winActive(ui.game) && !ui.fullscreen
-			return 1
-		else
-			return 0
-}
+
 
 isEnabledFS(*) {
 		if ui.enabled && winActive(ui.game) && ui.fullscreen
@@ -138,12 +135,7 @@ isEnabledFS(*) {
 			return 0
 }
 
-isHot(*) {
-	if winActive(ui.game) && ui.enabled
-		return 1
-	else
-		return 0
-}
+
 
 ui.flashLightEnabled:=false
 toggleFlashlightFlash(*) {
@@ -349,8 +341,11 @@ startAfk(this_mode:="cast",*) {
 }
 
 isHooked(*) {
-	lineTension:=round(pixelGetColor(ui.hookedX,ui.hookedY))
-	;log("Line Tension: " lineTension "`tLooking For: " ui.hookedColor[1])
+	lineTension:=pixelGetColor(ui.hookedX,ui.hookedY)
+	if ui.logNextRead {
+		log("isHooked x: " ui.hookedX ",y: " ui.hookedY " | is: " lineTension ", needs: " ui.hookedColor[1])	
+		ui.logNextRead:=false
+	}
 	if lineTension==ui.hookedColor[1] {
 		;if (checkPixel(ui.hookedX2,ui.hookedY2,ui.hookedColor[2])) {
 			;log("HOOKED!")
@@ -809,11 +804,10 @@ checkKeepnet(*) {
 	if !cfg.keepnetEnabled[cfg.profileSelected]
 		return
 		
-	thisColor := pixelGetColor(116,288)
-	ui.keepNetCoordX:=116 
-	ui.keepNetCoordY:=288
-	log("Keepnet: Check Coords [" ui.keepNetCoordX "," ui.keepNetCoordY "]: Is [" thisColor "] Full [0xFFC300]")
-	if thisColor=="0xFFC300" {
+	thisColor := pixelGetColor(ui.keepnetX,ui.keepnetY)
+
+	log("Keepnet: Check Coords [" ui.keepnetX "," ui.keepnetY "]: Is [" thisColor "] Full [" ui.keepnetColor "]")
+	if thisColor==ui.keepnetColor {
 		stopButtonClicked()
 		log("Keepnet: Full",0)
 		log("Keepnet: Skipping to next morning.",0)
@@ -885,6 +879,12 @@ sendNice(payload:="",gameWin:=ui.game) {
 }
 
 reeledIn(*) {
+	log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
+		log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])) 
+		log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])) 
+		log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])) 
+		log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])) 
+		
 	if pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2])=="0xF7F7F7"
 	&& pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])=="0xF7F7F7"
 	&& pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])=="0xF7F7F7"
