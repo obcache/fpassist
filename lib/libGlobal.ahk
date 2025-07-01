@@ -440,26 +440,30 @@ install() {
 			fileInstall("./img/toggle_off.png",installDir "/img/toggle_off.png",1)
 			fileInstall("./img/toggle_horz_on.png",installDir "/img/toggle_horz_on.png",1)
 			fileInstall("./img/toggle_horz_off.png",installDir "/img/toggle_horz_off.png",1)
-			fileInstall("./img/play_ani_1.png",installDir "/img/play_ani_1.png",1)
-			fileInstall("./img/play_ani_2.png",installDir "/img/play_ani_2.png",1)
-			fileInstall("./img/play_ani_3.png",installDir "/img/play_ani_3.png",1)
-			fileInstall("./img/play_ani_0.png",installDir "/img/play_ani_0.png",1)
+			; fileInstall("./img/play_ani_1.png",installDir "/img/play_ani_1.png",1)
+			; fileInstall("./img/play_ani_2.png",installDir "/img/play_ani_2.png",1)
+			; fileInstall("./img/play_ani_3.png",installDir "/img/play_ani_3.png",1)
+			; fileInstall("./img/play_ani_0.png",installDir "/img/play_ani_0.png",1)
 			fileInstall("./redist/sqlite3.dll",installDir "/redist/sqlite3.dll",1)
 			fileInstall("./redist/ss.exe",installDir "/redist/ss.exe",1)
 			fileInstall("./update.exe",installDir "/update.exe",1)
 			fileInstall("./fpassist_currentBuild.dat",installDir "/fpassist_currentBuild.dat",1)
-			fileInstall("./img/hooman.ico",installDir "/img/hooman.ico",1)
-			fileInstall("./img/action_cast.png",installDir "/img/action_cast.png",1)
-			fileInstall("./img/action_retrieve.png",installDir "/img/action_retrieve.png",1)
-			fileInstall("./img/action_reel.png",installDir "/img/action_reel.png",1)
-			fileInstall("./img/action_idle.png",installDir "/img/action_idle.png",1)
-			fileInstall("./img/button_edit_light.png",installDir "/img/button_edit_light.png",1)
+			;fileInstall("./img/hooman.ico",installDir "/img/hooman.ico",1)
+			;fileInstall("./img/action_cast.png",installDir "/img/action_cast.png",1)
+			;fileInstall("./img/action_retrieve.png",installDir "/img/action_retrieve.png",1)
+			;fileInstall("./img/action_reel.png",installDir "/img/action_reel.png",1)
+			;fileInstall("./img/action_idle.png",installDir "/img/action_idle.png",1)
+			fileInstall("./img/button_config.png",installDir "/img/button_config.png",1)
 			fileInstall("./img/button_settings.png",installDir "/img/button_settings.png",1)
-			pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
+			fileInstall("./img/fpassist_icon.ico",installDir "/img/fpassist_icon.ico",1)
 			
 			fileCreateShortcut(installDir "/fpassist.exe", a_desktop "\fpassist.lnk",installDir,,"Fishing Planet Assist",installDir "/img/fpassist_icon.ico")
 			fileCreateShortcut(installDir "/fpassist.exe", a_startMenu "\Programs\fpassist.lnk",installDir,,"fpassist Gaming Assistant",installDir "/img/fpassist_icon.ico")
+			
 			iniWrite(installDir,installDir "/fpassist.ini","System","InstallDir")
+			
+			pbConsole("`nINSTALL COMPLETED SUCCESSFULLY!")
+
 			if errorLevel
 				return errorLevel
 			

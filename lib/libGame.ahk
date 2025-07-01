@@ -16,12 +16,10 @@ startButtonClicked(*) {
 }
 
 stopButtonClicked(*) {
-	if getKeyState("capslock") {
+	
 		setTimer () => toggleOff(), -100
 		setTimer () => send("{capsLock}"),-350
 		setTimer () => toggleOn(),-550 
-	} else 
-		setTimer () => toggleOn(), -100
 	ui.mode:="off"	 
 	;toggleOn()
 	; ui.mode:="off"

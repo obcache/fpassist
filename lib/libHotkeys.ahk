@@ -67,10 +67,10 @@ focusChanged(*) {
 		: setCapslockState(false)
 }
 
-~!Tab:: {
-	focusChanged()
-	setTimer(checkMode,-1000)
-}
+; ~!Tab:: {
+	; focusChanged()
+	; setTimer(checkMode,-1000)
+; }
 
 
 
@@ -94,7 +94,7 @@ focusChanged(*) {
 		stopButtonClicked()
 	}
 
-	capsLock:: {
+	~capsLock:: {
 		toggleEnabled()
 		ui.prevState:=getKeyState("capslock")
 	}
@@ -132,28 +132,28 @@ focusChanged(*) {
 		setTimer(throttleForward,0)
 	}
 
-	+WheelUp:: {
-		if !getKeyState("RButton") {
-			send("{wheelUp}")
-			return
-		}
-		if ui.currentRod  > 1
-			ui.currentRod -= 1
-		else
-			ui.currentRod := 7
-		sendIfWinActive("{" ui.currentRod "}",ui.game)
-	}
-	+WheelDown:: {
-		if !getKeyState("RButton") {
-			send("{WheelDown}")
-			return
-		}
-		if ui.currentRod < 7
-			ui.currentRod += 1
-		else 
-			ui.currentRod:=1
-		sendIfWinActive("{" ui.currentRod "}",ui.game)
-	}
+	; +WheelUp:: {
+		; if !getKeyState("RButton") {
+			; send("{wheelUp}")
+			; return
+		; }
+		; if ui.currentRod  > 1
+			; ui.currentRod -= 1
+		; else
+			; ui.currentRod := 7
+		; sendIfWinActive("{" ui.currentRod "}",ui.game)
+	; }
+	; +WheelDown:: {
+		; if !getKeyState("RButton") {
+			; send("{WheelDown}")
+			; return
+		; }
+		; if ui.currentRod < 7
+			; ui.currentRod += 1
+		; else 
+			; ui.currentRod:=1
+		; sendIfWinActive("{" ui.currentRod "}",ui.game)
+	; }
 	!WheelUp:: {
 		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
@@ -169,7 +169,7 @@ focusChanged(*) {
 		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 	
-	~RButton & WheelUp:: {
+	RButton & WheelUp:: {
 		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
 		sendIfWinActive("{3}",ui.game,true)
@@ -177,7 +177,7 @@ focusChanged(*) {
 		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 	
-~RButton & WheelDown:: {
+	RButton & WheelDown:: {
 		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
 		sendIfWinActive("{4}",ui.game,true)

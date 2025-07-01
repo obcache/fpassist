@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.0.6"
+A_FileVersion := "1.4.0.8"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -254,7 +254,7 @@ resetKeyStates(*) {
 	send("{lctrl up}")
 	send("{rctrl up}")
 	send("{space up}")
-	setCapsLockState(true)
+	setCapsLockState(false)
 	return 1
 }
 
@@ -342,7 +342,7 @@ startAfk(this_mode:="cast",*) {
 
 isHooked(*) {
 	lineTension:=pixelGetColor(ui.hookedX,ui.hookedY)
-	if ui.logNextRead {
+	if cfg.debug {
 		log("isHooked x: " ui.hookedX ",y: " ui.hookedY " | is: " lineTension ", needs: " ui.hookedColor[1])	
 		ui.logNextRead:=false
 	}
@@ -684,7 +684,7 @@ reelIn(*) {
 landFish(*) {
 	log("Started: Land Fish",1)
 	mode("land")
-	
+	sendNice("{space down}")
 	log("Landing Fish")
 	loop 10 {
 		sendNice("{l}")
@@ -700,7 +700,7 @@ landFish(*) {
 		}
 		if noLineTension>=5 {
 			noLineTension:=0
-			return
+			retrieve()
 		}
 		
 		sendNice("{space Down}")
@@ -1050,10 +1050,10 @@ updateAfkTime(*) {
 	ui.secondsElapsed += 1
 	ui.fishLogAfkTime.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
 	ui.statAfkDuration.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
-	ui.playAniStep += 1
-	if ui.playAniStep > 3
-		ui.playAniStep := 1
-	ui.startButtonStatus.value := "./img/play_ani_" ui.playAniStep ".png"
+	; ui.playAniStep += 1
+	; if ui.playAniStep > 3
+		; ui.playAniStep := 1
+	; ui.startButtonStatus.value := "./img/play_ani_" ui.playAniStep ".png"
 }
 
 

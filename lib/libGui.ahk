@@ -220,7 +220,7 @@ logViewer(*) {
 	; msgBox(txt)
 	
 	ui.logGui.show("x" logX " y" logY)
-	guiVis(ui.logGui,true)
+	;guiVis(ui.logGui,true)
 	guiVis(ui.fishGui,false)
 }
 	
@@ -335,19 +335,19 @@ createGuiFS(*) {
 	ui.profileNextFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+108 " y" ui.fsIcons.y[a_screenwidth]+6 " w20 h26 background" ui.bgColor[3],"./img/button_arrowRight_knot.png")
 	ui.profileSelectedBg := ui.fishGuiFS.addText("center x" ui.fsIcons.x[a_screenwidth]+130 " y" ui.fsIcons.y[a_screenwidth]+5 " w340 h28 center background" ui.bgColor[3] " c" ui.trimFontColor[6])
 	ui.profileSelectedFS := ui.fishGuiFS.addText("center x" ui.fsIcons.x[a_screenwidth]+130 " y" ui.fsIcons.y[a_screenwidth]+3 " w340 h28 center backgroundTrans c" ui.trimFontColor[6],cfg.profileName[cfg.profileSelected])
-	ui.helpButton := ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+470 " y" ui.fsIcons.y[a_screenwidth]+6 " w20 h20 backgroundTrans c" ui.fontColor[1],"s")
-	ui.helpButton.setFont("s18 c" ui.bgColor[5],"Webdings")
+	ui.helpButton := ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+470 " y" ui.fsIcons.y[a_screenwidth]+4 " w24 h24 backgroundTrans c" ui.fontColor[1],"s")
+	ui.helpButton.setFont("s19 c" ui.trimFontColor[6],"Webdings")
 	ui.helpButton.onEvent("click",toggleHelp)
-	ui.profileEdit := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+498 " y" ui.fsIcons.y[a_screenwidth]+8 " w20 h20 backgroundTrans","./img/button_settings.png")
+	ui.profileEdit := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+496 " y" ui.fsIcons.y[a_screenwidth]+8 " w20 h20 backgroundTrans","./img/button_settings.png")
 	ui.profileEdit.onEvent("click",toggleEditor)
-	ui.viewLog := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+525 " y" ui.fsIcons.y[a_screenwidth]+6 " w20 h24 background" ui.bgColor[3],"./img/button_folder.png")
-	
+	ui.viewLog := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+523 " y" ui.fsIcons.y[a_screenwidth]+5 " w20 h26 background" ui.bgColor[3],"./img/button_folder.png")
+	ui.viewLog.onEvent("click",launchLogViewer)
 	ui.fs_profileNewButton := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+144+ui.fsIcons.xOffset[a_screenWidth]+ui.fsIcons.w[a_screenwidth]-194 " y" ui.fsIcons.y[a_screenwidth]+9 " w20 h20 backgroundTrans","./img/button_new.png")
 	ui.fs_profileDeleteButton := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+144+ui.fsIcons.xOffset[a_screenWidth]+ui.fsIcons.w[a_screenwidth]-148 " y" ui.fsIcons.y[a_screenwidth]+9 " w20 h20 backgroundTrans","./img/button_delete.png")
 	ui.fs_profileSaveCancelButton := ui.fishGuiFS.addPicture("hidden x" ui.fsIcons.x[a_screenwidth]+144+ui.fsIcons.xOffset[a_screenWidth]+ui.fsIcons.w[a_screenwidth]-194 " y" ui.fsIcons.y[a_screenwidth]+9 " w20 h19 backgroundTrans","./img/button_cancel.png")
 	ui.fs_profileSaveCancelButton.onEvent("click",cancelEditProfileName)
 	ui.fs_profileSaveButton := ui.fishGuiFS.addPicture("hidden x" ui.fsIcons.x[a_screenwidth]+144+ui.fsIcons.xOffset[a_screenwidth]+ui.fsIcons.w[a_screenwidth]-170 " y" ui.fsIcons.y[a_screenwidth]+9 " w20 h20 backgroundTrans","./img/button_save.png")
-	ui.fs_profileEditButton := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+144+ui.fsIcons.xOffset[a_screenwidth]+ui.fsIcons.w[a_screenwidth]-170 " y" ui.fsIcons.y[a_screenwidth]+9 " w20 h20 backgroundTrans","./img/button_edit_light.png")
+	ui.fs_profileEditButton := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+144+ui.fsIcons.xOffset[a_screenwidth]+ui.fsIcons.w[a_screenwidth]-170 " y" ui.fsIcons.y[a_screenwidth]+9 " w20 h20 backgroundTrans","./img/button_edit.png")
 	ui.fs_profileSaveButton.onEvent("click",saveProfileNameFS)
 	ui.fs_profileEditButton.onEvent("click",editProfileNameFS)
 	ui.fs_profileNewButton.onEvent("click",newProfileNameFS)
@@ -913,7 +913,7 @@ createGui() {
 	ui.startButton.onEvent("click",startButtonClicked)
 	ui.startButtonHotkey := ui.fishGui.addText("x+-25 ys-2 w40 h20 c" ui.trimDarkFontColor[1] " backgroundTrans","[Shift-F]")
 	ui.startButtonHotkey.setFont("s7","Palatino Linotype")
-	ui.startButtonStatus := ui.fishGui.addPicture("x1190 y775 w26 h14 backgroundTrans","./img/play_ani_0.png")
+	ui.startButtonStatus := ui.fishGui.addPicture("x1190 y775 w26 h14 backgroundTrans")
 	drawButton(1224,753,105,29)
 	ui.castButtonBg := ui.fishGui.addText("x1226 y755 w101 h25 background" ui.trimDarkColor[1])
 	ui.castButton := ui.fishGui.addText("section x1230 center y755 w96 h26 c" ui.trimDarkFontColor[1] " backgroundTrans","&Cast")
@@ -1014,20 +1014,7 @@ createGui() {
 	ui.fishLogText.setFont("s11 q5 c" ui.fontColor[2])
 	ui.fishLogText.onEvent("DoubleClick",openFishPic)
 		
-	launchLogViewer(fullscreen,*) {
-		static launchLogState:=false
-		(launchLogState:=!launchLogState) ? showLogScreen() : hideLogScreen()
-		
-		showLogScreen(*) {
-			guiVis(ui.logGui,true)
-			winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
-			ui.logGui.show("x" tX+tW+1 " y" tY " w600 h" tH)
-		}
-		hideLogScreen(*) {
-			guiVis(ui.logGui,false)
-		}
-	}
-	
+
 	
 	
 
@@ -1084,3 +1071,17 @@ while ui.fishLogArr.length < 43 {
 }
 
 
+	launchLogViewer(fullscreen,*) {
+		static launchLogState:=false
+		(launchLogState:=!launchLogState) ? showLogScreen() : hideLogScreen()
+		
+		showLogScreen(*) {
+			guiVis(ui.logGui,true)
+			;winGetPos(&tX,&tY,&tW,&tH,ui.fishGuiFS.hwnd)
+			;ui.logGui.show("x" tX+tW+1 " y" tY " w600 h" tH)
+		}
+		hideLogScreen(*) {
+			guiVis(ui.logGui,false)
+		}
+	}
+	
