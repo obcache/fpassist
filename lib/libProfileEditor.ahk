@@ -57,41 +57,41 @@ profileEditor(*) {
 
 		;drawButton(1,753,395,60)
 		;drawButton(398,753,264,60)
-		ui.editorGui_profileBg0 := ui.editorGui.addText("x2 y30 w446 h30 background" ui.bgColor[3])
-		ui.editorGui_profileBg := ui.editorGui.addText("x2 y137 w499 h64 background" ui.bgColor[4])
+		ui.fs_profileBg0 := ui.editorGui.addText("x2 y30 w446 h30 background" ui.bgColor[3])
+		ui.fs_profileBg := ui.editorGui.addText("x2 y137 w499 h64 background" ui.bgColor[4])
 		profilePos := map("x",0,"y",35,"w",499,"h",28)
-		ui.editorGui_profileBg := ui.editorGui.addText("x" profilePos["x"]+2 " y" profilePos["y"]-4 " w" profilePos["w"] " h" profilePos["h"]+8 " background" ui.bgColor[3])
-		ui.editorGui_profileBg2 := ui.editorGui.addText("x" profilePos["x"]+3 " y" profilePos["y"]-3 " w" profilePos["w"]-30 " h" profilePos["h"]+6 " background" ui.bgColor[3])
-		ui.editorGui_profileBg3 := ui.editorGui.addText("x4 y32 w496 h34 background" ui.bgColor[3])
-		ui.editorGui_profileBg4 := ui.editorGui.addText("x3 y138 w497 h62 background" ui.bgColor[6])
-		ui.editorGui_profileLArrow := ui.editorGui.addPicture("x" profilePos["x"]+5 " y" profilePos["y"]+3 " w20 h23 backgroundTrans","./img/button_arrowLeft_knot.png")
-		ui.editorGui_profileRArrow := ui.editorGui.addPicture("x" (profilePos["x"]+30)+(profilePos["w"]-50) " y" profilePos["y"]+3 " w20 h23 backgroundTrans","./img/button_arrowRight_knot.png")
-		ui.editorGui_profileLArrow.onEvent("click",profileLArrowClicked)
-		ui.editorGui_profileRArrow.onEvent("click",profileRArrowClicked)
-		ui.editorGui_profileText := ui.editorGui.addText("x" profilePos["x"]+30 " y" profilePos["y"]+4 " w446 h20 c" ui.fontColor[2] " center background" ui.bgColor[5])
-		ui.editorGui_profileText.text := cfg.profileName[cfg.profileSelected]
-		ui.editorGui_profileIcon := ui.editorGui.addPicture("hidden x410 y765 w230 h42 backgroundCC3355","")
-		ui.editorGui_profileTextOutline1 := ui.editorGui.addText("x" profilePos["x"]+29 " y" profilePos["y"]+3 " w1 h22 background" ui.fontColor[2])
-		ui.editorGui_profileTextOutline2 := ui.editorGui.addText("x" profilePos["x"]+29 " y" profilePos["y"]+24 " w446 h1 background" ui.fontColor[2])
-		ui.editorGui_profileTextOutline1 := ui.editorGui.addText("x" profilePos["x"]+29 " y" profilePos["y"]+3 " w446 h1 background" ui.fontColor[2])
-		ui.editorGui_profileTextOutline2 := ui.editorGui.addText("x" profilePos["x"]+475 " y" profilePos["y"]+3 " w1 h22 background" ui.fontColor[2])
-		ui.editorGui_profileText.setFont("s12","calibri")
+		ui.fs_profileBg := ui.editorGui.addText("x" profilePos["x"]+2 " y" profilePos["y"]-4 " w" profilePos["w"] " h" profilePos["h"]+8 " background" ui.bgColor[3])
+		ui.fs_profileBg2 := ui.editorGui.addText("x" profilePos["x"]+3 " y" profilePos["y"]-3 " w" profilePos["w"]-30 " h" profilePos["h"]+6 " background" ui.bgColor[3])
+		ui.fs_profileBg3 := ui.editorGui.addText("x4 y32 w496 h34 background" ui.bgColor[3])
+		ui.fs_profileBg4 := ui.editorGui.addText("x3 y138 w497 h62 background" ui.bgColor[6])
+		ui.fs_profileLArrow := ui.editorGui.addPicture("x" profilePos["x"]+5 " y" profilePos["y"]+3 " w20 h23 backgroundTrans","./img/button_arrowLeft_knot.png")
+		ui.fs_profileRArrow := ui.editorGui.addPicture("x" (profilePos["x"]+30)+(profilePos["w"]-50) " y" profilePos["y"]+3 " w20 h23 backgroundTrans","./img/button_arrowRight_knot.png")
+		ui.fs_profileLArrow.onEvent("click",profileLArrowClicked)
+		ui.fs_profileRArrow.onEvent("click",profileRArrowClicked)
+		ui.fs_profileText := ui.editorGui.addText("x" profilePos["x"]+30 " y" profilePos["y"]+4 " w446 h20 c" ui.fontColor[2] " center background" ui.bgColor[5])
+		ui.fs_profileText.text := cfg.profileName[cfg.profileSelected]
+		ui.fs_profileIcon := ui.editorGui.addPicture("hidden x410 y765 w230 h42 backgroundCC3355","")
+		ui.fs_profileTextOutline1 := ui.editorGui.addText("x" profilePos["x"]+29 " y" profilePos["y"]+3 " w1 h22 background" ui.fontColor[2])
+		ui.fs_profileTextOutline2 := ui.editorGui.addText("x" profilePos["x"]+29 " y" profilePos["y"]+24 " w446 h1 background" ui.fontColor[2])
+		ui.fs_profileTextOutline1 := ui.editorGui.addText("x" profilePos["x"]+29 " y" profilePos["y"]+3 " w446 h1 background" ui.fontColor[2])
+		ui.fs_profileTextOutline2 := ui.editorGui.addText("x" profilePos["x"]+475 " y" profilePos["y"]+3 " w1 h22 background" ui.fontColor[2])
+		ui.fs_profileText.setFont("s12","calibri")
 		profileNumStr := ""
-		ui.editorGui_profileNum := ui.editorGui.addText("x" profilePos["x"]+80 " y" profilePos["y"]+29 " right w160 h20 backgroundTrans c" ui.bgColor[5],profileNumStr)
-		ui.editorGui_profileNum.setFont("s13 c" ui.fontColor[2],"courier new")
+		ui.fs_profileNum := ui.editorGui.addText("x" profilePos["x"]+80 " y" profilePos["y"]+29 " right w160 h20 backgroundTrans c" ui.bgColor[5],profileNumStr)
+		ui.fs_profileNum.setFont("s13 c" ui.fontColor[2],"courier new")
 		
-		ui.editorGui_CastLength := ui.editorGui.addSlider("section toolTip background" ui.bgColor[3] " buddy2ui.ui.editorCastLengthText altSubmit center x" cp.x+65 " y" 71 " w176 h16  range1000-2500",1910)
-		ui.editorGui_castLength.onEvent("change",editorCastLengthChanged)
-		ui.editorGui_CastLengthLabel := ui.editorGui.addText("xs-3 y+5 w40 h13 right backgroundTrans","Cast")
-		ui.editorGui_CastLengthLabel.setFont("s8 c" ui.fontColor[2])
-		ui.editorGui_CastLengthLabel2 := ui.editorGui.addText("xs-3 y+-3 w40 h20 right backgroundTrans","Length")
-		ui.editorGui_CastLengthLabel2.setFont("s8 c" ui.fontColor[2])
-		ui.editorGui_CastLengthText := ui.editorGui.addText("x+0 ys+18 left w70 h32 backgroundTrans c" ui.fontColor[2])
+		ui.fs_CastLength := ui.editorGui.addSlider("section toolTip background" ui.bgColor[3] " buddy2ui.ui.editorCastLengthText altSubmit center x" cp.x+65 " y" 71 " w176 h16  range1000-2500",1910)
+		ui.fs_castLength.onEvent("change",editorCastLengthChanged)
+		ui.fs_CastLengthLabel := ui.editorGui.addText("xs-3 y+5 w40 h13 right backgroundTrans","Cast")
+		ui.fs_CastLengthLabel.setFont("s8 c" ui.fontColor[2])
+		ui.fs_CastLengthLabel2 := ui.editorGui.addText("xs-3 y+-3 w40 h20 right backgroundTrans","Length")
+		ui.fs_CastLengthLabel2.setFont("s8 c" ui.fontColor[2])
+		ui.fs_CastLengthText := ui.editorGui.addText("x+0 ys+18 left w70 h32 backgroundTrans c" ui.fontColor[2])
 		while cfg.profileSelected > cfg.castLength.Length
 			cfg.castLength.push("2000")
-		ui.editorGui_CastLengthText.text := cfg.castLength[cfg.profileSelected]
-		ui.editorGui_CastLength.value := cfg.castLength[cfg.profileSelected]
-		ui.editorGui_CastLengthText.setFont("s18")
+		ui.fs_CastLengthText.text := cfg.castLength[cfg.profileSelected]
+		ui.fs_CastLength.value := cfg.castLength[cfg.profileSelected]
+		ui.fs_CastLengthText.setFont("s18")
 		
 		slider("ReelSpeed",ui.editorGui,6+cp.x,cp.y-3,20,62,"1-4",1,1,"left","Reel","vertical","b",)
 		slider("dragLevel",ui.editorGui,33+cp.x,cp.y-3,20,62,"1-12",1,1,"center","Drag","vertical","b",)
@@ -109,33 +109,33 @@ profileEditor(*) {
 		while cfg.keepnetEnabled.length < cfg.profileSelected
 			cfg.keepnetEnabled.push(false)
 			
-		ui.editorGui_keepnetEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+20 " w10 h15 background" ui.bgColor[3],cfg.keepnetEnabled[cfg.profileSelected])
-		ui.editorGui_keepnetEnabled.onEvent("click",toggleKeepnet)
-		ui.editorGui_keepnetEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+22 " w60 h15 backgroundTrans c" ui.fontColor[2],"Keepnet")
-		ui.editorGui_keepnetEnabledLabel.setFont("s7","small fonts")
+		ui.fs_keepnetEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+20 " w10 h15 background" ui.bgColor[3],cfg.keepnetEnabled[cfg.profileSelected])
+		ui.fs_keepnetEnabled.onEvent("click",toggleKeepnet)
+		ui.fs_keepnetEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+22 " w60 h15 backgroundTrans c" ui.fontColor[2],"Keepnet")
+		ui.fs_keepnetEnabledLabel.setFont("s7","small fonts")
 		
-		ui.editorGui_floatEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+32 " w10 h15 background" ui.bgColor[3],cfg.floatEnabled[cfg.profileSelected])
-		ui.editorGui_floatEnabled.onEvent("click",toggleFloat)
-		ui.editorGui_floatEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+33 " w60 h15 backgroundTrans c" ui.fontColor[2],"Bottom")
-		ui.editorGui_floatEnabledLabel.setFont("s7","small fonts")
+		ui.fs_floatEnabled := ui.editorGui.addCheckBox("x230 y" cp.y+32 " w10 h15 background" ui.bgColor[3],cfg.floatEnabled[cfg.profileSelected])
+		ui.fs_floatEnabled.onEvent("click",toggleFloat)
+		ui.fs_floatEnabledLabel := ui.editorGui.addText("right x164 y" cp.y+33 " w60 h15 backgroundTrans c" ui.fontColor[2],"Bottom")
+		ui.fs_floatEnabledLabel.setFont("s7","small fonts")
 		
 		toggleFloat(*) {
 			while cfg.floatEnabled.length < cfg.profileSelected
 				cfg.floatEnabled.push(false)
-			cfg.floatEnabled[cfg.profileSelected] := ui.editorGui_floatEnabled.value
-			ui.editorGui_floatEnabledStr := ""
-			if ui.editorGui_floatEnabled.value
-				ui.editorGui_keepnetEnabled.opt("-disabled")
+			cfg.floatEnabled[cfg.profileSelected] := ui.fs_floatEnabled.value
+			ui.fs_floatEnabledStr := ""
+			if ui.fs_floatEnabled.value
+				ui.fs_keepnetEnabled.opt("-disabled")
 			else {
-				ui.editorGui_keepnetEnabled.value:=false
-				ui.editorGui_keepnetEnabled.opt("disabled")
+				ui.fs_keepnetEnabled.value:=false
+				ui.fs_keepnetEnabled.opt("disabled")
 			}
 		}
 
 		toggleKeepnet(*) {
 			while cfg.keepnetEnabled.length < cfg.profileSelected
 				cfg.keepnetEnabled.push(false)
-			cfg.keepnetEnabled[cfg.profileSelected] := ui.editorGui_keepnetEnabled.value
+			cfg.keepnetEnabled[cfg.profileSelected] := ui.fs_keepnetEnabled.value
 		}
 		
 		bgModeChanged(*) {
@@ -230,7 +230,7 @@ profileEditor(*) {
 		winGetPos(&tX,&tY,&tW,&tH,ui.editorGui.hwnd)
 		ui.editorGui.show("x" tX+40+tW+8 " y" tY+20 " w503 h202")
 		drawOutline(ui.editorGui,0,0,503,202,ui.bgColor[6],ui.bgColor[6],1)
-		;ui.editorGui_profileEditButton.focus()
+		;ui.fs_profileEditButton.focus()
 }
 ui.editorVisible:=false
 toggleEditor(*) {

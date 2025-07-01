@@ -66,7 +66,6 @@ initVars(*) {
 	
 	ui.gameExe 				:= "fishingPlanet.exe"
 	ui.game 				:= "ahk_exe " ui.gameExe
-
 	cfg.buttons 			:= ["startButton","castButton","retrieveButton","reelButton","cancelButton","reloadButton","exitButton"]
 	;cfg.profileSettings 	:= ["profileName","castLength","castTime","sinkTime","reelSpeed","dragLevel","landAggro","twitchFreq","stopFreq","reelFreq","BoatEnabled","floatEnabled","bgModeEnabled"]
 	;cfg.profileDefaults 	:= {"NewProfile","1900","1","1","1","1","1","1","1","0","0","0"]

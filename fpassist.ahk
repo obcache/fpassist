@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.0.5"
+A_FileVersion := "1.4.0.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -48,7 +48,7 @@ winActivate(ui.game)
 
 onExit(exitFunc)
 ;analyzeCatch()
-setStoreCapslockMode(0)
+;setStoreCapslockMode(0)
 createHelp()
 ;toggleHelp()
 
@@ -331,7 +331,7 @@ startAfk(this_mode:="cast",*) {
 		if !reeledIn() {
 			retrieve()
 		}	
-	cast()
+	;cast()
 	}
 	errorLevel:=(ui.enabled) ? 0 : killAfk()
 	sleep500(3)
@@ -533,7 +533,7 @@ retrieve(*) {
 		case ui.keepnetEnabled.value:
 			log("Watch: Monitoring Bait",1)
 			ui.retrieveButton.text := "Watch"
-			ui.editorGui_retrieveButton.text:="Watch"
+			ui.fs_retrieveButton.text:="Watch"
 			while !reeledIn() && winActive(ui.game) {
 				sleep500(6)
 				rotateRodStands()
@@ -546,7 +546,7 @@ retrieve(*) {
 			try
 				ui.retrieveButton.text := "Watch"
 			try
-				ui.editorGui_retrieveButton.text:="Watch"
+				ui.fs_retrieveButton.text:="Watch"
 			while !reeledIn() {
 				errorLevel:=(ui.enabled) ? 0 : killAfk()	
 				if round(a_index) > round(cfg.recastTime[cfg.profileSelected]*60) {
@@ -560,7 +560,7 @@ retrieve(*) {
 			try
 				ui.retrieveButton.text := "Retrie&ve"
 			try
-				ui.editorGui_retrieveButton.text:="Lure"
+				ui.fs_retrieveButton.text:="Lure"
 			return
 	checkState(*) {
 		(isHooked()) ? landFish() : 0
@@ -852,6 +852,8 @@ checkKeepnet(*) {
 
 tmp.beenPaused := false
 sendNice(payload:="",gameWin:=ui.game) {
+	if !ui.enabled
+		exit
 	if payload=="" {
 		if winActive(gameWin) {
 			if tmp.beenPaused {
@@ -879,11 +881,11 @@ sendNice(payload:="",gameWin:=ui.game) {
 }
 
 reeledIn(*) {
-	log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
-		log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])) 
-		log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])) 
-		log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])) 
-		log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])) 
+	; log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
+		; log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])) 
+		; log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])) 
+		; log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])) 
+		; log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])) 
 		
 	if pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2])=="0xF7F7F7"
 	&& pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])=="0xF7F7F7"
@@ -1053,3 +1055,7 @@ updateAfkTime(*) {
 		ui.playAniStep := 1
 	ui.startButtonStatus.value := "./img/play_ani_" ui.playAniStep ".png"
 }
+
+
+
+	ui.fsObjects:=[ui.actionBorder,ui.actionBg,ui.fishCountBorder,ui.profileBorder,ui.panelBg,ui.panelBg2,ui.action,ui.profilePrevFS,ui.profileNextFS,ui.profileSelectedFS,ui.profileSelectedBg,ui.profileEdit,ui.viewLog,ui.profileSelectedFS,ui.fishCountText,ui.fishCountIcon,ui.fishCountText,ui.fs_profileDeleteButton,ui.fs_profileEditButton,ui.fs_profileNewButton]
