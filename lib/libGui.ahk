@@ -529,15 +529,15 @@ if (visible) {
 		ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow")  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
 		ui.notifyGui.BackColor := ui.bgColor[3] ; Can be any RGB color (it will be made transparent below).
 		ui.notifyGui.SetFont("s30 bold")  ; Set a large font size (32-point).
-		ui.notifyGui.addPicture("x0 y0 w1582 h812","./img/fp_splash.png")
-		ui.loadingProgress := ui.notifyGui.addProgress("smooth x2 y757 w1580 h57 c202020 background404040")
+		ui.notifyGui.addPicture("x0 y0 w" a_screenwidth " h" a_screenheight,"./img/fp_splash.png")
+		ui.loadingProgress := ui.notifyGui.addProgress("smooth x2 y" a_screenheight-30 " w" a_screenwidth " h57 c202020 background404040")
 		ui.loadingProgress.value := 0
 		if winExist(ui.game) {
 			setTimer(startupProgress,32)
 		} else {
 			setTimer(startupProgress0,200)
 		}
-		ui.loadingProgress2 := ui.notifyGui.addProgress("smooth x2 y755 w1580 h2 c707070 background404040")
+		ui.loadingProgress2 := ui.notifyGui.addProgress("smooth x2 y" a_screenheight-2 " w" a_screenwidth " h2 c707070 background404040")
 		ui.loadingProgress2.value := 0
 		if winExist(ui.game) {
 			setTimer(startupProgress,32)
@@ -546,7 +546,7 @@ if (visible) {
 		}
 
 		ui.notifyGui.AddText("xs hidden")
-		ui.notifyGui.show("x0 y0 w1584 h816 noActivate")
+		ui.notifyGui.show("x0 y0 w" a_screenwidth " h" a_screenheight " noActivate")
 		winGetPos(&x,&y,&w,&h,ui.notifyGui.hwnd)
 		drawOutline(ui.notifyGui,1,1,w-2,h-2,"454545","757575",1)
 		drawOutline(ui.notifyGui,2,2,w-4,h-4,"858585","454545",1)
