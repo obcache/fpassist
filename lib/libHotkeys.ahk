@@ -169,7 +169,7 @@ focusChanged(*) {
 		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 	
-	RButton & WheelUp:: {
+	~RButton & WheelUp:: {
 		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
 		sendIfWinActive("{3}",ui.game,true)
@@ -177,7 +177,7 @@ focusChanged(*) {
 		sendIfWinActive("{LShift Up}",ui.game,true)
 	}
 	
-	RButton & WheelDown:: {
+	~RButton & WheelDown:: {
 		sendIfWinActive("{LShift Down}",ui.game,true)
 		sleep(200)
 		sendIfWinActive("{4}",ui.game,true)
