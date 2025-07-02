@@ -294,8 +294,9 @@ createGuiFS(*) {
 	ui.fsPanel := object()
 	ui.fsIcons := object()
 	ui.fsIcons.x := map(3440,2630,2560,1800,1920,1164)
-	ui.fsIcons.xOffset := map(3440,0,2560,8,1920,60)
 	ui.fsIcons.y := map(3440,6,2560,5,1920,1)
+	ui.fsIcons.xOffset := map(3440,0,2560,8,1920,60)
+
 	ui.fsIcons.w := map(3440,90,2560,80,1920,30)
 	ui.fsIcons.h := map(3440,30,2560,80,1920,30)
 	ui.fsPanel.x := 550
@@ -304,22 +305,16 @@ createGuiFS(*) {
 	ui.fsPanel.h := 20
 	ui.fishGuiFSx := 800
 	ui.fishGuiFSy := a_screenHeight-30-200-184
-	; try 
-		; winGetId(ui.fishGuiFS)
-	; catch
-		; h:=""
-	; else
-		; ui.fishGuiFS.destroy()
+
 	monitorGetWorkArea(monitorGetPrimary(),&mX,&mY,&mW,&mH)	
+	
 	ui.fishGuiFS := gui()
 	ui.fishGuiFS.name:="fishGuiFS"
 	ui.fishGuiFS.opt("-caption -border +toolWindow owner" ui.fishGui.hwnd)
 	ui.fishGuiFS.backColor := "010203"
-	;winSetTransColor("010203",ui.fishGuiFS.hwnd)
+
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenwidth-50 " y" ui.fsIcons.y[a_screenwidth]-2 " w41 h41 backgroundTrans","./img/button_nofs.png")
 	ui.noFSbutton.onEvent("click",noFS)
-
-
 
 	ui.actionBorder := ui.fishGuiFS.addPicture("section x" ui.fsIcons.x[a_screenwidth]-70 " y" ui.fsIcons.y[a_screenwidth] " w710 h36 center backgroundTrans c" ui.trimFontColor[6],"./img/profileFS_border.png")
 	ui.actionBg :=ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]-58 " y" ui.fsIcons.y[a_screenwidth]+4 " h29 w70 background" ui.bgColor[3])
@@ -327,7 +322,6 @@ createGuiFS(*) {
 	ui.profileBorder := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth] " y" ui.fsIcons.y[a_screenwidth] " w560 h36 center background" ui.bgColor[2] " c" ui.trimFontColor[6],"./img/profileFS_border.png")
 	ui.panelBg :=ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+12 " y" ui.fsIcons.y[a_screenwidth]+4 " h29 w536 background" ui.bgColor[3])
 	ui.panelBg2 :=ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]+560 " y" ui.fsIcons.y[a_screenwidth]+4 " h29 w156 background" ui.bgColor[3])
-	;ui.actionBg := ui.fishGuiFS.addText("x" ui.fsIcons.x[a_screenwidth]-46 " y" ui.fsIcons.y[a_screenwidth]+5 " w44 h28 background" ui.bgColor[5],"")
 	
 	ui.action := ui.fishGuiFS.addText("center x" ui.fsIcons.x[a_screenwidth]-56 " y" ui.fsIcons.y[a_screenwidth]+3 " w54 h30 backgroundTrans","Idle")
 	ui.action.setFont("q5 s18 c" ui.fontColor[2],"Calibri")

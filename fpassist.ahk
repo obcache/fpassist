@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.1.2"
+A_FileVersion := "1.4.1.3"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -407,81 +407,82 @@ ui.fishQ:=array()
 cast(*) {
 	checkKeepnet()
 	mode("cast")
-	if ui.keepnetEnabled.value {
-		rodCount:=4
-		loop rodCount {
-			send("{" a_index "}")
-			sleep500(6)
-			send("{lshift down}")
-			sleep(100)
-			send("{" a_index "}")
-			sleep(100)
-			send("{lshift up}")
-			sleep500(6)
-			if !reeledIn() && ui.enabled {
-				castButtonDim()
-				reelButtonOn()
+	; if ui.keepnetEnabled.value {
+		; rodCount:=4
+		; loop rodCount {
+			; send("{" a_index "}")
+			; sleep500(6)
+			; send("{lshift down}")
+			; sleep(100)
+			; send("{" a_index "}")
+			; sleep(100)
+			; send("{lshift up}")
+			; sleep500(6)
+			; if !reeledIn() && ui.enabled {
+				; castButtonDim()
+				; reelButtonOn()
 			
-				reelIn()
+				; reelIn()
 			
-				reelButtonOff()
-				castButtonOn()
-			}
+				; reelButtonOff()
+				; castButtonOn()
+			; }
 
-			sleep500(4)
+			; sleep500(4)
 
-			errorLevel:=(ui.enabled) ? 0 : killAfk()	
+			; errorLevel:=(ui.enabled) ? 0 : killAfk()	
 
-			log("Cast: Prepared")
-			ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
-			sleep500(3)
+			; log("Cast: Prepared")
+			; ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
+			; sleep500(3)
 			
-			log("Cast: Drawing Back Rod",1)
-			sendNice("{space down}")
-			(cfg.profileSelected <= cfg.castLength.length)  
-				? sleep(cfg.castLength[cfg.profileSelected])
-				: sleep(cfg.castLength[cfg.castLength.length])
-			sendNice("{space up}")
+			; log("Cast: Drawing Back Rod",1)
+			; sendNice("{space down}")
+			; (cfg.profileSelected <= cfg.castLength.length)  
+				; ? sleep(cfg.castLength[cfg.profileSelected])
+				; : sleep(cfg.castLength[cfg.castLength.length])
+			; sendNice("{space up}")
 			
-			log("Cast: Releasing Cast",1)
-			setTimer(calibrate,-100)
+			; log("Cast: Releasing Cast",1)
+			; setTimer(calibrate,-100)
 			
-			log("Wait: Lure In-Flight",1)
-			loop cfg.castTime[cfg.profileSelected] {
-				errorLevel:=(ui.enabled) ? 0 : killAfk()	
-				sleep500(2)
-			}
+			; log("Wait: Lure In-Flight",1)
+			; loop cfg.castTime[cfg.profileSelected] {
+				; errorLevel:=(ui.enabled) ? 0 : killAfk()	
+				; sleep500(2)
+			; }
 			
-			log("Wait: Lure Sinking",1)
-			loop cfg.sinkTime[cfg.profileSelected] {
-				errorLevel:=(ui.enabled) ? 0 : killAfk()	
-				sleep500(2)
-			}
-			if !reeledIn() {
-				log("Cast: Closing Bail")
-				sendNice("{space down}")
-				sleep(500)
-				sendNice("{space up}")
-				sleep(150)
-			}
-		}
-	} else {
+			; log("Wait: Lure Sinking",1)
+			; loop cfg.sinkTime[cfg.profileSelected] {
+				; errorLevel:=(ui.enabled) ? 0 : killAfk()	
+				; sleep500(2)
+			; }
+			; if !reeledIn() {
+				; log("Cast: Closing Bail")
+				; sendNice("{space down}")
+				; sleep(500)
+				; sendNice("{space up}")
+				; sleep(150)
+			; }
+		; }
+	; } else {
 	
 		while !reeledIn() && ui.enabled {
-			castButtonDim()
-			reelButtonOn()
+			mode("reel")
+			;castButtonDim()
+			;reelButtonOn()
 			reelIn()
-			reelButtonOff()
-			castButtonOn()
+			;reelButtonOff()
+			;castButtonOn()
 			sleep500(2)
 		}
 
-		log("Cast: Prepared")
+		;log("Cast: Ready")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
-		ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
+		;ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
 		sleep500(3)
 		
-		log("Cast: Drawing Back Rod",1)
+		log("Casting with Profile: " cfg.profileName[cfg.profileSelected],1)
 		
 		sendNice("{space down}")
 		(cfg.profileSelected <= cfg.castLength.length)  
@@ -509,7 +510,7 @@ cast(*) {
 		sleep(500)
 		sendNice("{space up}")
 		retrieve()
-	}
+	;}
 }
 
 rotateRodStands(rodCount:=4) {
@@ -611,7 +612,7 @@ retrieve(*) {
 			mechanic.last := mechanic.number
 			
 			if isHooked() {
-				sleep500(1)
+				;sleep500(1)
 				landFish()
 				return
 			}
@@ -626,7 +627,7 @@ retrieve(*) {
 						log("Retrieve: Twitch",1)
 							loop round(random(1,1)) {
 								if isHooked() {
-									sleep500(1)
+									;sleep500(1)
 									landFish()
 									return
 								}

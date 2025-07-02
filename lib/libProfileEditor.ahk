@@ -287,10 +287,10 @@ showEditor(*) {
 	
 	
 	monitorGetWorkArea(monitorGetPrimary(),&mL,&mT,&mR,&mB)
-	editorX:=mR-780
+	editorX:=mR-725
 	; ui.editorGui.show("x" editorX " y" editorY)
 	
-	editorY:=-25
+	editorY:=-30
 	ui.fishLogFS.focus()
 	winSetTransparent(0,ui.editorGui)
 	ui.editorGui.show("x" editorX " y" editorY)

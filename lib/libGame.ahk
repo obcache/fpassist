@@ -16,10 +16,9 @@ startButtonClicked(*) {
 }
 
 stopButtonClicked(*) {
-	
-		setTimer () => toggleOff(), -100
-		setTimer () => send("{capsLock}"),-350
-		setTimer () => toggleOn(),-550 
+	setTimer () => toggleOff(), -100
+	setTimer () => send("{capsLock}"),-350
+	setTimer () => toggleOn(),-550 
 	ui.mode:="off"	 
 	;toggleOn()
 	; ui.mode:="off"
@@ -37,33 +36,33 @@ stopButtonClicked(*) {
 	; exit
 }
 
+startTask(mode) {
+	ui.enabled:=true
+	mode(mode)
+	setTimer () => startAfk(mode),-100
+}
+
 castButtonClicked(*) {
 	ui.enabled:=true
-	ui.mode:="cast"
-	mode(ui.mode)
-	setTimer(startAfk,-100)
+	mode("cast")
+	setTimer () => startAfk("cast"),-100
 }
 
 reelButtonClicked(*) {
-	ui.mode:="reel"
-	mode(ui.mode)
-	ui.fishQ.push(ui.mode)
-	;showQ()
+	mode("reel")
 	reelIn()
-	setTimer(startAfk,-100)
+	setTimer () => startAfk("reel"),-100
 }
 
 
 retrieveButtonClicked(*) {
 	mode("retrieve")
-	;ui.fishQ.push(ui.mode)
-	;retrieve()
-	startAfk("retrieve")
+	setTimer () => startAfk("retrieve"),-100
 }
 
 editorCastLengthChanged(*) {
 		while cfg.profileSelected > cfg.castLength.Length
-			cfg.castLength.push("2000")
+			cfg.castLength.push("2250")
 		
 		cfg.castLength[cfg.profileSelected] := ui.fs_castLength.value
 		ui.fs_castLengthText.text := cfg.castLength[cfg.profileSelected]
@@ -72,7 +71,7 @@ editorCastLengthChanged(*) {
 
 CastLengthChanged(*) {
 		while cfg.profileSelected > cfg.castLength.Length
-			cfg.castLength.push("2000")
+			cfg.castLength.push("2250")
 		
 		cfg.castLength[cfg.profileSelected] := ui.castLength.value
 		ui.castLengthText.text := cfg.castLength[cfg.profileSelected]
@@ -132,11 +131,8 @@ toggleEnabled(*) {
 }
 
 toggleOn(*) {
-	;msgBox('toggleOn')
-	;setcapsLockState(true)
 	ui.toggleEnabledFS.value:="./img/toggle_on.png"
 	ui.toggleEnabledFSLabel.opt("hidden")
-	;ui.toggleEnabledFS.move((a_screenWidth*.68)+450)
 	ui.toggleEnabledFS.redraw()
 	for this_obj in ui.fsObjects 
 		this_obj.opt("-hidden")
@@ -145,13 +141,6 @@ toggleOn(*) {
 	ui.toggleLabelOutline.opt("hidden")
 	ui.enableButtonToggle.value := "./img/toggle_on.png"
 	guiVis(ui.disabledGui,false)
-	; ui.fishCountIcon.opt("-hidden")
-	; ui.fishCount1.opt("-hidden")
-	; ui.fishCount2.opt("-hidden")
-	; ui.fishCount3.opt("-hidden")
-	; ui.fishCount4.opt("-hidden")
-	; ui.fishCount5.opt("-hidden")
-	; ui.fishCountIcon.opt("-hidden")
 	ui.bigfishCount.opt("-hidden")
 	ui.bigfishCountLabel.opt("-hidden")
 	ui.bigfishCountLabel2.opt("-hidden")
@@ -160,29 +149,16 @@ toggleOn(*) {
 	ui.fishLogAfkTimeLabel2.opt("-hidden")
 	if ui.editorVisible
 		guiVis(ui.editorGui,true)
-	
-	;startAfk()
 }
 	
 toggleOff(*) {
-	;msgBox('toggleOff')
-	;setcapsLockState(true)
 	if ui.editorVisible
 		guiVis(ui.editorGui,false)
 	ui.toggleEnabledFS.value:="./img/toggle_off.png"
-	;ui.toggleEnabledFSLabel.opt("-hidden")
 	ui.toggleLabel.opt("-hidden")
 	ui.toggleLabelBg.opt("-hidden")
 	ui.toggleLabelOutline.opt("-hidden")
 	ui.fishCountText.opt("+hidden")
-	; ui.fishCount1.opt("+hidden")
-	; ui.fishCount2.opt("+hidden")
-	; ui.fishCount3.opt("+hidden")
-	; ui.fishCount4.opt("+hidden")
-	; ui.fishCount5.opt("+hidden")
-	; ui.fishCountIcon.opt("+hidden")
-	; ui.fishCountLabelFS.opt("+hidden")
-	; ui.fishCountLabel2FS.opt("+hidden")
 	ui.fishLogAfkTime.opt("+hidden")
 	ui.fishLogAfkTimeLabel.opt("+hidden")
 	ui.fishLogAfkTimeLabel2.opt("+hidden")
@@ -191,7 +167,6 @@ toggleOff(*) {
 	ui.bigfishCountLabel2.opt("+hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
-	;ui.toggleEnabledFS.move(a_screenWidth-50,,,)
 	ui.toggleEnabledFS.redraw()
 	ui.enableButtonToggle.value := "./img/toggle_off.png"
 	if !ui.fullscreen {
@@ -361,6 +336,7 @@ deleteProfileName(*) {
 		notifyOSD("Can't Delete Only Profile",ui.profileText)
 		;msgBox("Can't Delete Only Profile")
 	}
+	
 }
 
 deleteProfileNameFS(*) {
@@ -409,6 +385,8 @@ deleteProfileNameFS(*) {
 		notifyOSD("Can't Delete Only Profile",ui.profileText)
 		;msgBox("Can't Delete Only Profile")
 	}
+	profileRArrowClicked()
+	profileLArrowClicked()
 }
 
 editProfileName(*) {
@@ -425,7 +403,9 @@ editProfileName(*) {
 	ui.profileSaveCancelButton.opt("-hidden")
 	ui.fishGuiFS.onEvent("Escape",cancelEditProfileName)
 	winGetPos(&x,&y,&w,&h,ui.fishGui)
-	ui.editProfileGui.show("x" ui.profilePos["x"]+27 " y" ui.profilePos["y"]+4 " w208 h22")
+	ui.editProfileGui.show("x" ui.fsIcons.x[a_screenwidth]+130 " y" ui.fsIcons.y[a_screenwidth]+3 " w340 h28")
+	
+	;ui.profilePos["x"]+27 " y" ui.profilePos["y"]+4 " w208 h22")
 	ui.editProfileEdit.focus()
 }
 
@@ -463,12 +443,13 @@ cancelEditProfileName(*) {
 	ui.fs_profileDeleteButton.opt("-hidden")
 	
 }
+
 editProfileNameFS(*) {
 	ui.editProfileGui := gui()
 	ui.editProfileGui.opt("-border -caption owner" ui.fishGuiFS.hwnd)
 	ui.editProfileBg := ui.editProfileGui.addText("x0 y0 w350 h28 background" ui.trimColor[6])
 	ui.editProfileEdit := ui.editProfileGui.addEdit("x0 y1 w350 center h26 background" ui.bgColor[3] " -multi -wantReturn -wantTab limit -wrap -theme c" ui.fontColor[3],cfg.profileName[cfg.profileSelected])
-	ui.editProfileEdit.setFont("s12","calibri")	
+	ui.editProfileEdit.setFont("s14","calibri")	
 	ui.profileSelectedFS.opt("hidden")
 	ui.fs_profileNewButton.opt("hidden")
 	ui.fs_profileEditButton.opt("hidden")
@@ -477,10 +458,24 @@ editProfileNameFS(*) {
 	ui.fs_profileSaveCancelButton.opt("-hidden")
 	ui.fishGuiFS.onEvent("Escape",cancelEditProfileName)
 	winGetPos(&x,&y,&w,&h,ui.fishGuiFS)
-	ui.editProfileGui.show("center x" ui.fsIcons.x[a_screenwidth]+355+x " y" ui.fsIcons.y[a_screenwidth]+30 " w350 h26")
+	ui.fsIcons.x := map(3440,2630,2560,1800,1920,1164)
+	ui.fsIcons.y := map(3440,6,2560,5,1920,1)
+	ui.editProfileGui.show("x" ui.fsIcons.x[a_screenwidth]+130 " y" ui.fsIcons.y[a_screenwidth]+6 " w340 h28")
+	;ui.editProfileGui.show("center x" ui.fsIcons.x[a_screenwidth]+355+x " y" ui.fsIcons.y[a_screenwidth]+30 " w350 h26")
 	ui.editProfileEdit.focus()
+	ui.editProfileNameActive:=true
 }
 
+ui.editProfileNameActive:=false
+
+editProfileNameActive(*) {
+	return ui.editProfileNameActive
+}
+
+hotIf(editProfileNameActive)
+	hotkey("Enter",saveProfileNameFS)
+	hotkey("Esc",cancelEditProfileNameFS)
+hotIf()
 
 newProfileNameFS(*) {
 	for setting,default in cfg.profileSetting {
@@ -488,7 +483,7 @@ newProfileNameFS(*) {
 	}
 	cfg.profileName[cfg.profileSelected] := "Profile #" cfg.profileName.length
 	updateControls()
-	editProfileName()
+	editProfileNameFS()
 }
 
 saveProfileNameFS(*) {
@@ -502,6 +497,7 @@ saveProfileNameFS(*) {
 	ui.fs_profileDeleteButton.opt("-hidden")
 	try
 		ui.editProfileGui.destroy()
+	ui.editProfileNameActive:=false
 }
 
 cancelEditProfileNameFS(*) {
@@ -514,5 +510,5 @@ cancelEditProfileNameFS(*) {
 	ui.fs_profileEditButton.opt("-hidden")
 	ui.fs_profileNewButton.opt("-hidden")
 	ui.fs_profileDeleteButton.opt("-hidden")
-	
+	ui.editProfileNameActive:=false
 }
