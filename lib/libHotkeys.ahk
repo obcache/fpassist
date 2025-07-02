@@ -13,7 +13,7 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 hotKey(ui.exitKey,cleanExit)
 
 isEnabled(*) {
-	if winActive(ui.game) && ui.enabled
+	if winActive(ui.game) && !ui.paused
 		return 1
 	else
 		return 0
@@ -94,6 +94,19 @@ focusChanged(*) {
 		stopButtonClicked()
 	}
 
+	~Pause:: {
+		togglePaused()
+	}
+	
+	togglePaused(*) {
+		ui.paused:=!ui.paused
+		if ui.paused {
+			pauseOn()
+			toggleOff()
+		} else
+			pauseOff()
+			
+	}
 	~capsLock:: {
 		toggleEnabled()
 		ui.prevState:=getKeyState("capslock")

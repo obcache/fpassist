@@ -130,16 +130,14 @@ toggleEnabled(*) {
 		: toggleOff()
 }
 
-toggleOn(*) {
-	ui.toggleEnabledFS.value:="./img/toggle_on.png"
-	ui.toggleEnabledFSLabel.opt("hidden")
-	ui.toggleEnabledFS.redraw()
+ui.paused:=false
+pauseOff(*) {
+
 	for this_obj in ui.fsObjects 
 		this_obj.opt("-hidden")
 	ui.toggleLabel.opt("hidden")
 	ui.toggleLabelBg.opt("hidden")
 	ui.toggleLabelOutline.opt("hidden")
-	ui.enableButtonToggle.value := "./img/toggle_on.png"
 	guiVis(ui.disabledGui,false)
 	ui.bigfishCount.opt("-hidden")
 	ui.bigfishCountLabel.opt("-hidden")
@@ -150,11 +148,28 @@ toggleOn(*) {
 	if ui.editorVisible
 		guiVis(ui.editorGui,true)
 }
-	
+
+toggleOn(*) {
+	ui.enabled:=true
+	setTimer () => startAfk("Cast"),-100
+	; ui.toggleEnabledFS.value:="./img/toggle_horz_on.png"
+	; ui.toggleEnabledFSLabel.opt("hidden")
+	; ui.toggleEnabledFS.redraw()
+}
+
 toggleOff(*) {
+	ui.enabled:=false
+	mode("Off")
+	log("AFK: Stopped")	
+	setTimer(killAfk,-100)
+	; ui.toggleEnabledFS.value:="./img/toggle_horz_off.png"
+	; ui.toggleEnabledFS.redraw()
+
+}
+	
+pauseOn(*) {
 	if ui.editorVisible
 		guiVis(ui.editorGui,false)
-	ui.toggleEnabledFS.value:="./img/toggle_off.png"
 	ui.toggleLabel.opt("-hidden")
 	ui.toggleLabelBg.opt("-hidden")
 	ui.toggleLabelOutline.opt("-hidden")
@@ -167,14 +182,13 @@ toggleOff(*) {
 	ui.bigfishCountLabel2.opt("+hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
-	ui.toggleEnabledFS.redraw()
-	ui.enableButtonToggle.value := "./img/toggle_off.png"
+
 	if !ui.fullscreen {
 		guiVis(ui.disabledGui,true)
 		winSetTransparent(180,ui.disabledGui)         
 	}
-	log("AFK: Stopped")
-	endAfk()
+	toggleOff()
+	killAfk()
 }
 
 updateControls(*) {

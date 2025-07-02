@@ -293,8 +293,8 @@ createGuiFS(*) {
 		; ui.fishGuiFS.destroy()
 	ui.fsPanel := object()
 	ui.fsIcons := object()
-	ui.fsIcons.x := map(3440,2630,2560,1800,1920,1164)
-	ui.fsIcons.y := map(3440,6,2560,5,1920,1)
+	ui.fsIcons.x := map(3440,2708,2560,1800,1920,1164)
+	ui.fsIcons.y := map(3440,1,2560,5,1920,1)
 	ui.fsIcons.xOffset := map(3440,0,2560,8,1920,60)
 
 	ui.fsIcons.w := map(3440,90,2560,80,1920,30)
@@ -361,8 +361,8 @@ createGuiFS(*) {
 	; ui.fishCount3:=ui.fishGuiFS.addPicture("hidden x+0 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
 	; ui.fishCount4:=ui.fishGuiFS.addPictur e("hidden x+0 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
 	; ui.fishCount5:=ui.fishGuiFS.addPicture("hidden x+0 ys+5 h" ui.scaleFactorX*46 " w-1","./img/0.png")
-	ui.toggleEnabledFS := ui.fishGuiFS.addPicture("x" ui.fsIcons.x[a_screenwidth]+728 " y" ui.fsIcons.y[a_screenwidth]+0 " h36 w26 backgroundTrans","./img/toggle_ON.png")
-	ui.toggleEnabledFS.onEvent("click",toggleEnabled)
+	; ui.toggleEnabledFS := ui.fishGuiFS.addPicture("hidden x" ui.fsIcons.x[a_screenwidth]-57 " y" ui.fsIcons.y[a_screenwidth]+3 " h6 w56 backgroundTrans","./img/toggle_horz_off.png")
+	; ui.toggleEnabledFS.onEvent("click",toggleEnabled)
 	ui.fishCountBorder.opt("-hidden")
 	ui.toggleLabelOutline:=ui.fishGuiFS.addPicture("hidden x" ui.fsIcons.x[a_screenwidth]+350 " y" ui.fsIcons.y[a_screenwidth]+0 " w378 h36 backgroundTrans","./img/profileFS_border.png")
 	ui.toggleLabelBg:=ui.fishGuiFS.addText("hidden x" ui.fsIcons.x[a_screenwidth]+369 " y" ui.fsIcons.y[a_screenwidth]+2 " w370 h34 backgroundTrans")
@@ -397,8 +397,8 @@ createGuiFS(*) {
 	ui.reelIconFS := ui.fishGuiFS.addPicture("hidden xs+0 y+30 w" ui.fsIcons.w[a_screenwidth] " h" ui.fsIcons.w[a_screenwidth] " backgroundTrans","./img/icon_reel.png")
 	ui.reelIconFS.onEvent("click",reelButtonClicked)
 	
-	ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" (ui.fsIcons.x[a_screenwidth]+(ui.fsIcons.w[a_screenwidth])+480+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y[a_screenwidth]-10)*ui.scaleFactorY " w" 80*ui.scaleFactorX " backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
-	ui.toggleEnabledFSLabel.setFont("s" 10*ui.scaleFactorX " cWhite Bold","Small Fonts")
+	;ui.toggleEnabledFSLabel := ui.fishGuiFS.addText("hidden x" (ui.fsIcons.x[a_screenwidth]+(ui.fsIcons.w[a_screenwidth])+480+ui.fsPanelOffset[1])*ui.scaleFactorX " y" (ui.fsIcons.y[a_screenwidth]-10)*ui.scaleFactorY " w" 80*ui.scaleFactorX " backgroundTrans center","Caps`nLock`n`n`n`n`n`n`n`n`n`nfpAssist")
+	;ui.toggleEnabledFSLabel.setFont("s" 10*ui.scaleFactorX " cWhite Bold","Small Fonts")
 	
 	guiVis(ui.fishGuiFS,false)
 	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)

@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.1.3"
+A_FileVersion := "1.4.1.4"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -212,23 +212,7 @@ autoFishRestart(*) {
 	startAfk()
 }
 
-endAfk(*) {
-	ui.enabled:=false
-	mode("off")
-	setTimer(updateAfkTime,0)
-	setTimer(flashCancel,0)
-	setTimer(flashRetrieve,0)
-	setTimer(flashCast,0)
-	ui.toggleEnabledFS.value:="./img/toggle_off.png"
-	ui.toggleEnabledFSLabel.opt("hidden")
-	for this_obj in ui.fsObjects 
-		this_obj.opt("hidden")
-	;toggleEnabled()
-	exit
-}
-
 killAfk(*) {
-	ui.autoFish:=false
 	ui.enabled:=false
 	mode("off")
 	setTimer(updateAfkTime,0)
@@ -238,13 +222,14 @@ killAfk(*) {
 	setTimer(turnLeft,0)
 	setTimer(turnRight,0)
 	setTimer(throttleForward,0)
-	ui.toggleEnabledFS.value:="./img/toggle_off.png"
-	for this_obj in ui.fsObjects 
-		this_obj.opt("hidden")
-	;toggleEnabled()
+	; ui.toggleEnabledFS.value:="./img/toggle_off.png"
+	; ui.toggleEnabledFSLabel.opt("hidden")
+
 	resetKeyStates()
 	exit
 }
+
+
 
 resetKeyStates(*) {
 	send("{shift up}")
@@ -420,7 +405,7 @@ cast(*) {
 			; sleep500(6)
 			; if !reeledIn() && ui.enabled {
 				; castButtonDim()
-				; reelButtonOn()
+	; reelButtonOn()
 			
 				; reelIn()
 			
@@ -1060,3 +1045,5 @@ updateAfkTime(*) {
 
 
 	ui.fsObjects:=[ui.actionBorder,ui.actionBg,ui.fishCountBorder,ui.profileBorder,ui.panelBg,ui.panelBg2,ui.action,ui.profilePrevFS,ui.profileNextFS,ui.profileSelectedFS,ui.profileSelectedBg,ui.profileEdit,ui.viewLog,ui.profileSelectedFS,ui.fishCountText,ui.fishCountIcon,ui.fishCountText,ui.fs_profileDeleteButton,ui.fs_profileEditButton,ui.fs_profileNewButton]
+
+toggleEnabled()

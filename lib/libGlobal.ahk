@@ -455,6 +455,7 @@ install() {
 			;fileInstall("./img/action_idle.png",installDir "/img/action_idle.png",1)
 			fileInstall("./img/button_config.png",installDir "/img/button_config.png",1)
 			fileInstall("./img/button_settings.png",installDir "/img/button_settings.png",1)
+			fileInstall("./img/helpImg1.png",installDir "/img/helpImg1.png",1)
 			fileInstall("./img/fpassist_icon.ico",installDir "/img/fpassist_icon.ico",1)
 			
 			fileCreateShortcut(installDir "/fpassist.exe", a_desktop "\fpassist.lnk",installDir,,"Fishing Planet Assist",installDir "/img/fpassist_icon.ico")
