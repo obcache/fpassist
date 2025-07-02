@@ -293,9 +293,9 @@ createGuiFS(*) {
 		; ui.fishGuiFS.destroy()
 	ui.fsPanel := object()
 	ui.fsIcons := object()
-	ui.fsIcons.x := map(3440,2630,2560,1800,1920,1020)
-	ui.fsIcons.xOffset := map(3440,0,2560,8,1920,0)
-	ui.fsIcons.y := map(3440,6,2560,5,1920,5)
+	ui.fsIcons.x := map(3440,2630,2560,1800,1920,1164)
+	ui.fsIcons.xOffset := map(3440,0,2560,8,1920,60)
+	ui.fsIcons.y := map(3440,6,2560,5,1920,1)
 	ui.fsIcons.w := map(3440,90,2560,80,1920,30)
 	ui.fsIcons.h := map(3440,30,2560,80,1920,30)
 	ui.fsPanel.x := 550
