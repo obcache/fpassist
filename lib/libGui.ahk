@@ -65,22 +65,22 @@ setFScoords(*) {
 		case 1920:
 			ui.scaleFactorX:=.89
 			ui.scaleFactorY:=.95
-			ui.hookedXfs:=1641																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
-			ui.hookedYfs:=747
+			ui.hookedXfs:=1640																																																																																																																																																																																																																																																																																																																																																																																																																																																																		
+			ui.hookedYfs:=730
 			ui.hookedX2fs:=1741
 			ui.hookedY2fs:=746
 			ui.hookedColorfs:=[0x1EA6C6,0x1EA6C6]
-			ui.reeledInCoord1fs:=[1577,930]
-			ui.reeledInCoord2fs:=[1551,930]
-			ui.reeledInCoord3fs:=[1577,956]
-			ui.reeledInCoord4fs:=[1551,956]
-			ui.reeledInCoord5fs:=[1568,940]
-			ui.fishCaughtCoord1fs:=[1078,930]
-			ui.fishCaughtCoord2fs:=[1115,932]
+			ui.reeledInCoord1fs:=[1560,905]
+			ui.reeledInCoord2fs:=[1560,950]
+			ui.reeledInCoord3fs:=[1580,905]
+			ui.reeledInCoord4fs:=[1580,950]
+			ui.reeledInCoord5fs:=[1575,925]
+			ui.fishCaughtCoord1fs:=[1078,915]
+			ui.fishCaughtCoord2fs:=[1115,917]
 			ui.fishCaughtColorFs:=[round(0xFFFFFF),round(0xFFFFFF)]
 			ui.fsPanelOffset:=[-200,0]		
-			ui.keepnetX:=116
-			ui.keepnetY:=288
+			ui.keepnetX:=88
+			ui.keepnetY:=211
 			ui.keepnetColor:=0xFFC300
 			
 		DEFAULT:
@@ -145,11 +145,10 @@ saveLog(*) {
 				fileAppend(ui.LogLV.getText(a_index) "`n","./logs/" logFilename)
 			}
 			log("Saved Log to " a_scriptdir "logs/" logFilename)
-}
-
+}		
 logViewer(*) {
 		ui.logGui:=gui()
-		ui.logGui.opt("-caption toolWindow alwaysOnTop owner" ui.fishGui.hwnd)
+		ui.logGui.opt("-caption toolWindow alwaysOnTop owner" winGetId(ui.game))
 		ui.logGui.backColor:=ui.bgColor[6]
 		ui.logGui.addText("x1 y1 w598 h840 background" ui.bgColor[1])
 		ui.logTitleBar := ui.logGui.addText("x0 y0 w540 h30 background" ui.bgColor[5])
@@ -173,27 +172,10 @@ logViewer(*) {
 		ui.logLV.onEvent("DoubleClick",openFishPic)
 
 		guiVis(ui.logGui,false)
-		winGetPos(&tX,&tY,&tW,&tH,ui.fishGui.hwnd)
+		winGetPos(&tX,&tY,&tW,&tH,winGetId(ui.game))
 		ui.logGui.show("x" tX+tW+8 " y" tY " w600 h835")
 	}
 	showLog(*) {
-
-	; winGetPos(&tX,&tY,&tW,&tH,ui.game)
-	; if monitorGetCount() > 1 {
-		; winGetPos(&gX,&gY,&gW,&gH,ui.game)
-	
-		; monitorGetWorkArea(monitorGetPrimary(),&gmL,&gmT,&gmR,&gmB)
-		; msgBox(gX+gW "`n" sysGet("78"))
-		; if gX+gW==sysGet("78") {
-			; monitorGetWorkArea(monitorGetPrimary()-1,&lmL,&lmT,&lmR,&lmB)
-			; logX:=sysGet("78")-(a_screenwidth+600)
-			; logY:=lmT
-		; } else {
-			; monitorGetWorkArea(monitorGetPrimary()+1,&lmL,&lmT,&lmR,&lmB)
-			; logX:=gmR
-			; logY:=lmT
-		; }
-	; }
 	if monitorGetCount() > 1 {
 		vdLeft:=sysGet("76")
 		vdWidth:=sysGet("78")
@@ -213,15 +195,10 @@ logViewer(*) {
 		logX:=0
 		logY:=0
 	}
-	; loop monitorGetCount {
-		; monitorGet(a_index,&thisLeft,&thisTop,&thisRight,&thisBottom)
-		; txt.=thisLeft ":" thisTop ":" thisRight ":" thisBottom "`n"
-	; }
-	; msgBox(txt)
-	
-	ui.logGui.show("x" logX " y" logY)
-	;guiVis(ui.logGui,true)
-	guiVis(ui.fishGui,false)
+
+	; ui.logGui.show("x" logX " y" logY)
+	; guiVis(ui.logGui,true)
+	; guiVis(ui.fishGui,false)
 }
 	
 goFS(*) {
@@ -231,7 +208,7 @@ goFS(*) {
 	;ui.fishCountFS.redraw()
 	; ui.fishCountLabelFS.redraw()
 	; ui.fishCountLabel2FS.redraw()
-	guiVis(ui.fishGui,false)
+	;guiVis(ui.fishGui,false)
 	monitorGetWorkArea(monitorGetPrimary(),&l,&t,&r,&b)
 	;msgBox(r "`n" b)
 	winMove(0,0,r,b,ui.game)	
@@ -247,6 +224,8 @@ goFS(*) {
 	ui.hookedX:=ui.hookedXfs
 	ui.hookedY:=ui.hookedYfs
 	;createGuiFS()
+	
+	logViewer()		
 	showLog()
 	;click()
 }
@@ -284,7 +263,7 @@ noFS(*) {
 	ui.noFSbutton.opt("hidden")
 	try
 		ui.logGui.hide()
-	click()
+	click() 
 }
 
 
@@ -310,7 +289,7 @@ createGuiFS(*) {
 	
 	ui.fishGuiFS := gui()
 	ui.fishGuiFS.name:="fishGuiFS"
-	ui.fishGuiFS.opt("-caption -border +toolWindow owner" ui.fishGui.hwnd)
+	ui.fishGuiFS.opt("-caption -border +toolWindow owner" winGetId(ui.game))
 	ui.fishGuiFS.backColor := "010203"
 
 	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenwidth-50 " y" ui.fsIcons.y[a_screenwidth]-2 " w41 h41 backgroundTrans","./img/button_nofs.png")
@@ -401,15 +380,15 @@ createGuiFS(*) {
 	;ui.toggleEnabledFSLabel.setFont("s" 10*ui.scaleFactorX " cWhite Bold","Small Fonts")
 	
 	guiVis(ui.fishGuiFS,false)
-	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight-30)
+	ui.fishGuiFS.show("x0 y0 w" a_screenWidth " h" a_screenHeight)
 }
 
 
 
 
 drawButton(x,y,w,h) {
-		ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
-		ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background" ui.bgColor[4])
+		; ui.fishGui.addText("x" x " y" y " w" w " h" h " background" ui.bgColor[3])
+		; ui.fishGui.addText("x" x+1 " y" y+1 " w" w-2 " h" h-2 " background" ui.bgColor[4])
 }
 
 hotIfWinActive(ui.game)
@@ -622,40 +601,40 @@ WM_WINDOWPOSCHANGED(wParam, lParam, msg, Hwnd) {
 
 
 cancelButtonOn(*) {
-	ui.cancelButtonBg.opt("background" ui.trimColor[2])
-	ui.cancelButtonBg.redraw()
-	ui.cancelButton.setFont("c" ui.trimFontColor[2])
-	ui.cancelButton.redraw()
-	ui.cancelButtonHotkey.setFont("c" ui.trimFontColor[2])
-	ui.cancelButtonHotkey.redraw()
+	; ui.cancelButtonBg.opt("background" ui.trimColor[2])
+	; ui.cancelButtonBg.redraw()
+	; ui.cancelButton.setFont("c" ui.trimFontColor[2])
+	; ui.cancelButton.redraw()
+	; ui.cancelButtonHotkey.setFont("c" ui.trimFontColor[2])
+	; ui.cancelButtonHotkey.redraw()
 }
 
 cancelButtonOff(*) {
-	ui.cancelButtonBg.opt("background" ui.trimDarkColor[2])
-	ui.cancelButtonBg.redraw()
-	ui.cancelButton.setFont("c" ui.trimDarkFontColor[2])
-	ui.cancelButton.redraw()
-	ui.cancelButtonHotkey.setFont("c" ui.trimDarkFontColor[2])
-	ui.cancelButtonHotkey.redraw()
+	; ui.cancelButtonBg.opt("background" ui.trimDarkColor[2])
+	; ui.cancelButtonBg.redraw()
+	; ui.cancelButton.setFont("c" ui.trimDarkFontColor[2])
+	; ui.cancelButton.redraw()
+	; ui.cancelButtonHotkey.setFont("c" ui.trimDarkFontColor[2])
+	; ui.cancelButtonHotkey.redraw()
 }
 
 startButtonOff(*) {
-	ui.startButtonBg.opt("background" ui.trimDarkColor[1])
-	ui.startButtonBg.redraw()
-	ui.startButton.setFont("c" ui.trimDarkFontColor[1])
-	ui.startButton.redraw()
-	ui.startButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
-	ui.startButton.redraw()
+	; ui.startButtonBg.opt("background" ui.trimDarkColor[1])
+	; ui.startButtonBg.redraw()
+	; ui.startButton.setFont("c" ui.trimDarkFontColor[1])
+	; ui.startButton.redraw()
+	; ui.startButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	; ui.startButton.redraw()
 }
 
 startButtonDim(*) {
-	ui.startButtonBg.opt("background" ui.trimColor[3])
-	ui.startButtonBg.redraw()
-	ui.startButton.setFont("c" ui.trimFontColor[3])
-	ui.startButton.redraw()
-	ui.startButtonHotkey.setFont("c" ui.trimFontColor[3])
-	ui.startButton.redraw()
-	cancelButtonOn()
+	; ui.startButtonBg.opt("background" ui.trimColor[3])
+	; ui.startButtonBg.redraw()
+	; ui.startButton.setFont("c" ui.trimFontColor[3])
+	; ui.startButton.redraw()
+	; ui.startButtonHotkey.setFont("c" ui.trimFontColor[3])
+	; ui.startButton.redraw()
+	; cancelButtonOn()
 }
 
 
@@ -687,68 +666,68 @@ castButtonOn(*) {
 	try {
 		ui.castIconFS.value:="./img/icon_cast_on.png"
 	}
-	ui.castButtonBg.opt("background" ui.trimColor[1])
-	ui.castButtonBg.redraw()
-	ui.castButton.setFont("c" ui.trimFontColor[1])
-	ui.castButton.redraw()
-	ui.castButtonHotkey.setFont("c" ui.trimFontColor[1])
-	ui.castButton.redraw()
+	; ui.castButtonBg.opt("background" ui.trimColor[1])
+	; ui.castButtonBg.redraw()
+	; ui.castButton.setFont("c" ui.trimFontColor[1])
+	; ui.castButton.redraw()
+	; ui.castButtonHotkey.setFont("c" ui.trimFontColor[1])
+	; ui.castButton.redraw()
 }
 castButtonDim(*) {
-	startButtonOn()
-	ui.castButtonBg.opt("background" ui.bgColor[4])
-	ui.castButtonBg.redraw()
-	ui.castButton.setFont("c" ui.trimFontColor[1])
-	ui.castButton.redraw()
-	ui.castButtonHotkey.setFont("c" ui.trimFontColor[1])
-	ui.castButton.redraw()
+	; startButtonOn()
+	; ui.castButtonBg.opt("background" ui.bgColor[4])
+	; ui.castButtonBg.redraw()
+	; ui.castButton.setFont("c" ui.trimFontColor[1])
+	; ui.castButton.redraw()
+	; ui.castButtonHotkey.setFont("c" ui.trimFontColor[1])
+	; ui.castButton.redraw()
 }
 
 castButtonOff(*) {
-	ui.castButtonBg.opt("background" ui.trimDarkColor[1])
-	ui.castButtonBg.redraw()
-	ui.castButton.setFont("c" ui.trimDarkFontColor[1])
-	ui.castButton.redraw()
-	ui.castButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
-	ui.castButtonHotkey.redraw()
+	; ui.castButtonBg.opt("background" ui.trimDarkColor[1])
+	; ui.castButtonBg.redraw()
+	; ui.castButton.setFont("c" ui.trimDarkFontColor[1])
+	; ui.castButton.redraw()
+	; ui.castButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	; ui.castButtonHotkey.redraw()
 }
 
 reelButtonOn(*) {
-		ui.reelButtonBg.opt("background" ui.trimColor[1])
-		ui.reelButtonBg.redraw()
-		ui.reelButton.setFont("c" ui.trimFontColor[1])
-		ui.reelButton.redraw()
-		ui.reelButtonHotkey.setFont("c" ui.trimFontColor[1])
-		ui.reelButtonHotkey.redraw()	
-		cancelButtonOn()
+		; ui.reelButtonBg.opt("background" ui.trimColor[1])
+		; ui.reelButtonBg.redraw()
+		; ui.reelButton.setFont("c" ui.trimFontColor[1])
+		; ui.reelButton.redraw()
+		; ui.reelButtonHotkey.setFont("c" ui.trimFontColor[1])
+		; ui.reelButtonHotkey.redraw()	
+		; cancelButtonOn()
 }
 
 reelButtonOff(*) {
-	ui.reelButtonBg.opt("background" ui.trimDarkColor[1])
-	ui.reelButtonBg.redraw()
-	ui.reelButton.setFont("c" ui.trimDarkFontColor[1])
-	ui.reelButton.redraw()
-	ui.reelButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
-	ui.reelButtonHotkey.redraw()
+	; ui.reelButtonBg.opt("background" ui.trimDarkColor[1])
+	; ui.reelButtonBg.redraw()
+	; ui.reelButton.setFont("c" ui.trimDarkFontColor[1])
+	; ui.reelButton.redraw()
+	; ui.reelButtonHotkey.setFont("c" ui.trimDarkFontColor[1])
+	; ui.reelButtonHotkey.redraw()
 }
 
 retrieveButtonOn(*) {
-	ui.retrieveButtonBg.opt("background" ui.trimColor[1])
-	ui.retrieveButtonBg.redraw()
-	ui.retrieveButton.setFont("c" ui.trimFontColor[1])
-	ui.retrieveButton.redraw()
-	ui.retrieveButtonHotkey.setFont("c" ui.trimFontColor[1])
-	ui.retrieveButtonHotkey.redraw()
-	cancelButtonOn()
+	; ui.retrieveButtonBg.opt("background" ui.trimColor[1])
+	; ui.retrieveButtonBg.redraw()
+	; ui.retrieveButton.setFont("c" ui.trimFontColor[1])
+	; ui.retrieveButton.redraw()
+	; ui.retrieveButtonHotkey.setFont("c" ui.trimFontColor[1])
+	; ui.retrieveButtonHotkey.redraw()
+	; cancelButtonOn()
 }
 
 retrieveButtonOff(*) {
-	ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
-	ui.retrieveButtonBg.redraw()
-	ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
-	ui.retrieveButton.redraw()
-	ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
-	ui.retrieveButtonHotkey.redraw()
+	; ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
+	; ui.retrieveButtonBg.redraw()
+	; ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
+	; ui.retrieveButton.redraw()
+	; ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
+	; ui.retrieveButtonHotkey.redraw()
 }
 
 
@@ -783,7 +762,7 @@ createGui() {
 	ui.fishGui.opt("-caption owner" winGetId(ui.game))
 	ui.fishGui.backColor := ui.bgColor[4]
 	ui.fishGui.color := ui.fontColor[2]
-	winSetTransColor("010203",ui.fishGui.hwnd)
+	winSetTransColor("010203",winGetId(ui.game))
 	ui.fishGui.addText("x0 y0 w1583 h816 background" ui.bgColor[6])
 	ui.fishGui.addText("x1 y2 w1581 h814 background" ui.bgColor[1])
 	ui.appFrame := ui.fishGui.addText("x300 y32 w1281 h720 c" ui.fontColor[3] " background" ui.bgColor[3])
@@ -1054,7 +1033,7 @@ while ui.fishLogArr.length < 43 {
 	ui.fishGui.show("x" x-300 " y" y+-30 " w1583 h815 noActivate")
 	ui.fishLogAfkTime.text := "00:00:00"
 	ui.disabledGui := gui()
-	ui.disabledGui.opt("-caption -border toolWindow owner" ui.fishGui.hwnd)
+	ui.disabledGui.opt("-caption -border toolWindow owner" winGetId(ui.game))
 	ui.disabledGui.backColor := ui.bgColor[3]
 	ui.disabledGui.addText("x1 y1 w448 h58 background353535")
 	guiVis(ui.disabledGui,false)

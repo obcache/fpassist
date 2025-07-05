@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.1.4"
+A_FileVersion := "1.4.1.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -6,6 +6,11 @@ A_AppName := "fpassist"
 persistent()	
 setWorkingDir(a_scriptDir)
 DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
+
+if !inStr("3440,1920",a_screenwidth) {
+	msgBox("Apologies, currently screen resolution " a_screenwidth "x" a_screenheight " is not supported.`nPlease set your primary display to 1920x1080 or 3440x1440") 
+	exitApp
+}
 
 ui 					:= object()
 cfg 				:= object()
@@ -59,68 +64,68 @@ mode(mode) {
 
 	switch mode {
 		case "cast":
-			reelButtonOff()
-			retrieveButtonOff()
-			ui.retrieveButton.text:="Retrieve"
+			; reelButtonOff()
+			; retrieveButtonOff()
+			; ui.retrieveButton.text:="Retrieve"
 			ui.actionBg.opt("background00C6FD")
 			ui.action.text:="Cast"
 			ui.action.setFont("c08238c")
-			castButtonOn()
-			startButtonOn()
-			cancelButtonOn()
+			; castButtonOn()
+			; startButtonOn()
+			; cancelButtonOn()
 		
 		case "land":
-			reelButtonOff()
-			castButtonOff()
-			ui.retrieveButton.text:="Landing"
-			retrieveButtonOn()
-			startButtonOn()
-			cancelButtonOn()
+			; reelButtonOff()
+			; castButtonOff()
+			; ui.retrieveButton.text:="Landing"
+			; retrieveButtonOn()
+			; startButtonOn()
+			; cancelButtonOn()
 			ui.actionBg.opt("backgroundF29400")
 			ui.action.setFont("c4e2314")
 			ui.action.text:="Land"
-			flashretrieve()
-			setTimer(flashRetrieve,1500)
+			; flashretrieve()
+			; setTimer(flashRetrieve,1500)
 
 		case "retrieve":
-			ui.retrieveButton.text:="Retrieve"
-			reelButtonOff()
-			castButtonOff()
+			; ui.retrieveButton.text:="Retrieve"
+			; reelButtonOff()
+			; castButtonOff()
 			ui.actionBg.opt("background0024eb")
 			ui.action.setFont("cf1f3ff")
 			ui.action.text:="Lure"
 
-			startButtonOn()
-			cancelButtonOn()
-			retrieveButtonOn()
+			; startButtonOn()
+			; cancelButtonOn()
+			; retrieveButtonOn()
 		
 		
 		
 		case "reel":
-			ui.retrieveButton.text:="Retrieve"
+			; ui.retrieveButton.text:="Retrieve"
 
 			ui.actionBg.opt("backgroundF1F3FF")
 			ui.action.setFont("c0024EB")
 			ui.action.text:="Reel"
-			retrieveButtonOff()
-			startButtonOn()
-			cancelButtonOn()
-			reelButtonOn()
+			; retrieveButtonOff()
+			; startButtonOn()
+			; cancelButtonOn()
+			; reelButtonOn()
 		
 		case "afk":
 			startButtonOn()
 		
 		case "off":
-			setTimer(flashCancel,0)
-			ui.retrieveButton.text:="Retrieve"
-			cancelButtonOff()
-			startButtonOff()
-			retrieveButtonOff()
+			; setTimer(flashCancel,0)
+			; ui.retrieveButton.text:="Retrieve"
+			; cancelButtonOff()
+			; startButtonOff()
+			; retrieveButtonOff()
 			ui.actionBg.opt("backgroundb0bab5")
 			ui.action.text:="Idle"
 			ui.action.setFont("c565f6e")
-			castButtonOff()
-			reelButtonOff()
+			; castButtonOff()
+			; reelButtonOff()
 			return
 	}
 	cancelButtonOn()
@@ -198,12 +203,13 @@ modeChanged(*) {
 	
 stopAfk(restart:="",*) {
 	setTimer(updateAfkTime,0)
-	setTimer(flashCancel,1400)
+	; setTimer(flashCancel,1400)
 	mode("off")
-	ui.retrieveButton.text := "Retrie&ve"
+	ui.enabled:=false
+	; ui.retrieveButton.text := "Retrie&ve"
 	ui.secondsElapsed := 0
-	ui.fishLogAfkTime.text := "00:00:00"
-	setTimer(flashCancel,0)
+	; ui.fishLogAfkTime.text := "00:00:00"
+	; setTimer(flashCancel,0)
 }
 
 autoFishRestart(*) {
@@ -284,13 +290,13 @@ startAfk(this_mode:="cast",*) {
 	send("{LShift Up}")
 	send("{Space Up}")
 	send("{CapsLock Up}")
-	ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
-	ui.fishLogAfkTime.opt("-hidden")
-	ui.fishLogAfkTimeLabel.opt("-hidden")
-	ui.fishLogAfkTimeLabel2.opt("-hidden")
-	ui.bigfishCount.opt("-hidden")
-	ui.bigfishCountLabel.opt("-hidden")
-	ui.bigfishCountLabel2.opt("-hidden")
+	;ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
+	;ui.fishLogAfkTime.opt("-hidden")
+	;ui.fishLogAfkTimeLabel.opt("-hidden")
+	;ui.fishLogAfkTimeLabel2.opt("-hidden")
+	;ui.bigfishCount.opt("-hidden")
+	;ui.bigfishCountLabel.opt("-hidden")
+	;ui.bigfishCountLabel2.opt("-hidden")
 
 	loop 5 {
 		send("{+}")
@@ -516,23 +522,12 @@ retrieve(*) {
 	mode("retrieve")
 	log("Started: Retrieve")
 	switch {
-		case ui.keepnetEnabled.value:
-			log("Watch: Monitoring Bait",1)
-			ui.retrieveButton.text := "Watch"
-			ui.fs_retrieveButton.text:="Watch"
-			while !reeledIn() && winActive(ui.game) {
-				sleep500(6)
-				rotateRodStands()
-				sleep500(8)
-				sleep500(10)
-			}
-	
 		case cfg.floatEnabled[cfg.profileSelected]:
 			log("Watch: Monitoring Bait",1)
+			; try
+				; ui.retrieveButton.text := "Watch"
 			try
-				ui.retrieveButton.text := "Watch"
-			try
-				ui.fs_retrieveButton.text:="Watch"
+				ui.action.text:="Wait"
 			while !reeledIn() {
 				errorLevel:=(ui.enabled) ? 0 : killAfk()	
 				if round(a_index) > round(cfg.recastTime[cfg.profileSelected]*60) {
@@ -543,17 +538,17 @@ retrieve(*) {
 				sleep500(1)
 
 			}
+			; try
+				; ui.retrieveButton.text := "Retrie&ve"
 			try
-				ui.retrieveButton.text := "Retrie&ve"
-			try
-				ui.fs_retrieveButton.text:="Lure"
+				ui.action.text:="Lure"
 			return
 	checkState(*) {
 		(isHooked()) ? landFish() : 0
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 	}
 		
-	case !ui.floatEnabled.value:
+	case !cfg.floatEnabled[cfg.profileSelected]:
 		
 		mechanic.names:=["twitchFreq","stopFreq","reelFreq"]
 		mechanic.count := 0
@@ -670,25 +665,12 @@ reelIn(*) {
 landFish(*) {
 	log("Started: Land Fish",1)
 	mode("land")
-	sendNice("{space down}")
 	log("Landing Fish")
-	loop 10 {
-		sendNice("{l}")
-		sleep(100)
-	}	
 	sendNice("{RButton down}")
 	sleep(300)
 	sendNice("{space Down}")
 	noLineTension:=0
 	while !reeledIn() {
-		if !isHooked() {
-			noLineTension+=1
-		}
-		if noLineTension>=5 {
-			noLineTension:=0
-			retrieve()
-		}
-		
 		sendNice("{space Down}")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		sendNice("{RButton Down}")
@@ -867,11 +849,11 @@ sendNice(payload:="",gameWin:=ui.game) {
 }
 
 reeledIn(*) {
-	; log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
-		; log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])) 
-		; log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])) 
-		; log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])) 
-		; log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])) 
+	log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
+		log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])) 
+		log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])) 
+		log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])) 
+		log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])) 
 		
 	if pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2])=="0xF7F7F7"
 	&& pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])=="0xF7F7F7"
@@ -1034,8 +1016,8 @@ modeHeader(mode,debugLevel:=1) {
 
 updateAfkTime(*) {	
 	ui.secondsElapsed += 1
-	ui.fishLogAfkTime.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
-	ui.statAfkDuration.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
+	;ui.fishLogAfkTime.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
+	;ui.statAfkDuration.text := format("{:02i}",ui.secondsElapsed/3600) ":" format("{:02i}",mod(format("{:02i}",ui.secondsElapsed/60),60)) ":" format("{:02i}",mod(ui.secondsElapsed,60)) 
 	; ui.playAniStep += 1
 	; if ui.playAniStep > 3
 		; ui.playAniStep := 1

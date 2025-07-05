@@ -86,7 +86,6 @@ initVars(*) {
 	cfg.profileSetting["floatEnabled"] := "0"
 	cfg.profileSetting["bgModeEnabled"] := "0"
 	cfg.profileSetting["recastTime"] := "5"
-	cfg.profileSetting["keepnetEnabled"] := 0
 	
 	tmp.beenPaused			:= false
 	tmp.retrieveFlashOn 	:= false
@@ -180,15 +179,15 @@ cfgWrite(*) {
 	}
 	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
 	iniWrite(cfg.rodCount,cfg.file,"Game","RodCount")
-	ui.fishGui.getPos(&guiX,&guiY,&guiW,&guiH)
+	winGetPos(&guiX,&guiY,&guiW,&guiH,ui.game)
 	iniWrite(guiX,cfg.file,"System","GuiX")
 	iniWrite(guiY,cfg.file,"System","GuiY")
 	iniWrite(guiW,cfg.file,"System","GuiW")
 	iniWrite(guiH,cfg.file,"System","GuiH")
 	iniWrite(ui.fullscreen,cfg.file,"Game","Fullscreen")
-	if ui.fishLogCount.text < ui.bigfishCount.text	
-		ui.fishLogCount.text:=ui.bigfishCount.text
-	iniWrite(ui.fishLogCount.text,cfg.file,"Game","fishCount")
+	; if ui.fishLogCount.text < ui.bigfishCount.text	
+		; ui.fishLogCount.text:=ui.bigfishCount.text
+	iniWrite(ui.fishCountText.text,cfg.file,"Game","fishCount")
 }
 
 cfgLoad(*) {
@@ -267,7 +266,7 @@ notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := 
 	ui.notifyGui			:= Gui()
 	ui.notifyGui.Title 		:= "Notify"
 
-	ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow +Owner" ui.fishGui.hwnd)  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
+	ui.notifyGui.Opt("+AlwaysOnTop -Caption +ToolWindow +Owner" winGetId(ui.game))  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
 	ui.notifyGui.BackColor := ui.bgColor[2]  ; Can be any RGB color (it will be made transparent below).
 	ui.notifyGui.SetFont("s16")  ; Set a large font size (32-point).
 	ui.notifyGui.AddText("w262 h58 c" ui.fontColor[2] " " Alignment " BackgroundTrans",NotifyMsg)  ; XX & YY serve to 00auto-size the window.
@@ -513,13 +512,17 @@ verifyAdmin(*) {
 
 cleanExit(*) {
 	if winExist(ui.game) {
-		ui.exitButtonBg.opt("background" ui.trimColor[2])
-		ui.exitButtonBg.redraw()
-		ui.exitButton.opt("c" ui.trimFontColor[2])
-		ui.exitButtonHotkey.opt("c" ui.trimFontColor[2])
-		winActivate(ui.game)
-		winSetStyle("+0xC00000",ui.game)
-		while winExist(ui.game)
+		;ui.exitButtonBg.opt("background" ui.trimColor[2])
+		;ui.exitButtonBg.redraw()
+		;ui.exitButton.opt("c" ui.trimFontColor[2])
+		;ui.exitButtonHotkey.opt("c" ui.trimFontColor[2])
+		try
+			winActivate(ui.game)
+		try	
+			winSetStyle("+0xC00000",ui.game)
+		try
+			while winExist(ui.game)
+		try
 			winClose(ui.game)
 			sleep(1000)
 	}
@@ -542,7 +545,7 @@ log(msg,debug:=0,msgHistory:=msg) {
 		
 	msgData:=formatTime(,"[hh:mm:ss] ") 
 	ui.logLV.insert(1,,formatTime(,"[hh:mm:ss] ") msg)
-	ui.fishStatusText.text := msg
+	;ui.fishStatusText.text := msg
 		
 	if msg=="Ready" 
 		ui.fishLogArr.push(substr("_________________________________________________________________________",1,70))
@@ -550,8 +553,8 @@ log(msg,debug:=0,msgHistory:=msg) {
 		ui.fishLogArr.push(formatTime(,"[hh:mm:ss] ") ui.lastMsg)
 	
 	ui.fishLogArr.removeAt(1)
-	ui.fishLogText.delete()
-	ui.fishLogText.add(ui.fishLogArr)
+	;ui.fishLogText.delete()
+	;ui.fishLogText.add(ui.fishLogArr)
 
 	ui.lastMsg := msgHistory
 }

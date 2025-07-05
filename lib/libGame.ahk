@@ -66,7 +66,7 @@ editorCastLengthChanged(*) {
 		
 		cfg.castLength[cfg.profileSelected] := ui.fs_castLength.value
 		ui.fs_castLengthText.text := cfg.castLength[cfg.profileSelected]
-		ui.profileIcon.focus()
+		ui.profileSelectedFS.focus()
 }
 
 CastLengthChanged(*) {
@@ -75,7 +75,7 @@ CastLengthChanged(*) {
 		
 		cfg.castLength[cfg.profileSelected] := ui.castLength.value
 		ui.castLengthText.text := cfg.castLength[cfg.profileSelected]
-		ui.profileIcon.focus()
+		ui.profileSelectedFS.focus()
 }
 
 appReload(*) {
@@ -270,7 +270,7 @@ updateControls(*) {
 		ui.fishGui_profileText.text := cfg.profileName[cfg.profileSelected]
 	ui.profileNum.text := "Profile[" cfg.profileSelected "/" cfg.profileName.length "]"
 	try 
-		ui.profileIcon.focus()
+		ui.profileSelectedFS.focus()
 }
 
 profileLArrowClicked(*) {
@@ -405,7 +405,7 @@ deleteProfileNameFS(*) {
 
 editProfileName(*) {
 	ui.editProfileGui := gui()
-	ui.editProfileGui.opt("-border -caption owner" ui.fishGui.hwnd)
+	ui.editProfileGui.opt("-border -caption owner" winGetId(ui.game))
 	ui.editProfileBg := ui.editProfileGui.addText("x0 y0 w210 h30 background" ui.trimColor[6])
 	ui.editProfileEdit := ui.editProfileGui.addEdit("x0 y0 w209 center h23 background" ui.bgColor[3] " -multi -wantReturn -wantTab limit -wrap -theme c" ui.fontColor[3],cfg.profileName[cfg.profileSelected])
 	ui.editProfileEdit.setFont("s12","calibri")	

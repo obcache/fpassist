@@ -30,34 +30,30 @@ startGame(*) {
 		winSetStyle("-0xC00000",ui.game)
 		setTimer(startupProgress2,120)
 	}
-	winSetTransparent(1,ui.game)
-	winMove(0,0,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
+	winSetTransparent(255,ui.game)
+	winMove(0,0,a_screenwidth,a_screenheight,ui.game)
 	sleep(1000)
 	ui.loadingProgress.value += 4
 	ui.loadingProgress2.value += 4
-	winGetPos(&x,&y,&w,&h,ui.game)
-	while w != 1280*(a_screenDpi/96) || h != 720*(a_screenDpi/96) {
-		sleep(1000)
-		if w == a_screenWidth && h == a_screenHeight {
-			winActivate("ahk_exe fishingPlanet.exe")
-			send("{alt down}{enter}{alt up}")
-			sleep(500)
-			ui.loadingProgress.value += 2
-			ui.loadingProgress2.value += 2
-			winMove(0,0,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
-			sleep(500)
-			ui.loadingProgress.value += 2
-			ui.loadingProgress2.value += 2
-			winGetPos(&x,&y,&w,&h,ui.game)
-		}
-		winSetStyle("-0xC00000",ui.game)
-	winSetTransparent(0,ui.game) 
-	}
-
-	createGui()
+	; winGetPos(&x,&y,&w,&h,ui.game)
+	; while w != 1280*(a_screenDpi/96) || h != 720*(a_screenDpi/96) {
+		; sleep(1000)
+		; if w == a_screenWidth && h == a_screenHeight {
+			; winActivate("ahk_exe fishingPlanet.exe")
+			; send("{alt down}{enter}{alt up}")
+			; sleep(500)
+			; ui.loadingProgress.value += 2
+			; ui.loadingProgress2.value += 2
+			; winMove(0,0,1280*(a_screenDpi/96),720*(a_screenDpi/96),ui.game)
+			; sleep(500)
+			; ui.loadingProgress.value += 2
+			; ui.loadingProgress2.value += 2
+			; winGetPos(&x,&y,&w,&h,ui.game)
+		; }
+	winSetStyle("-0xC00000",ui.game)
+	winSetTransparent(255,ui.game) 
+	; }
 	createGuiFS()
-	if ui.fullscreen
-		goFS()
-	else
-		noFS()
+	goFS()
+	loadscreen(false)
 }

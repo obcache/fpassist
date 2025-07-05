@@ -25,8 +25,8 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 profileEditor(*) {
 	global
 		ui.editorGui:=gui()
-;		ui.editorGui.opt("-caption toolWindow alwaysOnTop owner" ui.fishGui.hwnd)
-		ui.editorGui.opt("-caption -BORDER toolWindow owner" ui.fishGui.hwnd)
+;		ui.editorGui.opt("-caption toolWindow alwaysOnTop owner" winGetId(ui.game))
+		ui.editorGui.opt("-caption -BORDER toolWindow owner" winGetId(ui.game))
 		ui.editorGui.name:="editorGui"
 		ui.editorGui.backColor:=ui.bgColor[3]
 		ui.editorGui.color:=ui.bgColor[3]
@@ -230,8 +230,8 @@ profileEditor(*) {
 		
 		guiVis(ui.editorGui,false)
 		winGetPos(&tX,&tY,&tW,&tH,ui.editorGui.hwnd)
-		ui.editorGui.show("x" tX+40+tW+8 " y" tY+20 " w503 h202")
-		drawOutline(ui.editorGui,0,0,503,202,ui.bgColor[6],ui.bgColor[6],1)
+		ui.editorGui.show("x" tX+40+tW+8 " y" tY+20 " w503 h138")
+		drawOutline(ui.editorGui,0,0,503,138,ui.bgColor[6],ui.bgColor[6],1)
 		;ui.fs_profileEditButton.focus()
 }
 ui.editorVisible:=false
@@ -282,7 +282,7 @@ showEditor(*) {
 			; monitorGet(monitorGetPrimary()+1,&lmL,&lmT,&lmR,&lmB)
 			; editorY:=lmT
 		; }
-	; } else {
+		; } else {
 	
 	
 	
@@ -294,7 +294,7 @@ showEditor(*) {
 	ui.fishLogFS.focus()
 	winSetTransparent(0,ui.editorGui)
 	ui.editorGui.show("x" editorX " y" editorY)
-	winSetRegion("0-67 w502 h202",ui.editorGui)
+	winSetRegion("0-67 w502 h160",ui.editorGui)
 	transLevel:=0
 	while transLevel < 240 {
 		transLevel+=10

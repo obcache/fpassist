@@ -50,7 +50,7 @@ sliderChange(this_slider,*) {
 		cfg.%name%[cfg.profileSelected] := this_slider.value
 	ui.%gui.name%_%this_slider.name%Label.redraw()
 	iniWrite(cfg.%name%[cfg.profileSelected],cfg.file,"Game",name)
-	ui.fpBg.focus()
+	ui.profileSelectedFS.focus()
 }
 
 saveSliderValues(*) {
