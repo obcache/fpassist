@@ -195,7 +195,7 @@ updateControls(*) {
 	
 	try
 		ui.fs_CastLengthText.text:=cfg.castLength[cfg.profileSelected]
-	try
+		try
 		ui.fs_reelSpeed.value:=cfg.reelSpeed[cfg.profileSelected]
 	try
 		ui.fs_dragLevel.value:=cfg.dragLevel[cfg.profileSelected]

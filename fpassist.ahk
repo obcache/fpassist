@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.1.5"
+A_FileVersion := "1.4.1.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -685,13 +685,13 @@ landFish(*) {
 	}
 	
 	sendNice("{space Up}")
-	setTimer(flashRetrieve,0)
-	ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
-	ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
-	ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
-	ui.retrieveButtonBg.redraw()
-	ui.retrieveButtonHotkey.redraw()
-	ui.retrieveButton.redraw()
+	; setTimer(flashRetrieve,0)
+	; ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
+	; ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
+	; ui.retrieveButtonHotkey.opt("c" ui.trimDarkFontColor[1])
+	; ui.retrieveButtonBg.redraw()
+	; ui.retrieveButtonHotkey.redraw()
+	; ui.retrieveButton.redraw()
 	sleep(1500)
 	analyzeCatch()
 }	

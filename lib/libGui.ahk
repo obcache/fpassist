@@ -292,7 +292,7 @@ createGuiFS(*) {
 	ui.fishGuiFS.opt("-caption -border +toolWindow owner" winGetId(ui.game))
 	ui.fishGuiFS.backColor := "010203"
 
-	ui.noFSbutton := ui.fishGuiFS.addPicture("x" a_screenwidth-50 " y" ui.fsIcons.y[a_screenwidth]-2 " w41 h41 backgroundTrans","./img/button_nofs.png")
+	ui.noFSbutton := ui.fishGuiFS.addPicture("HIDDEN x" a_screenwidth-50 " y" ui.fsIcons.y[a_screenwidth]-2 " w41 h41 backgroundTrans","./img/button_nofs.png")
 	ui.noFSbutton.onEvent("click",noFS)
 
 	ui.actionBorder := ui.fishGuiFS.addPicture("section x" ui.fsIcons.x[a_screenwidth]-70 " y" ui.fsIcons.y[a_screenwidth] " w710 h36 center backgroundTrans c" ui.trimFontColor[6],"./img/profileFS_border.png")
@@ -732,9 +732,9 @@ retrieveButtonOff(*) {
 
 
 flashRetrieve(*) {
-	(tmp.retrieveFlashOn := !tmp.retrieveFlashOn)
-		? (ui.reelIconFS.value:="./img/icon_reel_flash.png",ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("c482a11"),ui.retrieveButtonHotkey.opt("c482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
-		: (ui.reelIconFS.value:="./img/icon_reel_on.png",ui.retrieveButtonBg.opt("background" ui.trimDarkColor[3]),ui.retrieveButton.opt("c1f1105"),ui.retrieveButtonHotkey.opt("c1f1105"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+	; (tmp.retrieveFlashOn := !tmp.retrieveFlashOn)
+		; ? (ui.reelIconFS.value:="./img/icon_reel_flash.png",ui.retrieveButtonBg.opt("background" ui.trimColor[3]),ui.retrieveButton.opt("c482a11"),ui.retrieveButtonHotkey.opt("c482a11"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
+	; : (ui.reelIconFS.value:="./img/icon_reel_on.png",ui.retrieveButtonBg.opt("background" ui.trimDarkColor[3]),ui.retrieveButton.opt("c1f1105"),ui.retrieveButtonHotkey.opt("c1f1105"),ui.retrieveButtonBg.redraw(),ui.retrieveButton.redraw())
 }
 
 flashButton(mode) {
