@@ -269,7 +269,7 @@ noFS(*) {
 
 createGuiFS(*) {
 	; try
-		; ui.fishGuiFS.destroy()
+	; ui.fishGuiFS.destroy()
 	ui.fsPanel := object()
 	ui.fsIcons := object()
 	ui.fsIcons.x := map(3440,2708,2560,1800,1920,1190)

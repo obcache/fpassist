@@ -490,8 +490,9 @@ getGamePath(*) {
 
 runApp(appName) {
 	global
-	for app in comObject('shell.application').nameSpace('shell:appsFolder').items
-	(app.Name = appName) && runWait('explorer shell:appsFolder\' app.path,,,&appPID)
+	for app in comObject('shell.application').nameSpace('shell:appsFolder').items {
+		(app.Name = appName) && runWait('explorer shell:appsFolder\' app.path,,,&appPID)
+	}
 }
 
 verifyAdmin(*) {
@@ -511,14 +512,7 @@ verifyAdmin(*) {
 }	
 
 cleanExit(*) {
-	exitApp
-}
-
-exitFunc(*) {
-	if a_restarted
-		Return
-	cfgWrite()
-	if winExist(ui.game) {
+		if winExist(ui.game) {
 
 		try	
 			winSetStyle("+0xC00000",ui.game)
@@ -528,7 +522,12 @@ exitFunc(*) {
 			winClose(ui.game)
 			sleep(1000)
 	}
-	exitApp
+	exitFunc()
+}
+
+exitFunc(*) {
+		cfgWrite()
+		exitApp
 }
 
 logCatch(*) {

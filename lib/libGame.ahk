@@ -268,7 +268,8 @@ updateControls(*) {
 		ui.fishGui_bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
 	try 
 		ui.fishGui_profileText.text := cfg.profileName[cfg.profileSelected]
-	ui.profileNum.text := "Profile[" cfg.profileSelected "/" cfg.profileName.length "]"
+	try
+		ui.profileNum.text := "Profile[" cfg.profileSelected "/" cfg.profileName.length "]"
 	try 
 		ui.profileSelectedFS.focus()
 }
@@ -280,7 +281,7 @@ profileLArrowClicked(*) {
 	else
 		cfg.profileSelected := cfg.profileName.Length
 	
-	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	;ui.profileText.text := cfg.profileName[cfg.profileSelected]
 	ui.profileSelectedFS.text := cfg.profileName[cfg.profileSelected]
 	for setting,default in cfg.profileSetting {
 		while cfg.%setting%.length < cfg.profileName.length
@@ -295,7 +296,7 @@ profileRArrowClicked(*) {
 		cfg.profileSelected += 1
 	else
 		cfg.profileSelected := 1
-	ui.profileText.text := cfg.profileName[cfg.profileSelected]
+	;ui.profileText.text := cfg.profileName[cfg.profileSelected]
 	ui.profileSelectedFS.text := cfg.profileName[cfg.profileSelected]
 	for setting,default in cfg.profileSetting {
 		while cfg.%setting%.length < cfg.profileName.length
@@ -363,7 +364,7 @@ deleteProfileNameFS(*) {
 			cfg.twitchFreq.removeAt(cfg.profileSelected)
 		try
 			cfg.stopFreq.removeAt(cfg.profileSelected)
-			try
+		try
 			cfg.dragLevel.removeAt(cfg.profileSelected)
 		try
 			cfg.reelSpeed.removeAt(cfg.profileSelected)
@@ -396,7 +397,7 @@ deleteProfileNameFS(*) {
 		try
 			ui.bgModeEnabled.value := cfg.bgModeEnabled[cfg.profileSelected]
 	} else {
-		notifyOSD("Can't Delete Only Profile",ui.profileText)
+		notifyOSD("Can't Delete Only Profile")
 		;msgBox("Can't Delete Only Profile")
 	}
 	profileRArrowClicked()
@@ -446,7 +447,7 @@ saveProfileName(*) {
 }
 
 cancelEditProfileName(*) {
-	cfg.profileName[cfg.profileSelected] := ui.profileText.text 
+	cfg.profileName[cfg.profileSelected] := ui.profileSelectedFS.text 
 	try
 		ui.editProfileGui.destroy()
 	ui.profileSelectedFS.opt("-hidden")

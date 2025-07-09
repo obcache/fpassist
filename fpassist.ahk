@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.1.9"
+A_FileVersion := "1.4.2.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -319,6 +319,7 @@ startAfk(this_mode:="cast",*) {
 	while ui.enabled  {
 		if reeledIn() {
 			errorLevel:=(ui.enabled) ? 0 : killAfk()
+			send("{space}")
 			send("{backspace}")
 			sleep500(2)
 			cast()
@@ -748,7 +749,9 @@ analyzeCatch(*) {
 			ui.statFishCount.text := format("{:05i}",ui.fishLogCount.text)
 	}
 	sleep(1500)
-	sendNice("{space}")
+	send("{space down}")
+	sleep(500)
+	send("{space up}")
 	sleep(1500)
 	send("{shift up}")
 	send("{lshift up}")

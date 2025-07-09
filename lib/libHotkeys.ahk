@@ -41,9 +41,9 @@ hotif(isEnabled)
 	hotKey("+" ui.startKey,startButtonClicked)
 	hotKey("+" ui.castKey,castButtonClicked)
 	hotKey("+" ui.retrieveKey,retrieveButtonClicked)
-	hotKey("F11",toggleFS)
+	;hotKey("F11",toggleFS)
 
-	hotKey("^End",rodsIn)
+	;hotKey("^End",rodsIn)
 	hotKey("^a",turnLeft)
 	hotKey("^d",turnRight)
 	
@@ -55,7 +55,6 @@ ui.toggleRightEnabled:=false
 ui.toggleLeftEnabled:=false
 ui.toggleForwardEnabled:=false
 ui.toggleBackwardEnabled:=false
-ui.prevState:=getKeyState("capslock")
 ui.visible:=false
 
 
@@ -80,16 +79,16 @@ focusChanged(*) {
 	{
 		toggleHelp()
 	}
-	Home::
-	{
-		isColor:=pixelGetColor(ui.hookedX,ui.hookedY)
-		log("Hooked X: " ui.hookedX " Y: " ui.hookedY " is: " isColor " needs: " ui.hookedColor[1])
+	; Home::
+	; {
+		; isColor:=pixelGetColor(ui.hookedX,ui.hookedY)
+		; log("Hooked X: " ui.hookedX " Y: " ui.hookedY " is: " isColor " needs: " ui.hookedColor[1])
 		
-		ui.flagNextRead:=true
-	}
+		; ui.flagNextRead:=true
+	; }
 	XButton2::LAlt
 	XButton1::LCtrl
-	MButton::r
+	~MButton::r
 	!RButton:: {
 		stopButtonClicked()
 	}
