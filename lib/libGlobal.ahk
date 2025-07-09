@@ -511,13 +511,15 @@ verifyAdmin(*) {
 }	
 
 cleanExit(*) {
+	exitApp
+}
+
+exitFunc(*) {
+	if a_restarted
+		Return
+	cfgWrite()
 	if winExist(ui.game) {
-		;ui.exitButtonBg.opt("background" ui.trimColor[2])
-		;ui.exitButtonBg.redraw()
-		;ui.exitButton.opt("c" ui.trimFontColor[2])
-		;ui.exitButtonHotkey.opt("c" ui.trimFontColor[2])
-		try
-			winActivate(ui.game)
+
 		try	
 			winSetStyle("+0xC00000",ui.game)
 		try
@@ -526,11 +528,6 @@ cleanExit(*) {
 			winClose(ui.game)
 			sleep(1000)
 	}
-	exitFunc()
-}
-
-exitFunc(*) {
-	cfgWrite()
 	exitApp
 }
 

@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.1.7"
+A_FileVersion := "1.4.1.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -12,6 +12,13 @@ if !inStr("3440,1920",a_screenwidth) {
 	exitApp
 }
 
+
+	a_cmdLine := DllCall("GetCommandLine", "str")
+	a_restarted := 
+			(inStr(a_cmdLine,"/restart"))
+				? true
+				: false
+				
 ui 					:= object()
 cfg 				:= object()
 tmp 				:= object()
@@ -333,6 +340,7 @@ startAfk(this_mode:="cast",*) {
 
 isHooked(*) {
 	lineTension:=pixelGetColor(ui.hookedX,ui.hookedY)
+	cfg.debug:=true
 	if cfg.debug {
 		log("isHooked x: " ui.hookedX ",y: " ui.hookedY " | is: " lineTension ", needs: " ui.hookedColor[1])	
 		ui.logNextRead:=false
@@ -671,6 +679,7 @@ landFish(*) {
 	sendNice("{space Down}")
 	noLineTension:=0
 	while !reeledIn() {
+		sendNice("{space}")
 		sendNice("{space Down}")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		sendNice("{RButton Down}")
@@ -683,7 +692,7 @@ landFish(*) {
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 
 	}
-	
+	log("Reeled In: Analyzing Catch")
 	sendNice("{space Up}")
 	; setTimer(flashRetrieve,0)
 	; ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
