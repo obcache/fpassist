@@ -179,7 +179,7 @@ cfgWrite(*) {
 	}
 	iniWrite(cfg.profileSelected,cfg.file,"Game","ProfileSelected")
 	iniWrite(cfg.rodCount,cfg.file,"Game","RodCount")
-	winGetPos(&guiX,&guiY,&guiW,&guiH,ui.game)
+	winGetPos(&guiX,&guiY,&guiW,&guiH,ui.fishGuiFS)
 	iniWrite(guiX,cfg.file,"System","GuiX")
 	iniWrite(guiY,cfg.file,"System","GuiY")
 	iniWrite(guiW,cfg.file,"System","GuiW")
@@ -275,7 +275,7 @@ notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := 
 	WinSetTransparent(0,ui.notifyGui)
 	ui.notifyGui.Show("NoActivate Autosize")  ; NoActivate avoids deactivating the currently active window.
 	ui.notifyGui.GetPos(&x,&y,&w,&h)
-	ui.profileText.getPos(&guiX,&guiY,&guiW,&guiH)
+	ui.profileSelectedFS.getPos(&guiX,&guiY,&guiW,&guiH)
 	ui.notifyGui.Show("x" (GuiX+(GuiW/2)-(w/2)+20) " y" GuiY+(13-(h/2))+6  "w262 h58 NoActivate")
 	guiVis(ui.notifyGui,true)
 	drawOutlineNamed("notify2",ui.notifyGui,1,1,260,56,ui.bgColor[3],ui.bgColor[1])

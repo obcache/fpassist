@@ -287,7 +287,7 @@ showEditor(*) {
 	
 	
 	monitorGetWorkArea(monitorGetPrimary(),&mL,&mT,&mR,&mB)
-	editorX:=mR-725
+	editorX:=mR-700
 	; ui.editorGui.show("x" editorX " y" editorY)
 	
 	editorY:=-30
