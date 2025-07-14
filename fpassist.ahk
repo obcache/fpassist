@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.2.2"
+A_FileVersion := "1.4.2.4"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -306,7 +306,7 @@ startAfk(this_mode:="cast",*) {
 	;ui.bigfishCountLabel2.opt("-hidden")
 
 	loop 5 {
-		send("{+}")
+		send("{+}")	
 		sleep(150)
 	}
 	
@@ -677,11 +677,10 @@ landFish(*) {
 	log("Landing Fish")
 	sendNice("{RButton down}")
 	sleep(300)
-	sendNice("{space Down}")
+	sendNice("{space}")
 	noLineTension:=0
 	while !reeledIn() {
-		sendNice("{space}")
-		sendNice("{space Down}")
+		send("{space down}")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		sendNice("{RButton Down}")
 		;loop round(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2))
@@ -691,7 +690,7 @@ landFish(*) {
 		sendNice("{RButton Up}")
 		sleep((((4-cfg.landAggro[cfg.profileSelected])/2)*500)*2.5)
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
-
+		send("{space up}")
 	}
 	log("Reeled In: Analyzing Catch")
 	sendNice("{space Up}")
@@ -721,32 +720,32 @@ analyzeCatch(*) {
 	}
 	if !(DirExist("./fishPics"))
 		DirCreate("./fishPics")
-	ui.bigfishCount.opt("hidden")
-	ui.bigfishCountLabel.opt("hidden")
-	ui.bigfishCountLabel2.opt("hidden")
-	ui.fishLogAfkTime.opt("hidden")
-	ui.fishLogAfkTimeLabel.opt("hidden")
-	ui.fishLogAfkTimeLabel2.opt("hidden")
-	ui.fishCountText.opt("hidden")
+	; ui.bigfishCount.opt("hidden")
+	; ui.bigfishCountLabel.opt("hidden")
+	; ui.bigfishCountLabel2.opt("hidden")
+	; ui.fishLogAfkTime.opt("hidden")
+	; ui.fishLogAfkTimeLabel.opt("hidden")
+	; ui.fishLogAfkTimeLabel2.opt("hidden")
+	; ui.fishCountText.opt("hidden")
 	log("Fish Caught!",0)
 	picTimestamp := formatTime(,"yyyyMMddhhmmss")
 	runWait("./redist/ss.exe -wt fishingPlanet -o " a_scriptDir "/fishPics/" picTimestamp ".png",,"hide")
 	sleep(1500)
 	log("Screenshot: " a_scriptDir "/fishPics/" picTimestamp ".png",1)
-	ui.fishCountText.opt("-hidden")
-	ui.bigfishCount.opt("-hidden")
-	ui.bigfishCountLabel.opt("-hidden")
-	ui.bigfishCountLabel2.opt("-hidden")
-	ui.fishLogAfkTime.opt("-hidden")
-	ui.fishLogAfkTimeLabel.opt("-hidden")
-	ui.fishLogAfkTimeLabel2.opt("-hidden")
-	if ui.fishLogCount.text < 99999 {
-		ui.fishLogCount.text := format("{:05i}",ui.fishLogCount.text + 1)
-		iniWrite(ui.fishLogCount.text,cfg.file,"Game","fishCount")
-		try
-			ui.bigfishCount.text := format("{:05i}",ui.fishLogCount.text)
-		try
-			ui.statFishCount.text := format("{:05i}",ui.fishLogCount.text)
+	; ui.fishCountText.opt("-hidden")
+	; ui.bigfishCount.opt("-hidden")
+	; ui.bigfishCountLabel.opt("-hidden")
+	; ui.bigfishCountLabel2.opt("-hidden")
+	; ui.fishLogAfkTime.opt("-hidden")
+	; ui.fishLogAfkTimeLabel.opt("-hidden")
+	; ui.fishLogAfkTimeLabel2.opt("-hidden")
+	if ui.fishCount < 99999 {
+		ui.fishCountText.text := format("{:05i}",ui.fishCount + 1)
+		iniWrite(ui.fishCount.text,cfg.file,"Game","fishCount")
+		; try
+			; ui.bigfishCount.text := format("{:05i}",ui.fishLogCount.text)
+		; try
+			; ui.statFishCount.text := format("{:05i}",ui.fishLogCount.text)
 	}
 	sleep(1500)
 	send("{space down}")
