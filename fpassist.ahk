@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.2.4"
+A_FileVersion := "1.4.2.5"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -34,6 +34,7 @@ initVars()
 #include <libHotkeys>
 #include <Class_LV_Colors>
 #include <libHelp>
+
 
 verifyAdmin()		 
 
@@ -227,6 +228,13 @@ autoFishRestart(*) {
 
 killAfk(*) {
 	ui.enabled:=false
+	send("{LButton Up}")
+	send("{RButton Up}")
+	send("{space up}")
+	send("{windows up}")
+	send("{lshift up}")
+	send("{rshift up}")
+	
 	mode("off")
 	setTimer(updateAfkTime,0)
 	setTimer(flashCancel,0)
@@ -344,7 +352,6 @@ isHooked(*) {
 	cfg.debug:=true
 	if cfg.debug {
 		log("isHooked x: " ui.hookedX ",y: " ui.hookedY " | is: " lineTension ", needs: " ui.hookedColor[1])	
-		ui.logNextRead:=false
 	}
 	if lineTension==ui.hookedColor[1] {
 		;if (checkPixel(ui.hookedX2,ui.hookedY2,ui.hookedColor[2])) {
@@ -552,12 +559,13 @@ retrieve(*) {
 			try
 				ui.action.text:="Lure"
 			return
-	checkState(*) {
-		(isHooked()) ? landFish() : 0
-		errorLevel:=(ui.enabled) ? 0 : killAfk()	
-	}
 		
-	case !cfg.floatEnabled[cfg.profileSelected]:
+		checkState(*) {
+			(isHooked()) ? landFish() : 0
+			errorLevel:=(ui.enabled) ? 0 : killAfk()	
+		}
+		
+		case !cfg.floatEnabled[cfg.profileSelected]:
 		
 		mechanic.names:=["twitchFreq","stopFreq","reelFreq"]
 		mechanic.count := 0
@@ -601,7 +609,8 @@ retrieve(*) {
 			mechanic.last := mechanic.number
 			
 			if isHooked() {
-				;sleep500(1)
+				sendNice("{space up}")
+				sendNice("{rbutton up}")
 				landFish()
 				return
 			}
@@ -610,13 +619,14 @@ retrieve(*) {
 			if mechanic.repeats < 2 {	
 				;msgBox(mechanic.number "`n" twitchRatio "`n" reelRatio "`n" stopRatio)
 				switch {
-						case 0:
-							;do nothing
-						case mechanic.number <= twitchRatio:
+					case 0:
+						;do nothing
+					case mechanic.number <= twitchRatio:
 						log("Retrieve: Twitch",1)
 							loop round(random(1,1)) {
 								if isHooked() {
-									;sleep500(1)
+									sendNice("{space up}")
+									sendNice("{rbutton up}")
 									landFish()
 									return
 								}
@@ -627,10 +637,22 @@ retrieve(*) {
 								;sendNice("{space up}")
 							}
 					case mechanic.number > twitchRatio && mechanic.number <= stopRatio+twitchRatio:
+						if isHooked() {
+							sendNice("{space up}")
+							sendNice("{rbutton up}")
+							landFish()
+							return
+						}
 						log("Retrieve: Pause",1)
 						sendNice("{space up}")
 						sleep500(round(random(1,2)))
 					case mechanic.number > stopRatio+twitchRatio:
+						if isHooked() {
+							sendNice("{space up}")
+							sendNice("{rbutton up}")
+							landFish()
+							return
+						}
 						log("Retrieve: Reel",1)
 						setKeyDelay(0)
 						sendNice("{space down}")       
@@ -677,10 +699,9 @@ landFish(*) {
 	log("Landing Fish")
 	sendNice("{RButton down}")
 	sleep(300)
-	sendNice("{space}")
+	sendNice("{LButton Down}")
 	noLineTension:=0
 	while !reeledIn() {
-		send("{space down}")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		sendNice("{RButton Down}")
 		;loop round(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2))
@@ -690,8 +711,9 @@ landFish(*) {
 		sendNice("{RButton Up}")
 		sleep((((4-cfg.landAggro[cfg.profileSelected])/2)*500)*2.5)
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
-		send("{space up}")
+		
 	}
+	send("{LButton up}")
 	log("Reeled In: Analyzing Catch")
 	sendNice("{space Up}")
 	; setTimer(flashRetrieve,0)
