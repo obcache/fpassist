@@ -138,13 +138,7 @@ pauseOff(*) {
 	ui.toggleLabel.opt("hidden")
 	ui.toggleLabelBg.opt("hidden")
 	ui.toggleLabelOutline.opt("hidden")
-	guiVis(ui.disabledGui,false)
-	ui.bigfishCount.opt("-hidden")
-	ui.bigfishCountLabel.opt("-hidden")
-	ui.bigfishCountLabel2.opt("-hidden")
-	ui.fishLogAfkTime.opt("-hidden")
-	ui.fishLogAfkTimeLabel.opt("-hidden")
-	ui.fishLogAfkTimeLabel2.opt("-hidden")
+	;guiVis(ui.disabledGui,false)
 	if ui.editorVisible
 		guiVis(ui.editorGui,true)
 }
@@ -174,19 +168,15 @@ pauseOn(*) {
 	ui.toggleLabelBg.opt("-hidden")
 	ui.toggleLabelOutline.opt("-hidden")
 	ui.fishCountText.opt("+hidden")
-	ui.fishLogAfkTime.opt("+hidden")
-	ui.fishLogAfkTimeLabel.opt("+hidden")
-	ui.fishLogAfkTimeLabel2.opt("+hidden")
-	ui.bigfishCount.opt("+hidden")
-	ui.bigfishCountLabel.opt("+hidden")
-	ui.bigfishCountLabel2.opt("+hidden")
+	; ui.fishLogAfkTime.opt("+hidden")
+	; ui.fishLogAfkTimeLabel.opt("+hidden")
+	; ui.fishLogAfkTimeLabel2.opt("+hidden")
+	; ui.bigfishCount.opt("+hidden")
+	; ui.bigfishCountLabel.opt("+hidden")
+	; ui.bigfishCountLabel2.opt("+hidden")
 	for this_obj in ui.fsObjects 
 		this_obj.opt("hidden")
 
-	if !ui.fullscreen {
-		guiVis(ui.disabledGui,true)
-		winSetTransparent(180,ui.disabledGui)         
-	}
 	toggleOff()
 	killAfk()
 }

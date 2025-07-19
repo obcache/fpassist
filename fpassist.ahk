@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.2.6"
+A_FileVersion := "1.4.2.9"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -120,8 +120,13 @@ mode(mode) {
 			; cancelButtonOn()
 			; reelButtonOn()
 		
+		case "Idle":
+			ui.actionBg.opt("backgroundb0bab5")
+			ui.action.text:="Idle"
+			ui.action.setFont("c565f6e")
+		
 		case "afk":
-			startButtonOn()
+			;startButtonOn()
 		
 		case "off":
 			; setTimer(flashCancel,0)
@@ -136,7 +141,7 @@ mode(mode) {
 			; reelButtonOff()
 			return
 	}
-	cancelButtonOn()
+	;cancelButtonOn()
 }
 
 
@@ -235,7 +240,7 @@ killAfk(*) {
 	send("{lshift up}")
 	send("{rshift up}")
 	
-	mode("off")
+	mode("Idle")
 	setTimer(updateAfkTime,0)
 	setTimer(flashCancel,0)
 	setTimer(flashRetrieve,0)
@@ -694,14 +699,27 @@ reelIn(*) {
 }
 
 landFish(*) {
+	notHooked:=0
+	wasRunning:=ui.enabled
+	ui.enabled:=true
 	log("Started: Land Fish",1)
 	mode("land")
 	log("Landing Fish")
+	sendNice("{LButton Up}{Space Up}")
+	sendNice("{space Down}")
 	sendNice("{RButton down}")
 	sleep(300)
 	sendNice("{LButton Down}")
 	noLineTension:=0
 	while !reeledIn() {
+		if !isHooked() {
+			notHooked+=1
+		}
+		if notHooked>=5 {
+			mode("retrieve")
+			retrieve()
+			return
+		}
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		sendNice("{RButton Down}")
 		;loop round(random(((cfg.landAggro[cfg.profileSelected]-2)*2),cfg.landAggro[cfg.profileSelected]*2))
@@ -716,6 +734,9 @@ landFish(*) {
 	send("{LButton up}")
 	log("Reeled In: Analyzing Catch")
 	sendNice("{space Up}")
+	mode("Idle")
+	if wasRunning==false
+		ui.enabled:=false
 	; setTimer(flashRetrieve,0)
 	; ui.retrieveButtonBg.opt("background" ui.trimDarkColor[1])
 	; ui.retrieveButton.opt("c" ui.trimDarkFontColor[1])
@@ -762,8 +783,8 @@ analyzeCatch(*) {
 	; ui.fishLogAfkTimeLabel.opt("-hidden")
 	; ui.fishLogAfkTimeLabel2.opt("-hidden")
 	if ui.fishCount < 99999 {
-		ui.fishCountText.text := format("{:05i}",ui.fishCount + 1)
-		iniWrite(ui.fishCount.text,cfg.file,"Game","fishCount")
+		ui.fishCountText.text := format("{:05i}",ui.fishCount+=1)
+		iniWrite(ui.fishCount,cfg.file,"Game","fishCount")
 		; try
 			; ui.bigfishCount.text := format("{:05i}",ui.fishLogCount.text)
 		; try
@@ -892,9 +913,10 @@ reeledIn(*) {
 	&& pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])=="0xF7F7F7"
 	&& pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])=="0xF7F7F7"
 	&& pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])=="0xF7F7F7"
-	&& pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])!="0xF7F7F7"
+	&& pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])!="0xF7F7F7" {
+		mode("Idle")
 		return 1
-	else
+	} else
 		return 0
 }
 

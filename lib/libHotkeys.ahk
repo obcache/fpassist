@@ -19,7 +19,45 @@ isEnabled(*) {
 		return 0
 }
 
-hotif(isEnabled)
+#hotIf isEnabled()
+	~capsLock:: {
+		toggleEnabled()
+		ui.prevState:=getKeyState("capslock")
+	}
+	
+	+a:: {
+		setTimer(turnLeft,4000)
+		turnLeft()
+	}
+	
+	~a:: {
+		setTimer(turnLeft,0)
+		setTimer(turnRight,0)
+		setTimer(throttleForward,0)
+	}
+
+	+d:: {
+		setTimer(turnRight,4000)
+		turnRight()
+	}
+	
+	~d:: {
+		setTimer(turnLeft,0)
+		setTimer(turnRight,0)
+		setTimer(throttleForward,0)
+	}
+	
+	+w:: {
+		setTimer(throttleForward,2500)
+		throttleForward()
+	}
+	
+	~w:: {
+		setTimer(turnLeft,0)
+		setTimer(turnRight,0)
+		setTimer(throttleForward,0)
+	}
+
 	^+l:: {
 		landFish()
 	}
@@ -27,7 +65,9 @@ hotif(isEnabled)
 	 !+e:: {
 		 toggleEditor()
 	 }
+#hotIf
 
+hotif(isEnabled)
 	;hotkey("LShift",shiftDown)
 	;hotkey("~shift up",shiftUp)
 	hotkey("~f",stopFlashLightFlash)
@@ -86,9 +126,12 @@ focusChanged(*) {
 		
 		; ui.flagNextRead:=true
 	; }
-	XButton2::LAlt
-	XButton1::LCtrl
+	
+	~XButton2::LAlt
+	~XButton1::LCtrl
+
 	~MButton::r
+	
 	!RButton:: {
 		stopButtonClicked()
 	}
@@ -105,43 +148,6 @@ focusChanged(*) {
 		} else
 			pauseOff()
 			
-	}
-	~capsLock:: {
-		toggleEnabled()
-		ui.prevState:=getKeyState("capslock")
-	}
-	
-	+a:: {
-		setTimer(turnLeft,4000)
-		turnLeft()
-	}
-	
-	~a:: {
-		setTimer(turnLeft,0)
-		setTimer(turnRight,0)
-		setTimer(throttleForward,0)
-	}
-
-	+d:: {
-		setTimer(turnRight,4000)
-		turnRight()
-	}
-	
-	~d:: {
-		setTimer(turnLeft,0)
-		setTimer(turnRight,0)
-		setTimer(throttleForward,0)
-	}
-	
-	+w:: {
-		setTimer(throttleForward,2500)
-		throttleForward()
-	}
-	
-	~w:: {
-		setTimer(turnLeft,0)
-		setTimer(turnRight,0)
-		setTimer(throttleForward,0)
 	}
 
 	; +WheelUp:: {

@@ -512,14 +512,13 @@ verifyAdmin(*) {
 }	
 
 cleanExit(*) {
-		if winExist(ui.game) {
-
+	if winExist(ui.game) {
 		try	
 			winSetStyle("+0xC00000",ui.game)
 		try
 			while winExist(ui.game)
-		try
-			winClose(ui.game)
+				try
+					winClose(ui.game)
 			sleep(1000)
 	}
 	exitFunc()
