@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.3.0"
+A_FileVersion := "1.4.3.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -240,7 +240,7 @@ killAfk(*) {
 	send("{lshift up}")
 	send("{rshift up}")
 	
-	mode("Idle")
+	mode("idle")
 	setTimer(updateAfkTime,0)
 	setTimer(flashCancel,0)
 	setTimer(flashRetrieve,0)
@@ -478,7 +478,7 @@ cast(*) {
 			; }
 		; }
 	; } else {
-	
+	if !reeledIn()
 		while !reeledIn() && ui.enabled {
 			mode("reel")
 			;castButtonDim()
@@ -488,7 +488,7 @@ cast(*) {
 			;castButtonOn()
 			sleep500(2)
 		}
-
+		mode("cast")
 		;log("Cast: Ready")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
 		;ui.statCastCount.text := format("{:03d}",ui.statCastCount.text+1)
@@ -716,6 +716,7 @@ landFish(*) {
 			notHooked+=1
 		}
 		if notHooked>=5 {
+			send("{LButton Up}{RButton Up}{space Down}")
 			mode("retrieve")
 			retrieve()
 			return
@@ -903,20 +904,28 @@ sendNice(payload:="",gameWin:=ui.game) {
 }
 
 reeledIn(*) {
-	log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2]))
-		log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])) 
-		log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])) 
-		log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])) 
-		log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])) 
+	c1:=pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2])
+	c2:=pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])
+	c3:=pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])
+	c4:=pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])
+	c5:=pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])
+	
 		
-	if pixelGetColor(ui.reeledInCoord1[1],ui.reeledInCoord1[2])=="0xF7F7F7"
-	&& pixelGetColor(ui.reeledInCoord2[1],ui.reeledInCoord2[2])=="0xF7F7F7"
-	&& pixelGetColor(ui.reeledInCoord3[1],ui.reeledInCoord3[2])=="0xF7F7F7"
-	&& pixelGetColor(ui.reeledInCoord4[1],ui.reeledInCoord4[2])=="0xF7F7F7"
-	&& pixelGetColor(ui.reeledInCoord5[1],ui.reeledInCoord5[2])!="0xF7F7F7" {
+	if c1=="0xF7F7F7" && c2=="0xF7F7F7"	&& c3=="0xF7F7F7" && c4=="0xF7F7F7"	&& c5!="0xF7F7F7" {
 		mode("Idle")
+		log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," c1)
+		log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," c2) 
+		log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," c3) 
+		log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," c4) 
+		log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," c5) 
+
 		return 1
 	} else
+		log(ui.reeledInCoord1[1] "," ui.reeledInCoord1[2] "," c1)
+		log(ui.reeledInCoord3[1] "," ui.reeledInCoord3[2] "," c2) 
+		log(ui.reeledInCoord2[1] "," ui.reeledInCoord2[2] "," c3) 
+		log(ui.reeledInCoord4[1] "," ui.reeledInCoord4[2] "," c4) 
+		log(ui.reeledInCoord5[1] "," ui.reeledInCoord5[2] "," c5) 
 		return 0
 }
 

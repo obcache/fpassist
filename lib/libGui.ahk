@@ -74,7 +74,7 @@ setFScoords(*) {
 			ui.reeledInCoord2fs:=[1540,980]
 			ui.reeledInCoord3fs:=[1570,955]
 			ui.reeledInCoord4fs:=[1570,980]
-			ui.reeledInCoord5fs:=[1550,960]
+			ui.reeledInCoord5fs:=[1558,967]
 			ui.fishCaughtCoord1fs:=[1078,915]
 			ui.fishCaughtCoord2fs:=[1115,917]
 			ui.fishCaughtColorFs:=[round(0xFFFFFF),round(0xFFFFFF)]
