@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.3.1"
+A_FileVersion := "1.4.3.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -120,7 +120,7 @@ mode(mode) {
 			; cancelButtonOn()
 			; reelButtonOn()
 		
-		case "Idle":
+		case "idle":
 			ui.actionBg.opt("backgroundb0bab5")
 			ui.action.text:="Idle"
 			ui.action.setFont("c565f6e")
@@ -232,6 +232,7 @@ autoFishRestart(*) {
 }
 
 killAfk(*) {
+	mode("idle")
 	ui.enabled:=false
 	send("{LButton Up}")
 	send("{RButton Up}")
@@ -240,7 +241,6 @@ killAfk(*) {
 	send("{lshift up}")
 	send("{rshift up}")
 	
-	mode("idle")
 	setTimer(updateAfkTime,0)
 	setTimer(flashCancel,0)
 	setTimer(flashRetrieve,0)

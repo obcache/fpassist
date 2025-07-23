@@ -133,7 +133,7 @@ focusChanged(*) {
 	~MButton::r
 	
 	!RButton:: {
-		stopButtonClicked()
+		toggleEnabled()
 	}
 
 	~Pause:: {
