@@ -53,7 +53,10 @@ startGame(*) {
 	winSetStyle("-0xC00000",ui.game)
 	winSetTransparent(255,ui.game) 
 	; }
+
 	createGuiFS()
+
 	goFS()
-	loadscreen(false)
+
+	ui.notifyGui.hide()
 }

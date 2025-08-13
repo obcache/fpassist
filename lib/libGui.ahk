@@ -173,33 +173,38 @@ logViewer(*) {
 
 		guiVis(ui.logGui,false)
 		winGetPos(&tX,&tY,&tW,&tH,winGetId(ui.game))
-		ui.logGui.show("x" tX+tW+8 " y" tY " w600 h835")
+		ui.logWidth:=600
+		ui.logGui.show("x" tX+tW+8 " y" tY " w" ui.logWidth " h835")
 	}
+
 	showLog(*) {
-	if monitorGetCount() > 1 {
 		vdLeft:=sysGet("76")
 		vdWidth:=sysGet("78")
 		vdRight:=vdLeft+vdWidth
-
 		winGetPos(&gX,&gY,&gW,&gH,ui.game)
-		if gX+gW+600 > vdRight {
-			logX:=gX-600
-			monitorGet(monitorGetPrimary()+1,&lmL,&lmT,&lmR,&lmB)
-			logY:=lmT
-		} else {
-			logX:=gX+gW
-			monitorGet(monitorGetPrimary()-1,&lmL,&lmT,&lmR,&lmB)
-			logY:=lmT
+		loop monitorGetCount() {
+			monitorGet(a_index,&this_left,&this_top,&this_right,&this_bottom)
+			if this_left>=gX+gW {
+				logMonitor:=a_index 
+				logX:=this_left
+				if gY<this_top
+					logY:=this_top
+				else
+					logY:=gY
+				break
+			}
+			
+			if this_right <= gX {
+				logMonitor:=a_index
+				logX:=gX-ui.logWidth
+				logY:=this_top
+			} else {
+				logX:=0
+				logY:=0
+			}
 		}
-	} else {
-		logX:=0
-		logY:=0
 	}
-
-	; ui.logGui.show("x" logX " y" logY)
-	; guiVis(ui.logGui,true)
-	; guiVis(ui.fishGui,false)
-}
+	
 	
 goFS(*) {
 	ui.fullscreen := true
@@ -464,16 +469,8 @@ if (visible) {
 			sleep(1)
 		}
 		winSetTransparent("Off",ui.notifyGui.hwnd)
-} else {
-			transparent := 255
-			while transparent < 20 {
-				winSetTransparent(transparent,ui.notifyGui.hwnd)
-				transparent -= 8
-				sleep(1)
-			}
-			ui.notifyGui.hide()
-			winActivate(ui.game)
-			;setTimer () => detectPrompts(1),-6000
+	} else {
+		;setTimer () => detectPrompts(1),-6000
 	}
 }
 
