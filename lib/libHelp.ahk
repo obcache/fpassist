@@ -23,27 +23,26 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 
 createHelp(*) {
 	ui.keybase:=map()
-	ui.keybase["00_CapsLock"]:="Start/Stop AFK"
-	ui.keybase["01_Pause"]:="Disable fpAssist"
-	ui.keybase["02_Ctrl-Shift-L"]:="Land Fish"
-	ui.keybase["03_Shift-F"]:="Cast"
-	ui.keybase["04_Shift-V"]:="Retrieve"
-	ui.keybase["05_Shift-R"]:="Reel In"
-	ui.keybase["06_Alt-ScrollUp"]:="Rod stand slot 1"
-	ui.keybase["07_Alt-ScrollDown"]:="Rod stand slot 2"
-	ui.keybase["08_RButton-ScrollUp"]:="Rod stand slot 3"
-	ui.keybase["09_RButton-ScrollDown"]:="Rod stand slot 4"
-	ui.keybase["10_Shift-D"]:="Autosteer boat Right"
-	ui.keybase["11_F4"]:="Quit Fishing Planet and fpAssist"
-	ui.keybase["12_F5"]:="Restart fpAssist"
-	ui.keybase["13_F11"]:="Toggle Fullscreen"
+	ui.keybase["00_F1"]:="Toggle Help Window"
+	ui.keybase["01_Pause"]:="Enable/Disable fpAssist (Default: Enabled)"
+	ui.keybase["02_Ctrl-Shift-L"]:="Land Fish: Reel in using AGGRO Level for Rod Control"
+	ui.keybase["03_Shift-F"]:="Cast: Using CAST LENGTH for duration of holding cast key (in ms)"
+	ui.keybase["04_Shift-V"]:="Retrieve: Start jigging or wait for bite (depending on FLOAT setting)"
+	ui.keybase["05_Shift-R"]:="Reel In: Reel in line at full speed"
+	ui.keybase["06_Alt-ScrollUp"]:="Place/Pickup Rod in stand slot 1"
+	ui.keybase["07_Alt-ScrollDown"]:="Place/Pickup Rod in Rod stand slot 2"
+	ui.keybase["08_RButton-ScrollUp"]:="Place/Pickup Rod in Rod stand slot 3"
+	ui.keybase["10_RButton-ScrollDown"]:="Place/Pickup Rod in Rod stand slot 4"
+	ui.keybase["11_Shift-D"]:="Autosteer: Feather Right while in captains chair"
+	ui.keybase["12_F4"]:="Quit Fishing Planet and fpAssist (Close Everything)"
+	ui.keybase["13_F5"]:="Restart/Refresh fpAssist (Useful for display changes)"
 
 
 	ui.transparentColor:="010203"
 	ui.helpGui:=gui()
 	ui.helpGuiPos:=object()
 	ui.helpGuiPos.w:=820
-	ui.helpGuiPos.h:=602
+	ui.helpGuiPos.h:=512
 	ui.helpGuiPos.x:=(a_screenwidth/2)-(ui.helpGuiPos.w/2)
 	ui.helpGuiPos.y:=(a_screenheight/2)-(ui.helpGuiPos.h/2)
 	ui.helpGui.opt("-caption -border toolWindow alwaysOnTop")
@@ -63,8 +62,8 @@ createHelp(*) {
 	ui.helpGuiClose.setFont("s22 c" ui.fontColor[3],"Webdings")
 
 	ui.helpGui.setFont("s16 c" ui.fontColor[3],"Calibri")
-	ui.helpGui.addText("x8 y34 w0 h0 section backgroundTrans")
-	ui.helpImg1:=ui.helpGui.addPicture("xs+0 y+0 w800 h55 backgroundTrans","./img/helpImg1.png")
+	ui.helpGui.addText("x8 y32 w0 h0 section backgroundTrans")
+	;ui.helpImg1:=ui.helpGui.addPicture("xs+0 y+0 w800 h55 backgroundTrans","./img/helpImg1.png")
 	;ui.helpGuiTextBg:=ui.helpGui.addText("xs+0 y+0 w800 h400 background" ui.bgColor[2])
 
 	for this_hotkey in ui.keybase {

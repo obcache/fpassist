@@ -9,8 +9,17 @@ if (InStr(A_LineFile,A_ScriptFullPath)) {
 	ExitApp
 	Return
 }
+hotIf(isGameActive)
+	hotkey("F1",toggleHelp)
+	hotKey(ui.exitKey,cleanExit)
+hotIf()
 
-hotKey(ui.exitKey,cleanExit)
+isGameActive(*) {
+	if winActive(ui.game)
+		return 1
+	else
+		return 0
+}
 
 isEnabled(*) {
 	if winActive(ui.game) && !ui.paused
@@ -20,7 +29,7 @@ isEnabled(*) {
 }
 
 #hotIf isEnabled()
-	~capsLock:: {
+	+capsLock:: {
 		toggleEnabled()
 		ui.prevState:=getKeyState("capslock")
 	}
