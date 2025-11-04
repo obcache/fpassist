@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.3.5"
+A_FileVersion := "1.4.3.6"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -488,6 +488,7 @@ cast(*) {
 			;castButtonOn()
 			sleep500(2)
 		}
+		sleep500(4)
 		mode("cast")
 		;log("Cast: Ready")
 		errorLevel:=(ui.enabled) ? 0 : killAfk()	
