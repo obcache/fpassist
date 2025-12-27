@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.3.6"
+A_FileVersion := "1.4.6.0"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -1094,3 +1094,14 @@ updateAfkTime(*) {
 	ui.fsObjects:=[ui.actionBorder,ui.actionBg,ui.fishCountBorder,ui.profileBorder,ui.panelBg,ui.panelBg2,ui.action,ui.profilePrevFS,ui.profileNextFS,ui.profileSelectedFS,ui.profileSelectedBg,ui.profileEdit,ui.viewLog,ui.profileSelectedFS,ui.fishCountText,ui.fishCountIcon,ui.fishCountText,ui.fs_profileDeleteButton,ui.fs_profileEditButton,ui.fs_profileNewButton]
 
 toggleEnabled()
+
+setTimer(gamepadSupport,200)
+
+gamepadSupport(*) {
+	if getKeystate("Joy11") {
+		toggleEnabled()
+	}
+	if getKeyState("Joy12") {
+		landFish()
+	}
+}

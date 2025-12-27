@@ -98,8 +98,8 @@ profileEditor(*) {
 		slider("landAggro",ui.editorGui,306+cp.x,cp.y-1,120,15,"0-4",1,1,"center","Land Aggro",,,)
 		slider("twitchFreq",ui.editorGui,306+cp.x,cp.y+18,120,17,"0-10",1,1,"center","Twitch",,,)
 		slider("stopFreq",ui.editorGui,306+cp.x,cp.y+40,120,15,"0-10",1,1,"center","Stop && Go",,,)
-		slider("castTime",ui.editorGui,248+cp.x,cp.y-3,20,62,"0-6",1,1,"center","Cast","vertical","b",)
-		slider("sinkTime",ui.editorGui,275+cp.x,cp.y-3,20,62,"0-20",1,1,"center","Sink","vertical","b",)
+		slider("castTime",ui.editorGui,248+cp.x,cp.y-3,20,62,"0-16",1,1,"center","Cast","vertical","b",)
+		slider("sinkTime",ui.editorGui,275+cp.x,cp.y-3,20,62,"0-60",1,1,"center","Sink","vertical","b",)
 		slider("recastTime",ui.editorGui,102+cp.x,cp.y+43,139,13,"1-20",1,1,"center","Recast",,"l","11")
 		slider("reelFreq",ui.editorGui,1900+cp.x,cp.y+0,0,0,"0-10",1,10,"center","Reel",,,)
 		
