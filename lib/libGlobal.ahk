@@ -161,7 +161,6 @@ initVars(*) {
 	ui.hookedColor:=ui.hookedColorStd
 	ui.fishCaughtCoord1:=ui.fishCaughtCoord1Std
 	ui.fishCaughtColor:=ui.fishCaughtColorStd
-	
 	setcapsLockState(false)
 }
 
@@ -205,12 +204,10 @@ cfgLoad(*) {
 	
 	ui.fullscreen			:= iniRead(cfg.file,"Game","Fullscreen",0)
 	cfg.profileSelected 	:= iniRead(cfg.file,"Game","ProfileSelected",1)
-	cfg.debug 				:= iniRead(cfg.file,"System","Debug",2)
-	cfg.rodCount 			:= iniRead(cfg.file,"Game","RodCount",6)
-	ui.currentRod 			:= iniRead(cfg.file,"Game","CurrentRod",1)
+	cfg.debug 			:= iniRead(cfg.file,"System","Debug",2)
+	cfg.rodCount 		:= iniRead(cfg.file,"Game","RodCount",6)
+	ui.currentRod 		:= iniRead(cfg.file,"Game","CurrentRod",1)
 	ui.fishCountText		:= iniRead(cfg.file,"Game","fishCount",0)
-
-
 }
 
 initTrayMenu(*) {
@@ -252,7 +249,6 @@ guiVis(guiName,isVisible:= true) {
 	} else {
 		WinSetTransparent(0,guiName)
 		ui.visible:=false
-
 	}
 }
 
@@ -297,7 +293,6 @@ notifyOSD(notifyMsg,relativeControl := ui.fishGui,duration := 3000,alignment := 
 	waitOSD() {
 		ui.notifyGui.destroy()
 		notifyOSD("Timed out waiting for response.`nPlease try your action again",-1000)
-	
 	}
 }
 
@@ -389,6 +384,7 @@ install() {
 				pbConsole("A fresh install to " A_MyDocuments "\fpassist is being performed.")
 				fileInstall("./fpassist.ini",installDir "/fpassist.ini",1)
 			}
+			
 			if !(dirExist(installDir "\lib"))
 			{
 				dirCreate(installDir "\lib")
@@ -473,10 +469,8 @@ install() {
 			exitApp
 
 			exit
-		
 		}
 	}
-	
 }
 
 getGamePath(*) {

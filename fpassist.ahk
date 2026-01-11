@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.6.0"
+A_FileVersion := "1.4.6.1"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -1100,7 +1100,7 @@ setTimer(gamepadSupport,200)
 gamepadSupport(*) {
 	if getKeystate("Joy11") {
 		toggleEnabled()
-	}
+	}																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																										
 	if getKeyState("Joy12") {
 		landFish()
 	}

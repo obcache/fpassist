@@ -10,11 +10,25 @@ if (InStr(A_LineFile,A_ScriptFullPath)){
 
 
 startGame(*) {
-	loadScreen()
 	if !winExist(ui.game) {
+		ui.loadGui:=gui()
+		ui.loadGui.opt("-caption -border toolWindow")
+		ui.loadGui.backColor:="010203"
+		ui.loadGui.color:="010203"
+		winSetTransColor("010203",ui.loadGui)
+		ui.loadGuiBorder:=ui.loadGui.addText("x0 y0 w600 h100 background909090")
+		ui.loadGuiBg:=ui.loadGui.addText("x3 y3 w594 h94 background506050")
+		ui.loadGuiText:=ui.loadGui.addText("x0 y10 w600 h50 center backgroundTrans","Fishing Planet Not Running")
+		ui.loadGuiText2:=ui.loadGui.addText("x0 y55 w600 h50 center backgroundTrans","Please launch game through Steam or Epic launcher.")
+
+		ui.loadGuiText.setFont("s28 ca0a0a0","calibri")
+		ui.loadGuiText2.setFont("s18 ca0a0a0","calibri")
+		ui.loadGui.show("x" (a_screenwidth/2)-300 " y" (a_screenheight/2)-50)
+		
 	;msgbox(getGamePath())
-		run(getGamePath(),,"Hide")		
+		;run(getGamePath(),,"Hide")		
 		winWait(ui.game)
+		loadScreen()
 		winMove(0,0,,,ui.game)
 		winSetTransparent(1,ui.game)	
 		loop 40 {
@@ -25,6 +39,7 @@ startGame(*) {
 		winMove(0,0,,,ui.game)
 		winSetStyle("-0xC00000",ui.game)
 	} else {
+		loadScreen()
 		winActivate(ui.game)
 		winWait(ui.game)	
 		winSetStyle("-0xC00000",ui.game)

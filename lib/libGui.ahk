@@ -119,16 +119,20 @@ setFScoords(*) {
 ;MSGbOX(ui.reeledInCoord5fs[1] "`n" ui.reeledInCoord5fs[2])
 }
 
+updateSetting(this_setting,this_profile) {
+	while cfg.%this_setting%.length < this_profile
+		cfg.%this_setting%.push(false)
+	cfg.%this_setting%[this_profile] := ui.%this_setting%.value
+	%this_setting%Str := ""
+	loop cfg.%this_setting%.length {
+		%this_setting%Str.=cfg.%this_setting%[this_profile] ","
+	}
+	iniWrite(rtrim(%this_setting%Str,","),cfg.file,"Game",%this_setting%)
+}
 
 toggleKeepnet(*) {
-	while cfg.keepnetEnabled.length < cfg.profileSelected
-		cfg.keepnetEnabled.push(false)
-	cfg.keepnetEnabled[cfg.profileSelected] := ui.keepnetEnabled.value
-	keepnetEnabledStr := ""
-	loop cfg.keepnetEnabled.length {
-		keepnetEnabledStr.=cfg.keepnetEnabled[a_index] ","
-	}
-	iniWrite(rtrim(keepnetEnabledStr,","),cfg.file,"Game","KeepnetEnabled")	
+	this_setting:="keepnetEnabled"
+	updateSetting(this_setting,cfg.profileSelected)
 }
 
 
@@ -145,7 +149,8 @@ saveLog(*) {
 				fileAppend(ui.LogLV.getText(a_index) "`n","./logs/" logFilename)
 			}
 			log("Saved Log to " a_scriptdir "logs/" logFilename)
-}		
+}
+
 logViewer(*) {
 		ui.logGui:=gui()
 		ui.logGui.opt("-caption toolWindow alwaysOnTop owner" winGetId(ui.game))
