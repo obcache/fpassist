@@ -1,4 +1,4 @@
-A_FileVersion := "1.4.6.1"
+A_FileVersion := "1.4.6.2"
 A_AppName := "fpassist"
 #requires autoHotkey v2.0+
 #singleInstance
@@ -301,50 +301,46 @@ this:=object()
 startAfk(this_mode:="cast",*) {
 	mode(this_mode)
 	ui.enabled:=true
-	ui.fishCountIcon.opt("-hidden")
-	setTimer(updateAfkTime,1000)
-	log("AFK: Started")
-	send("{LButton Up}")
-	send("{RButton Up}")
-	send("{Shift Up}")
-	send("{LShift Up}")
-	send("{Space Up}")
-	send("{CapsLock Up}")
-	;ui.statAfkStartTime.text 	:= formatTime(,"yyyy-MM-dd@hh:mm:ss")
-	;ui.fishLogAfkTime.opt("-hidden")
-	;ui.fishLogAfkTimeLabel.opt("-hidden")
-	;ui.fishLogAfkTimeLabel2.opt("-hidden")
-	;ui.bigfishCount.opt("-hidden")
-	;ui.bigfishCountLabel.opt("-hidden")
-	;ui.bigfishCountLabel2.opt("-hidden")
+	if this_mode!="retrieve" {
+		ui.fishCountIcon.opt("-hidden")
+		setTimer(updateAfkTime,1000)
+		log("AFK: Started")
+		send("{LButton Up}")
+		send("{RButton Up}")
+		send("{Shift Up}")
+		send("{LShift Up}")
+		send("{Space Up}")
+		send("{CapsLock Up}")
 
-	loop 5 {
-		send("{+}")	
-		sleep(150)
-	}
-	
-	while ui.enabled && !reeledIn {
-		send("{space down}")
-		sleep(500)
-	}
-	errorLevel:=(ui.enabled) ? 0 : killAfk()
-	
-	while ui.enabled  {
-		if reeledIn() {
-			errorLevel:=(ui.enabled) ? 0 : killAfk()
-			send("{space}")
-			send("{backspace}")
-			sleep500(2)
-			cast()
-		} else {
-			reelIn()
+		loop 5 {
+			send("{+}")	
+			sleep(150)
 		}
-
-		if !reeledIn() {
-			retrieve()
-		}	
-	;cast()
+			
+		while ui.enabled && !reeledIn {
+			send("{space down}")
+			sleep(500)
+		}
+		errorLevel:=(ui.enabled) ? 0 : killAfk()
+	
+		while ui.enabled  {
+			if reeledIn() {
+				errorLevel:=(ui.enabled) ? 0 : killAfk()
+				send("{space}")
+				send("{backspace}")
+				sleep500(2)
+				cast()
+			} else {
+				reelIn()
+			}
+		}
 	}
+	
+	if !reeledIn() {
+		retrieve()
+	}	
+	;cast()
+	
 	errorLevel:=(ui.enabled) ? 0 : killAfk()
 	sleep500(3)
 	analyzeCatch()
