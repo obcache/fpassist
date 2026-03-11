@@ -120,7 +120,7 @@ initVars(*) {
 	ui.castKey 				:= "c"
 	ui.reelKey 				:= "r"
 	ui.reelKeyFS			:= "^+space"
-	ui.exitKey 				:= "F4"
+	ui.exitKey 				:= "^+F4"
 	ui.retrieveKey 			:= "v"
 	ui.flashlight 			:= "+F"
 	ui.keepnetNumber		:= 1
